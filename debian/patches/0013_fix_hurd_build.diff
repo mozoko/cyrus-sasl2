@@ -1,0 +1,13 @@
+Author: Michael Banck <mbanck@debian.org>
+Description: Include config.h so that MAXHOSTNAMELEN is available when
+building on hurd-i386.
+--- trunk.orig/saslauthd/auth_sasldb.c
++++ trunk/saslauthd/auth_sasldb.c
+@@ -41,6 +41,7 @@
+ #include <string.h>
+ #include <stdlib.h>
+ #include <pwd.h>
++#include <config.h>
+ /* END PUBLIC DEPENDENCIES */
+ 
+ #define RETURN(x) return strdup(x)
