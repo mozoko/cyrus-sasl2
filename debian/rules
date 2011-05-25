@@ -210,7 +210,7 @@ override_dh_auto_install:
 	# Alter the rpath of certain binaries and shared libraries.
 	chrpath -d $(TMPPKG_MIT)/usr/sbin/sasldblistusers2 \
 		$(TMPPKG_MIT)/usr/sbin/saslpasswd2
-	chrpath -d $(TMPPKG_MIT)/usr/lib/sasl2/libsql.so.2.0.23
+	chrpath -d $(TMPPKG_MIT)/usr/lib/sasl2/libsql.so.2.0.24
 
 	# Install the sasl-sample-client and -server man pages.
 	dh_installman -psasl2-bin sasl-sample-client.8 sasl-sample-server.8
@@ -235,7 +235,7 @@ override_dh_installinit:
 override_dh_strip:
 	dh_strip -psasl2-bin -plibsasl2-2 -plibsasl2-modules -plibsasl2-modules-ldap -plibsasl2-modules-otp -plibsasl2-modules-sql -plibsasl2-modules-gssapi-mit -plibsasl2-dev -Nlibsasl2-modules-gssapi-heimdal --dbg-package=cyrus-sasl2-dbg
 	dh_strip -plibsasl2-modules-gssapi-heimdal -Nsasl2-bin -Nlibsasl2-2 -Nlibsasl2-modules -Nlibsasl2-modules-ldap -Nlibsasl2-modules-otp -Nlibsasl2-modules-sql -Nlibsasl2-modules-gssapi-mit -Nlibsasl2-dev --dbg-package=cyrus-sasl2-heimdal-dbg
-	mv debian/cyrus-sasl2-dbg/usr/lib/debug/usr/lib/sasl2/libgssapiv2.so.2.0.23 debian/cyrus-sasl2-mit-dbg/usr/lib/debug/usr/lib/sasl2/
+	mv debian/cyrus-sasl2-dbg/usr/lib/debug/usr/lib/sasl2/libgssapiv2.so.2.0.24 debian/cyrus-sasl2-mit-dbg/usr/lib/debug/usr/lib/sasl2/
 
 override_dh_makeshlibs:
 	dh_makeshlibs -X/usr/lib/sasl2
