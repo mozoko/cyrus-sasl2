@@ -17,8 +17,21 @@ cyrus-sasl2 (2.1.24~rc1.dfsg1-1) unstable; urgency=low
   * Fix autoreconf by adding some recommended options to configure.in
     and Makefile.am
   * Imported Upstream version 2.1.24~rc1.dfsg1
+  * Update patches to new release
+  * Update repack.sh
+  * Build against sqlite3 since upstream has a support for it
+    (Closes: #444799)
+  * Fix FTBFS in LDAP plugin
+  * Don't use .la files to open plugins, just scan .so
+  * Set configdir to /etc/sasl2:/etc/sasl:/usr/lib/sasl2
+    (Closes: #465569)
+  * Stop shipping .la and .a files for all modules (Closes: #516833)
+  * sasl2-bin can depend on generic db-util package now
+  * Add myself to uploaders
+  * Removed hardcoded -R option when searching for sqlite libraries
+  * Fix Sqlite3 FTBFS due missing link libraries in plugins/
 
- -- Ondřej Surý <ondrej@debian.org>  Wed, 25 May 2011 16:35:59 +0200
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 25 May 2011 21:57:11 +0200
 
 cyrus-sasl2 (2.1.23.dfsg1-8) unstable; urgency=low
 
