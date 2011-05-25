@@ -1,8 +1,8 @@
 Author: Roberto C. Sanchez <roberto@connexer.com>
 Description: Drop gratuitous dependency on krb5support
---- trunk.orig/aclocal.m4
-+++ trunk/aclocal.m4
-@@ -2924,9 +2924,6 @@
+--- a/aclocal.m4
++++ b/aclocal.m4
+@@ -2928,9 +2928,6 @@ if test "$gssapi" != no; then
    fi
  
    if test "$gss_impl" = "auto" -o "$gss_impl" = "mit"; then
@@ -12,9 +12,9 @@ Description: Drop gratuitous dependency on krb5support
      gss_failed=0
      AC_CHECK_LIB(gssapi_krb5,gss_unwrap,gss_impl="mit",gss_failed=1,
                   ${GSSAPIBASE_LIBS} -lgssapi_krb5 -lkrb5 -lk5crypto -lcom_err ${K5SUP} ${LIB_SOCKET})
---- trunk.orig/cmulocal/sasl2.m4
-+++ trunk/cmulocal/sasl2.m4
-@@ -110,9 +110,6 @@
+--- a/cmulocal/sasl2.m4
++++ b/cmulocal/sasl2.m4
+@@ -112,9 +112,6 @@ if test "$gssapi" != no; then
    fi
  
    if test "$gss_impl" = "auto" -o "$gss_impl" = "mit"; then
@@ -24,9 +24,9 @@ Description: Drop gratuitous dependency on krb5support
      gss_failed=0
      AC_CHECK_LIB(gssapi_krb5,gss_unwrap,gss_impl="mit",gss_failed=1,
                   ${GSSAPIBASE_LIBS} -lgssapi_krb5 -lkrb5 -lk5crypto -lcom_err ${K5SUP} ${LIB_SOCKET})
---- trunk.orig/saslauthd/aclocal.m4
-+++ trunk/saslauthd/aclocal.m4
-@@ -1333,9 +1333,6 @@
+--- a/saslauthd/aclocal.m4
++++ b/saslauthd/aclocal.m4
+@@ -1335,9 +1335,6 @@ if test "$gssapi" != no; then
    fi
  
    if test "$gss_impl" = "auto" -o "$gss_impl" = "mit"; then

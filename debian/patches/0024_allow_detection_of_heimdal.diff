@@ -1,9 +1,9 @@
 Author: Roberto C. Sanchez <roberto@connexer.com>
 Description: A patch to allow recognition of Heimdal with the heimdal-multidev
 package
---- trunk.orig/plugins/gssapi.c
-+++ trunk/plugins/gssapi.c
-@@ -86,7 +86,7 @@
+--- a/plugins/gssapi.c
++++ b/plugins/gssapi.c
+@@ -86,7 +86,7 @@ static const char plugin_id[] = "$Id: gs
  
  static const char * GSSAPI_BLANK_STRING = "";
  

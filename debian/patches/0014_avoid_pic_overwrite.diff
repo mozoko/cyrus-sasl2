@@ -4,9 +4,9 @@ is created out of non-PIC objects, is not going to overwrite the PIC version,
 which is created out of PIC objects. The PIC version is placed in .libs, and
 the non-PIC version in the current directory.  This ensures that both non-PIC
 and PIC versions are available in the correct locations.
---- trunk.orig/lib/Makefile.am
-+++ trunk/lib/Makefile.am
-@@ -76,7 +76,7 @@
+--- a/lib/Makefile.am
++++ b/lib/Makefile.am
+@@ -78,7 +78,7 @@ endif
  
  libsasl2.a: libsasl2.la $(SASL_STATIC_OBJS)
  	@echo adding static plugins and dependencies
@@ -15,9 +15,9 @@ and PIC versions are available in the correct locations.
  	@for i in ./libsasl2.la ../sasldb/libsasldb.la ../plugins/lib*.la; do \
  	if test ! -f $$i; then continue; fi; . $$i; \
  	for j in $$dependency_libs foo; do \
---- trunk.orig/sasldb/Makefile.am
-+++ trunk/sasldb/Makefile.am
-@@ -63,6 +63,6 @@
+--- a/sasldb/Makefile.am
++++ b/sasldb/Makefile.am
+@@ -63,6 +63,6 @@ libsasldb_a_SOURCES =
  EXTRA_libsasldb_a_SOURCES =
  
  libsasldb.a: libsasldb.la $(SASL_DB_BACKEND_STATIC)
