@@ -21,3 +21,4 @@
 0024_allow_detection_of_heimdal.diff
 0025_ld_as_needed.diff
 0026_drop_krb5support_dependency.diff
+0027_db5_support.diff
