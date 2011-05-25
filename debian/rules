@@ -70,12 +70,14 @@ CONFIGURE_COMMON_OPTIONS= \
 	--enable-ntlm \
 	--disable-passdss \
 	$(CONFIGURE_SQL) \
+	--with-sqlite3=/usr \
+	--with-mysql=/usr \
+	--with-pgsql=/usr/include/postgresql \
 	$(CONFIGURE_LDAPDB) \
 	--disable-macos-framework \
 	--with-pam \
 	--with-saslauthd=/var/run/saslauthd \
 	$(CONFIGURE_LDAP) \
-	--with-pgsql=/usr/include/postgresql \
 	--with-configdir=/etc/sasl:/usr/lib/sasl2 \
 	--sysconfdir=/etc \
 	--with-devrandom=/dev/urandom
