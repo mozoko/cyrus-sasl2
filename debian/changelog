@@ -1,4 +1,4 @@
-cyrus-sasl2 (2.1.23.dfsg1-9) unstable; urgency=low
+cyrus-sasl2 (2.1.24~rc1.dfsg1-1) unstable; urgency=low
 
   [ Roberto C. Sanchez ]
   * libsasl2-2.README.Debian: document that SASL logs debug messages by
@@ -12,8 +12,13 @@ cyrus-sasl2 (2.1.23.dfsg1-9) unstable; urgency=low
   * Remove /etc/sasldb2 in prerm remove if empty (Closes: #618885)
   * Improve Berkeley DB upgrade code to note the used version in
     berkeley_db.active file and compare it with current version
+  * Convert debian/rules to debhelper7
+  * Update Vcs-* and Homepage fields
+  * Fix autoreconf by adding some recommended options to configure.in
+    and Makefile.am
+  * Imported Upstream version 2.1.24~rc1.dfsg1
 
- -- Ondřej Surý <ondrej@debian.org>  Wed, 25 May 2011 15:49:39 +0200
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 25 May 2011 16:35:59 +0200
 
 cyrus-sasl2 (2.1.23.dfsg1-8) unstable; urgency=low
 
