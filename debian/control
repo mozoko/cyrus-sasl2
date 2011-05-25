@@ -6,9 +6,9 @@ Uploaders: Fabian Fagerholm <fabbe@debian.org>, Roberto C. Sanchez <roberto@conn
 Standards-Version: 3.9.2
 Build-Depends: debhelper (>= 7.0.50~), quilt (>= 0.46-7~), autotools-dev, automake, autoconf, libtool, libdb-dev, libpam0g-dev (>= 0.76-22), libssl-dev (>= 0.9.7e-3), libmysqlclient-dev | libmysqlclient15-dev (>= 5.0.20), libpq-dev (>= 8.1.3-4), heimdal-multidev, krb5-multidev, libsqlite0-dev (>= 2.8.16), libldap2-dev (>= 2.1.30-8), chrpath, groff-base, debconf (>= 0.5) | debconf-2.0, po-debconf, docbook-to-man, hardening-wrapper
 Build-Conflicts: heimdal-dev
-Vcs-Browser: http://svn.debian.org/wsvn/pkg-cyrus-sasl2/cyrus-sasl-2.1/trunk/
-Vcs-Svn: svn://svn.debian.org/svn/pkg-cyrus-sasl2/cyrus-sasl-2.1/trunk/
-Homepage: http://cyrusimap.web.cmu.edu/
+Vcs-Browser: http://git.debian.org/?p=pkg-cyrus-sasl2/cyrus-sasl2.git;a=summary
+Vcs-Git: git://git.debian.org/git/pkg-cyrus-sasl2/cyrus-sasl2/
+Homepage: http://www.cyrusimap.org/
 
 Package: sasl2-bin
 Section: utils
