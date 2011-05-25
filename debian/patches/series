@@ -16,3 +16,4 @@
 0027_db5_support.diff
 0028-autotools_fixes.patch
 0029-ldap_fixes.patch
+0030-dont_use_la_files_for_opening_plugins.patch
