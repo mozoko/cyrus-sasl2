@@ -18,3 +18,4 @@
 0029-ldap_fixes.patch
 0030-dont_use_la_files_for_opening_plugins.patch
 0031-dont_use_-R_when_search_for_sqlite_libraries.patch
+0032-missing_SQLITE3_in_plugins_Makefile.am.patch
