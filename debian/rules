@@ -25,6 +25,8 @@ export DEB_BUILD_HARDENING=1
 DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
+BDB_VERSION ?= $(shell LC_ALL=C dpkg-query -l 'libdb[45].[0-9]-dev' | grep ^ii | sed -e 's|.*\s\libdb\([45]\.[0-9]\)-dev\s.*|\1|')
+
 include /usr/share/quilt/quilt.make
 
 # Set proper compiler flags here.
@@ -244,6 +246,9 @@ install: build-arch build-indep test
 
 	cd $(TMPBUILD_MIT) && $(MAKE) install DESTDIR=$(TMPPKG_MIT)
 	cd $(TMPBUILD_HEIMDAL) && $(MAKE) install DESTDIR=$(TMPPKG_HEIMDAL)
+
+	# Note the version of Berkeley DB used to build this package
+	echo $(BDB_VERSION) > $(TMPPKG_MIT)/usr/lib/sasl2/berkeley_db.txt
 
 	# Alter the default location and names of files to fit Debian
 	# policy and better integrate with the Debian system.
