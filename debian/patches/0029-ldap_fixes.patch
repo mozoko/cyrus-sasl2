@@ -1,0 +1,38 @@
+--- a/plugins/ldapdb.c
++++ b/plugins/ldapdb.c
+@@ -249,7 +249,7 @@ static int ldapdb_auxprop_lookup(void *g
+ 	    result = SASL_UNAVAIL;
+ 	    break;
+ 
+-	case LDAP_PROXY_AUTHZ_FAILURE:
++	case LDAP_X_PROXY_AUTHZ_FAILURE:
+ 	case LDAP_INAPPROPRIATE_AUTH:
+ 	case LDAP_INVALID_CREDENTIALS:
+ 	case LDAP_INSUFFICIENT_ACCESS:
+--- a/plugins/Makefile.am
++++ b/plugins/Makefile.am
+@@ -119,7 +119,7 @@ libsasldb_la_LIBADD = ../sasldb/libsasld
+ 
+ libldapdb_la_SOURCES = ldapdb.c ldapdb_init.c $(common_sources)
+ libldapdb_la_DEPENDENCIES = $(COMPAT_OBJS)
+-libldapdb_la_LIBADD = $(COMPAT_OBJS)
++libldapdb_la_LIBADD = $(LIB_LDAP) $(COMPAT_OBJS)
+ 
+ libsql_la_SOURCES = sql.c sql_init.c $(common_sources)
+ libsql_la_LDFLAGS = $(LIB_MYSQL) $(LIB_PGSQL) $(LIB_SQLITE) $(AM_LDFLAGS)
+--- a/plugins/makeinit.sh
++++ b/plugins/makeinit.sh
+@@ -90,4 +90,4 @@ SASL_AUXPROP_PLUG_INIT( $auxprop )
+ done
+ 
+ # ldapdb is also a canon_user plugin
+-echo "SASL_CANONUSER_PLUG_INIT( ldap )" >> ldapdb_init.c
++echo "SASL_CANONUSER_PLUG_INIT( ldapdb )" >> ldapdb_init.c
+--- a/plugins/ldapdb_init.c
++++ b/plugins/ldapdb_init.c
+@@ -36,4 +36,4 @@ BOOL APIENTRY DllMain( HANDLE hModule,
+ 
+ SASL_AUXPROP_PLUG_INIT( ldapdb )
+ 
+-SASL_CANONUSER_PLUG_INIT( ldap )
++SASL_CANONUSER_PLUG_INIT( ldapdb )

@@ -15,3 +15,4 @@
 0026_drop_krb5support_dependency.diff
 0027_db5_support.diff
 0028-autotools_fixes.patch
+0029-ldap_fixes.patch
