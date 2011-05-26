@@ -143,20 +143,9 @@ override_dh_auto_configure:
 	CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS) -I/usr/include/mit-krb5" \
 	dh_auto_configure -B$(TMPBUILD_MIT) -- $(CONFIGURE_COMMON_OPTIONS) --with-gss_impl=mit
 
-	# Cope with the way that ./configure creates symlinks
-	cp $(CURDIR)/sasldb/* $(TMPBUILD_MIT)/sasldb/
-	cp $(CURDIR)/plugins/* $(TMPBUILD_MIT)/plugins/
-	cp $(CURDIR)/lib/* $(TMPBUILD_MIT)/lib/
-
-
 	LDFLAGS="$(LDFLAGS) -L/usr/lib/heimdal -Wl,-z,defs" \
 	CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS) -I/usr/include/heimdal" \
 	dh_auto_configure -B$(TMPBUILD_HEIMDAL) -- $(CONFIGURE_COMMON_OPTIONS) --with-gss_impl=heimdal
-
-	# Cope with the way that ./configure creates symlinks
-	cp $(CURDIR)/sasldb/* $(TMPBUILD_HEIMDAL)/sasldb/
-	cp $(CURDIR)/plugins/* $(TMPBUILD_HEIMDAL)/plugins/
-	cp $(CURDIR)/lib/* $(TMPBUILD_HEIMDAL)/lib/
 
 	# Record the build-time settings for later reference
 	echo 'To build this package, configure was called as follows:' \
