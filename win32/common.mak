@@ -2,10 +2,20 @@
 #Keep in sync with include/sasl.h and win32/include/config.h
 SASL_VERSION_MAJOR=2
 SASL_VERSION_MINOR=1
-SASL_VERSION_STEP=23
+SASL_VERSION_STEP=24
+
+!IF "$(STATIC)" == ""
+STATIC=yes
+!ENDIF
 
 # Uncomment the following line, if you want to use Visual Studio 6
 #VCVER=6
+
+# Use in Visual Studio 6 & 7:
+#EXCEPTHANDLING=/GX
+
+# Use in Visual Studio 8:
+EXCEPTHANDLING=/EHsc
 
 # Define compiler/linker/etc.
 
@@ -13,8 +23,14 @@ CPP=cl.exe /nologo
 LINK32=link.exe /nologo
 LINK32DLL=$(LINK32) /dll
 LINK32EXE=$(LINK32)
+# It seems that -lib must be the first parameter
+LINK32LIB=link.exe /lib /nologo
 
 SYS_LIBS=ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib
+
+!IF "$(BITS)" == "64"
+SYS_LIBS=$(SYS_LIBS) bufferoverflowU.lib
+!ENDIF
 
 # Define the minimal Windows OS you want to run on:40 (NT), 50 (W2K), 51 (XP)
 # Default is no restrictions. Currently we only check for 51 or later.
@@ -105,6 +121,20 @@ SQLITE_LIBPATH="C:\work\open_source\sqllite\sqlite\objs"
 !ENDIF
 !ENDIF
 
+!IF "$(SQLITE_INCLUDE3)" == ""
+SQLITE_INCLUDES3=/I"c:\work\sqlite\generated"
+!IF "$(VERBOSE)" != "0"
+!MESSAGE Defaulting SQLITE_INCLUDES3 includes to $(SQLITE_INCLUDES3).
+!ENDIF
+!ENDIF
+
+!IF "$(SQLITE_LIBPATH3)" == ""
+SQLITE_LIBPATH3="c:\work\sqlite\objs.NT"
+!IF "$(VERBOSE)" != "0"
+!MESSAGE Defaulting SQLITE library path to $(SQLITE_LIBPATH3).
+!ENDIF
+!ENDIF
+
 !IF "$(LDAP_LIB_BASE)" == ""
 LDAP_LIB_BASE = c:\work\open_source\openldap\openldap-head\ldap\Debug
 !IF "$(VERBOSE)" != "0"
@@ -143,9 +173,13 @@ CODEGEN=/MD
 ENABLE_WIN64_WARNINGS=/Wp64
 !ENDIF
 
-CPP_PROJ= $(CODEGEN) /W3 /GX /O2 $(ENABLE_WIN64_WARNINGS) /Zi /D "NDEBUG" $(CPPFLAGS) /FD /c 
+CPP_PROJ= $(CODEGEN) /W3 $(EXCEPTHANDLING) /O2 $(ENABLE_WIN64_WARNINGS) /Zi /D "NDEBUG" $(CPPFLAGS) /FD /c 
 
-LINK32_FLAGS=/incremental:no /debug /machine:I386
+incremental=no
+
+# This use to contain /machine:I386. This breaks cross compiling to Windows 64.
+# It doesn't seem that the /machine option is needed anyway.
+LINK32_FLAGS=/debug
 
 !ELSEIF  "$(CFG)" == "Debug"
 
@@ -160,14 +194,22 @@ CODEGEN=/MDd
 !ENDIF 
 !ENDIF 
 
-CPP_PROJ=$(CODEGEN) /W3 /Gm /GX /ZI /Od /D "_DEBUG" $(CPPFLAGS) /FD /GZ /c 
+CPP_PROJ=$(CODEGEN) /W3 /Gm $(EXCEPTHANDLING) /ZI /Od /D "_DEBUG" $(CPPFLAGS) /FD /GZ /c 
 
-LINK32_FLAGS=/incremental:yes /debug /machine:I386 /pdbtype:sept 
+incremental=yes
+
+# This use to contain /machine:I386. This breaks cross compiling to Windows 64.
+# It doesn't seem that the /machine option is needed anyway.
+LINK32_FLAGS=/debug /pdbtype:sept
 
 !ENDIF
 
-LINK32DLL_FLAGS=$(LINK32_FLAGS) $(SYS_LIBS) $(EXTRA_LIBS)
+LINK32DLL_FLAGS=/incremental:$(incremental) $(LINK32_FLAGS) $(SYS_LIBS) $(EXTRA_LIBS)
 
 # Assume we are only building console applications
-LINK32EXE_FLAGS=/subsystem:console $(LINK32_FLAGS) $(SYS_LIBS) $(EXTRA_LIBS)
+LINK32EXE_FLAGS=/subsystem:console /incremental:$(incremental) $(LINK32_FLAGS) $(SYS_LIBS) $(EXTRA_LIBS)
 
+# Assume we are only building console applications
+LINK32EXE_FLAGS=/subsystem:console /incremental:$(incremental) $(LINK32_FLAGS) $(SYS_LIBS) $(EXTRA_LIBS)
+
+LINK32LIB_FLAGS=$(LINK32_FLAGS)

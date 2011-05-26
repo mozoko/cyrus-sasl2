@@ -309,7 +309,7 @@ ac_includes_default="\
 #endif"
 
 ac_subdirs_all="$ac_subdirs_all saslauthd"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CPP LN_S RANLIB ac_ct_RANLIB LIBTOOL PURECOV PURIFY JAVAC JAVAH JAVADOC JAVA_TRUE JAVA_FALSE JAVA_INCLUDES JAVAROOT SAMPLE_TRUE SAMPLE_FALSE LIB_SOCKET EGREP SASL_DB_UTILS SASL_DB_MANS SASL_DB_BACKEND SASL_DB_BACKEND_STATIC SASL_DB_INC SASL_DB_LIB NO_SASL_DB_MANS_TRUE NO_SASL_DB_MANS_FALSE SASL_DL_LIB NM SASLAUTHD_TRUE SASLAUTHD_FALSE PWCHECKMETH PWCHECK_TRUE PWCHECK_FALSE IPCTYPE LIB_DOOR CMU_LIB_SUBDIR LIB_DES OTP_LIBS SRP_LIBS SASL_KRB_LIB LIB_CRYPT GSSAPI_LIBS GSSAPIBASE_LIBS PLAIN_LIBS NTLM_LIBS PASSDSS_LIBS LIB_MYSQL LIB_PGSQL LIB_SQLITE LIB_LDAP SASL_MECHS SASL_STATIC_SRCS SASL_STATIC_OBJS SASL_STATIC_LIBS plugindir configdir MACOSX_TRUE MACOSX_FALSE DMALLOC_LIBS SFIO_INC_FLAGS SFIO_LIB_FLAGS SMTPTEST_PROGRAM SASL_UTIL_LIBS_EXTRA SASL_UTIL_HEADERS_EXTRA LIBOBJS GETSUBOPT SNPRINTFOBJS LTSNPRINTFOBJS GETADDRINFOOBJS LTGETADDRINFOOBJS GETNAMEINFOOBJS LTGETNAMEINFOOBJS LTLIBOBJS DIRS subdirs'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CPP LN_S RANLIB ac_ct_RANLIB LIBTOOL PURECOV PURIFY JAVAC JAVAH JAVADOC JAVA_TRUE JAVA_FALSE JAVA_INCLUDES JAVAROOT SAMPLE_TRUE SAMPLE_FALSE LIB_SOCKET EGREP SASL_DB_UTILS SASL_DB_MANS SASL_DB_BACKEND SASL_DB_BACKEND_STATIC SASL_DB_INC SASL_DB_LIB NO_SASL_DB_MANS_TRUE NO_SASL_DB_MANS_FALSE SASL_DL_LIB NM SASLAUTHD_TRUE SASLAUTHD_FALSE PWCHECKMETH PWCHECK_TRUE PWCHECK_FALSE IPCTYPE LIB_DOOR CMU_LIB_SUBDIR LIB_DES OTP_LIBS SRP_LIBS SASL_KRB_LIB LIB_CRYPT GSSAPI_LIBS GSSAPIBASE_LIBS PLAIN_LIBS NTLM_LIBS PASSDSS_LIBS LIB_MYSQL LIB_PGSQL LIB_SQLITE LIB_SQLITE3 LIB_LDAP SASL_MECHS SASL_STATIC_SRCS SASL_STATIC_OBJS SASL_STATIC_LIBS plugindir configdir MACOSX_TRUE MACOSX_FALSE DMALLOC_LIBS SFIO_INC_FLAGS SFIO_LIB_FLAGS SMTPTEST_PROGRAM SASL_UTIL_LIBS_EXTRA SASL_UTIL_HEADERS_EXTRA LIBOBJS GETSUBOPT SNPRINTFOBJS LTSNPRINTFOBJS GETADDRINFOOBJS LTGETADDRINFOOBJS GETNAMEINFOOBJS LTGETNAMEINFOOBJS LTLIBOBJS DIRS subdirs'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -909,6 +909,7 @@ Optional Packages:
   --with-mysql=PATH       use MySQL from PATH
   --with-pgsql=PATH       use PostgreSQL from PATH
   --with-sqlite=PATH       use SQLite from PATH
+  --with-sqlite3=PATH       use SQLite3 from PATH
   --with-plugindir=DIR    set the directory where plugins will
                           be found [/usr/lib/sasl2]
    --with-configdir=DIR    set the directory where config files will
@@ -1711,7 +1712,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=cyrus-sasl
- VERSION=2.1.23
+ VERSION=2.1.24
 
 
 cat >>confdefs.h <<_ACEOF
@@ -3304,11 +3305,6 @@ cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 
 #include <stdlib.h>
-
-int
-main ()
-{
-
 static void foo(void) __attribute__ ((noreturn));
 
 static void
@@ -3316,6 +3312,11 @@ foo(void)
 {
   exit(1);
 }
+
+int
+main ()
+{
+
 
   ;
   return 0;
@@ -3358,7 +3359,7 @@ echo "${ECHO_T}$ac_cv___attribute__" >&6
    # CMU GUESS RUNPATH SWITCH
   echo "$as_me:$LINENO: checking for runpath switch" >&5
 echo $ECHO_N "checking for runpath switch... $ECHO_C" >&6
-if test "${andrew_runpath_switch+set}" = set; then
+if test "${andrew_cv_runpath_switch+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
 
@@ -3393,7 +3394,7 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  andrew_runpath_switch="-R"
+  andrew_cv_runpath_switch="-R"
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
@@ -3428,12 +3429,12 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  andrew_runpath_switch="-Wl,-rpath,"
+  andrew_cv_runpath_switch="-Wl,-rpath,"
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-andrew_runpath_switch="none"
+andrew_cv_runpath_switch="none"
 fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 
@@ -3442,8 +3443,8 @@ rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
   LDFLAGS="${SAVE_LDFLAGS}"
 
 fi
-echo "$as_me:$LINENO: result: $andrew_runpath_switch" >&5
-echo "${ECHO_T}$andrew_runpath_switch" >&6
+echo "$as_me:$LINENO: result: $andrew_cv_runpath_switch" >&5
+echo "${ECHO_T}$andrew_cv_runpath_switch" >&6
 
 
 # Check whether --with-staticsasl or --without-staticsasl was given.
@@ -3766,7 +3767,7 @@ test x"$silent" = xyes && libtool_flags="$libtool_flags --silent"
 case "$lt_target" in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 3769 "configure"' > conftest.$ac_ext
+  echo '#line 3770 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -5128,18 +5129,18 @@ if test $ac_cv_header_db_h = yes; then
 	if test -d $with_bdb_lib; then
 
   # this is CMU ADD LIBPATH TO
-  if test "$andrew_runpath_switch" = "none" ; then
+  if test "$andrew_cv_runpath_switch" = "none" ; then
 	LDFLAGS="-L$with_bdb_lib ${LDFLAGS}"
   else
-	LDFLAGS="-L$with_bdb_lib ${LDFLAGS} $andrew_runpath_switch$with_bdb_lib"
+	LDFLAGS="-L$with_bdb_lib ${LDFLAGS} $andrew_cv_runpath_switch$with_bdb_lib"
   fi
 
 
   # this is CMU ADD LIBPATH TO
-  if test "$andrew_runpath_switch" = "none" ; then
+  if test "$andrew_cv_runpath_switch" = "none" ; then
 	BDB_LIBADD="-L$with_bdb_lib ${BDB_LIBADD}"
   else
-	BDB_LIBADD="-L$with_bdb_lib ${BDB_LIBADD} $andrew_runpath_switch$with_bdb_lib"
+	BDB_LIBADD="-L$with_bdb_lib ${BDB_LIBADD} $andrew_cv_runpath_switch$with_bdb_lib"
   fi
 
 	else
@@ -5147,7 +5148,7 @@ if test $ac_cv_header_db_h = yes; then
 	fi
 
 	saved_LIBS=$LIBS
-        for dbname in db-4.4 db4.4 db44 db-4.3 db4.3 db43 db-4.2 db4.2 db42 db-4.1 db4.1 db41 db-4.0 db4.0 db-4 db40 db4 db-3.3 db3.3 db33 db-3.2 db3.2 db32 db-3.1 db3.1 db31 db-3 db30 db3 db
+        for dbname in ${with_bdb} db-4.6 db4.6 db46 db-4.5 db4.5 db45 db-4.4 db4.4 db44 db-4.3 db4.3 db43 db-4.2 db4.2 db42 db-4.1 db4.1 db41 db-4.0 db4.0 db-4 db40 db4 db-3.3 db3.3 db33 db-3.2 db3.2 db32 db-3.1 db3.1 db31 db-3 db30 db3 db
           do
 	    LIBS="$saved_LIBS -l$dbname"
 	    cat >conftest.$ac_ext <<_ACEOF
@@ -5157,6 +5158,7 @@ _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
+#include <stdio.h>
 #include <db.h>
 int
 main ()
@@ -5197,6 +5199,7 @@ _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
+#include <stdio.h>
 #include <db.h>
 int
 main ()
@@ -5885,18 +5888,18 @@ if test $ac_cv_header_db_h = yes; then
 	if test -d $with_bdb_lib; then
 
   # this is CMU ADD LIBPATH TO
-  if test "$andrew_runpath_switch" = "none" ; then
+  if test "$andrew_cv_runpath_switch" = "none" ; then
 	LDFLAGS="-L$with_bdb_lib ${LDFLAGS}"
   else
-	LDFLAGS="-L$with_bdb_lib ${LDFLAGS} $andrew_runpath_switch$with_bdb_lib"
+	LDFLAGS="-L$with_bdb_lib ${LDFLAGS} $andrew_cv_runpath_switch$with_bdb_lib"
   fi
 
 
   # this is CMU ADD LIBPATH TO
-  if test "$andrew_runpath_switch" = "none" ; then
+  if test "$andrew_cv_runpath_switch" = "none" ; then
 	BDB_LIBADD="-L$with_bdb_lib ${BDB_LIBADD}"
   else
-	BDB_LIBADD="-L$with_bdb_lib ${BDB_LIBADD} $andrew_runpath_switch$with_bdb_lib"
+	BDB_LIBADD="-L$with_bdb_lib ${BDB_LIBADD} $andrew_cv_runpath_switch$with_bdb_lib"
   fi
 
 	else
@@ -5904,7 +5907,7 @@ if test $ac_cv_header_db_h = yes; then
 	fi
 
 	saved_LIBS=$LIBS
-        for dbname in db-4.4 db4.4 db44 db-4.3 db4.3 db43 db-4.2 db4.2 db42 db-4.1 db4.1 db41 db-4.0 db4.0 db-4 db40 db4 db-3.3 db3.3 db33 db-3.2 db3.2 db32 db-3.1 db3.1 db31 db-3 db30 db3 db
+        for dbname in ${with_bdb} db-4.6 db4.6 db46 db-4.5 db4.5 db45 db-4.4 db4.4 db44 db-4.3 db4.3 db43 db-4.2 db4.2 db42 db-4.1 db4.1 db41 db-4.0 db4.0 db-4 db40 db4 db-3.3 db3.3 db33 db-3.2 db3.2 db32 db-3.1 db3.1 db31 db-3 db30 db3 db
           do
 	    LIBS="$saved_LIBS -l$dbname"
 	    cat >conftest.$ac_ext <<_ACEOF
@@ -5914,6 +5917,7 @@ _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
+#include <stdio.h>
 #include <db.h>
 int
 main ()
@@ -5954,6 +5958,7 @@ _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
+#include <stdio.h>
 #include <db.h>
 int
 main ()
@@ -6501,7 +6506,7 @@ echo "${ECHO_T}$dblib" >&6
 
 SASL_DB_BACKEND="db_${dblib}.lo"
 SASL_DB_BACKEND_STATIC="db_${dblib}.o allockey.o"
-SASL_DB_BACKEND_STATIC_SRCS="../sasldb/db_${dblib}.c ../sasldb/allockey.c"
+SASL_DB_BACKEND_STATIC_SRCS="\$(top_srcdir)/sasldb/db_${dblib}.c \$(top_srcdir)/sasldb/allockey.c"
 SASL_DB_UTILS="saslpasswd2 sasldblistusers2"
 SASL_DB_MANS="saslpasswd2.8 sasldblistusers2.8"
 
@@ -6535,7 +6540,7 @@ _ACEOF
 echo "$as_me: WARNING: Disabling SASL authentication database support" >&2;}
             SASL_DB_BACKEND="db_none.lo"
     SASL_DB_BACKEND_STATIC="db_none.o"
-    SASL_DB_BACKEND_STATIC_SRCS="../sasldb/db_none.c"
+    SASL_DB_BACKEND_STATIC_SRCS="\$(top_srcdir)/sasldb/db_none.c"
     SASL_DB_UTILS=""
     SASL_DB_MANS=""
     SASL_DB_LIB=""
@@ -6544,7 +6549,7 @@ esac
 
 if test "$enable_static" = yes; then
     if test "$dblib" != "none"; then
-      SASL_STATIC_SRCS="$SASL_STATIC_SRCS ../plugins/sasldb.c $SASL_DB_BACKEND_STATIC_SRCS"
+      SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/sasldb.c $SASL_DB_BACKEND_STATIC_SRCS"
       SASL_STATIC_OBJS="$SASL_STATIC_OBJS sasldb.o $SASL_DB_BACKEND_STATIC"
 
 cat >>confdefs.h <<\_ACEOF
@@ -7445,7 +7450,7 @@ echo "${ECHO_T}enabled" >&6
   SASL_MECHS="$SASL_MECHS libcrammd5.la"
   if test "$enable_static" = yes; then
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS cram.o"
-    SASL_STATIC_SRCS="$SASL_STATIC_SRCS ../plugins/cram.c"
+    SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/cram.c"
 
 cat >>confdefs.h <<\_ACEOF
 #define STATIC_CRAMMD5
@@ -7866,10 +7871,10 @@ fi;
 	  CPPFLAGS="${CPPFLAGS} -I${with_openssl}/include"
 
   # this is CMU ADD LIBPATH
-  if test "$andrew_runpath_switch" = "none" ; then
+  if test "$andrew_cv_runpath_switch" = "none" ; then
 	LDFLAGS="-L${with_openssl}/$CMU_LIB_SUBDIR ${LDFLAGS}"
   else
-	LDFLAGS="-L${with_openssl}/$CMU_LIB_SUBDIR $andrew_runpath_switch${with_openssl}/$CMU_LIB_SUBDIR ${LDFLAGS}"
+	LDFLAGS="-L${with_openssl}/$CMU_LIB_SUBDIR $andrew_cv_runpath_switch${with_openssl}/$CMU_LIB_SUBDIR ${LDFLAGS}"
   fi
 
 	fi
@@ -9140,7 +9145,7 @@ if test "$digest" != no; then
 echo "${ECHO_T}enabled" >&6
   SASL_MECHS="$SASL_MECHS libdigestmd5.la"
   if test "$enable_static" = yes; then
-    SASL_STATIC_SRCS="$SASL_STATIC_SRCS ../plugins/digestmd5.c"
+    SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/digestmd5.c"
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS digestmd5.o"
 
 cat >>confdefs.h <<\_ACEOF
@@ -9176,7 +9181,7 @@ echo "${ECHO_T}enabled" >&6
 
   SASL_MECHS="$SASL_MECHS libotp.la"
   if test "$enable_static" = yes; then
-    SASL_STATIC_SRCS="$SASL_STATIC_SRCS ../plugins/otp.c"
+    SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/otp.c"
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS otp.o"
 
 cat >>confdefs.h <<\_ACEOF
@@ -9445,7 +9450,7 @@ echo "${ECHO_T}enabled" >&6
 
   SASL_MECHS="$SASL_MECHS libsrp.la"
   if test "$enable_static" = yes; then
-    SASL_STATIC_SRCS="$SASL_STATIC_SRCS ../plugins/srp.c"
+    SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/srp.c"
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS srp.o"
 
 cat >>confdefs.h <<\_ACEOF
@@ -10072,7 +10077,7 @@ echo $ECHO_N "checking KERBEROS_V4... $ECHO_C" >&6
     echo "$as_me:$LINENO: result: enabled" >&5
 echo "${ECHO_T}enabled" >&6
     SASL_MECHS="$SASL_MECHS libkerberos4.la"
-    SASL_STATIC_SRCS="$SASL_STATIC_SRCS ../plugins/kerberos4.c"
+    SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/kerberos4.c"
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS kerberos4.o"
 
 cat >>confdefs.h <<\_ACEOF
@@ -10425,11 +10430,7 @@ echo "${ECHO_T}$ac_cv_header_gssapi_h" >&6
 
 fi
 if test $ac_cv_header_gssapi_h = yes; then
-
-cat >>confdefs.h <<\_ACEOF
-#define HAVE_GSSAPI_H
-_ACEOF
-
+  :
 else
   if test "${ac_cv_header_gssapi_gssapi_h+set}" = set; then
   echo "$as_me:$LINENO: checking for gssapi/gssapi.h" >&5
@@ -10577,6 +10578,14 @@ fi
 fi
 
 if test "$gssapi" != no; then
+  if test "$ac_cv_header_gssapi_h" = "yes" -o "$ac_cv_header_gssapi_gssapi_h" = "yes"; then
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_GSSAPI_H
+_ACEOF
+
+  fi
+
   # We need to find out which gssapi implementation we are
   # using. Supported alternatives are: MIT Kerberos 5,
   # Heimdal Kerberos 5 (http://www.pdc.kth.se/heimdal),
@@ -11327,7 +11336,7 @@ fi
 
   SASL_MECHS="$SASL_MECHS libgssapiv2.la"
   SASL_STATIC_OBJS="$SASL_STATIC_OBJS gssapi.o"
-  SASL_STATIC_SRCS="$SASL_STATIC_SRCS ../plugins/gssapi.c"
+  SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/gssapi.c"
 
   cmu_save_LIBS="$LIBS"
   LIBS="$LIBS $GSSAPIBASE_LIBS"
@@ -11481,7 +11490,7 @@ echo "${ECHO_T}enabled" >&6
   SASL_MECHS="$SASL_MECHS libplain.la"
   if test "$enable_static" = yes; then
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS plain.o"
-    SASL_STATIC_SRCS="$SASL_STATIC_SRCS ../plugins/plain.c"
+    SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/plain.c"
 
 cat >>confdefs.h <<\_ACEOF
 #define STATIC_PLAIN
@@ -11510,7 +11519,7 @@ echo "${ECHO_T}enabled" >&6
   SASL_MECHS="$SASL_MECHS libanonymous.la"
   if test "$enable_static" = yes; then
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS anonymous.o"
-    SASL_STATIC_SRCS="$SASL_STATIC_SRCS ../plugins/anonymous.c"
+    SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/anonymous.c"
 
 cat >>confdefs.h <<\_ACEOF
 #define STATIC_ANONYMOUS
@@ -11537,7 +11546,7 @@ if test "$login" != no; then
 echo "${ECHO_T}enabled" >&6
   SASL_MECHS="$SASL_MECHS liblogin.la"
   if test "$enable_static" = yes; then
-    SASL_STATIC_SRCS="$SASL_STATIC_SRCS ../plugins/login.c"
+    SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/login.c"
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS login.o"
 
 cat >>confdefs.h <<\_ACEOF
@@ -11574,7 +11583,7 @@ echo "${ECHO_T}enabled" >&6
 
   SASL_MECHS="$SASL_MECHS libntlm.la"
   if test "$enable_static" = yes; then
-    SASL_STATIC_SRCS="$SASL_STATIC_SRCS ../plugins/ntlm.c"
+    SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/ntlm.c"
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS ntlm.o"
 
 cat >>confdefs.h <<\_ACEOF
@@ -11612,7 +11621,7 @@ echo "${ECHO_T}enabled" >&6
   SASL_MECHS="$SASL_MECHS libpassdss.la"
   if test "$enable_static" = yes; then
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS passdss.o"
-    SASL_STATIC_SRCS="$SASL_STATIC_SRCS ../plugins/passdss.c"
+    SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/passdss.c"
 
 cat >>confdefs.h <<\_ACEOF
 #define STATIC_PASSDSS
@@ -11653,7 +11662,7 @@ if test "$sql" != no; then
 echo "${ECHO_T}enabled" >&6
   SASL_MECHS="$SASL_MECHS libsql.la"
   if test "$enable_static" = yes; then
-    SASL_STATIC_SRCS="$SASL_STATIC_SRCS ../plugins/sql.c"
+    SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/sql.c"
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS sql.o"
 
 cat >>confdefs.h <<\_ACEOF
@@ -11704,37 +11713,37 @@ echo "$as_me: WARNING: MySQL Library not found" >&2;}; true;;
      if test -d ${with_mysql}/lib/mysql; then
 
   # this is CMU ADD LIBPATH TO
-  if test "$andrew_runpath_switch" = "none" ; then
+  if test "$andrew_cv_runpath_switch" = "none" ; then
 	LIB_MYSQL="-L${with_mysql}/lib/mysql ${LIB_MYSQL}"
   else
-	LIB_MYSQL="-L${with_mysql}/lib/mysql ${LIB_MYSQL} $andrew_runpath_switch${with_mysql}/lib/mysql"
+	LIB_MYSQL="-L${with_mysql}/lib/mysql ${LIB_MYSQL} $andrew_cv_runpath_switch${with_mysql}/lib/mysql"
   fi
 
      elif test -d ${with_mysql}/mysql/lib; then
 
   # this is CMU ADD LIBPATH TO
-  if test "$andrew_runpath_switch" = "none" ; then
+  if test "$andrew_cv_runpath_switch" = "none" ; then
 	LIB_MYSQL="-L${with_mysql}/mysql/lib ${LIB_MYSQL}"
   else
-	LIB_MYSQL="-L${with_mysql}/mysql/lib ${LIB_MYSQL} $andrew_runpath_switch${with_mysql}/mysql/lib"
+	LIB_MYSQL="-L${with_mysql}/mysql/lib ${LIB_MYSQL} $andrew_cv_runpath_switch${with_mysql}/mysql/lib"
   fi
 
      elif test -d ${with_mysql}/lib; then
 
   # this is CMU ADD LIBPATH TO
-  if test "$andrew_runpath_switch" = "none" ; then
+  if test "$andrew_cv_runpath_switch" = "none" ; then
 	LIB_MYSQL="-L${with_mysql}/lib ${LIB_MYSQL}"
   else
-	LIB_MYSQL="-L${with_mysql}/lib ${LIB_MYSQL} $andrew_runpath_switch${with_mysql}/lib"
+	LIB_MYSQL="-L${with_mysql}/lib ${LIB_MYSQL} $andrew_cv_runpath_switch${with_mysql}/lib"
   fi
 
      else
 
   # this is CMU ADD LIBPATH TO
-  if test "$andrew_runpath_switch" = "none" ; then
+  if test "$andrew_cv_runpath_switch" = "none" ; then
 	LIB_MYSQL="-L${with_mysql} ${LIB_MYSQL}"
   else
-	LIB_MYSQL="-L${with_mysql} ${LIB_MYSQL} $andrew_runpath_switch${with_mysql}"
+	LIB_MYSQL="-L${with_mysql} ${LIB_MYSQL} $andrew_cv_runpath_switch${with_mysql}"
   fi
 
      fi
@@ -11863,37 +11872,37 @@ echo "$as_me: WARNING: PostgreSQL Library not found" >&2;}; true;;
      if test -d ${with_pgsql}/lib/pgsql; then
 
   # this is CMU ADD LIBPATH TO
-  if test "$andrew_runpath_switch" = "none" ; then
+  if test "$andrew_cv_runpath_switch" = "none" ; then
 	LIB_PGSQL="-L${with_pgsql}/lib/pgsql ${LIB_PGSQL}"
   else
-	LIB_PGSQL="-L${with_pgsql}/lib/pgsql ${LIB_PGSQL} $andrew_runpath_switch${with_pgsql}/lib/pgsql"
+	LIB_PGSQL="-L${with_pgsql}/lib/pgsql ${LIB_PGSQL} $andrew_cv_runpath_switch${with_pgsql}/lib/pgsql"
   fi
 
      elif test -d ${with_pgsql}/pgsql/lib; then
 
   # this is CMU ADD LIBPATH TO
-  if test "$andrew_runpath_switch" = "none" ; then
+  if test "$andrew_cv_runpath_switch" = "none" ; then
 	LIB_PGSQL="-L${with_pgsql}/pgsql/lib ${LIB_PGSQL}"
   else
-	LIB_PGSQL="-L${with_pgsql}/pgsql/lib ${LIB_PGSQL} $andrew_runpath_switch${with_pgsql}/pgsql/lib"
+	LIB_PGSQL="-L${with_pgsql}/pgsql/lib ${LIB_PGSQL} $andrew_cv_runpath_switch${with_pgsql}/pgsql/lib"
   fi
 
      elif test -d ${with_pgsql}/lib; then
 
   # this is CMU ADD LIBPATH TO
-  if test "$andrew_runpath_switch" = "none" ; then
+  if test "$andrew_cv_runpath_switch" = "none" ; then
 	LIB_PGSQL="-L${with_pgsql}/lib ${LIB_PGSQL}"
   else
-	LIB_PGSQL="-L${with_pgsql}/lib ${LIB_PGSQL} $andrew_runpath_switch${with_pgsql}/lib"
+	LIB_PGSQL="-L${with_pgsql}/lib ${LIB_PGSQL} $andrew_cv_runpath_switch${with_pgsql}/lib"
   fi
 
      else
 
   # this is CMU ADD LIBPATH TO
-  if test "$andrew_runpath_switch" = "none" ; then
+  if test "$andrew_cv_runpath_switch" = "none" ; then
 	LIB_PGSQL="-L${with_pgsql} ${LIB_PGSQL}"
   else
-	LIB_PGSQL="-L${with_pgsql} ${LIB_PGSQL} $andrew_runpath_switch${with_pgsql}"
+	LIB_PGSQL="-L${with_pgsql} ${LIB_PGSQL} $andrew_cv_runpath_switch${with_pgsql}"
   fi
 
      fi
@@ -12104,9 +12113,128 @@ fi
 esac
 
 
-if test "$sql" = yes -a "$with_pgsql" = no -a "$with_mysql" = no -a "$with_sqlite" = no; then
-    { { echo "$as_me:$LINENO: error: --enable-sql chosen but neither Postgres nor MySQL nor SQLite found" >&5
-echo "$as_me: error: --enable-sql chosen but neither Postgres nor MySQL nor SQLite found" >&2;}
+
+# Check whether --with-sqlite3 or --without-sqlite3 was given.
+if test "${with_sqlite3+set}" = set; then
+  withval="$with_sqlite3"
+  with_sqlite3=$withval
+else
+  with_sqlite3=$sql
+fi;
+
+# find location of library
+# we assume that if one given then it is correct
+if test "${with_sqlite3}" = "yes"; then
+  with_sqlite3=notfound
+  for sqlite3loc in lib
+  do
+    if test -f ${prefix}/${sqlite3loc}/libsqlite3.a; then
+      with_sqlite3="${prefix}"
+      break
+    elif test -f /usr/local/${sqlite3loc}/libsqlite3.a; then
+      with_sqlite3="/usr/local"
+      break
+    elif test -f /usr/${sqlite3loc}/libsqlite3.a; then
+      with_sqlite3="/usr"
+      break
+    fi
+  done
+fi
+
+LIB_SQLITE3=""
+
+case "$with_sqlite3" in
+    no) true;;
+    notfound) { echo "$as_me:$LINENO: WARNING: SQLite3 Library not found" >&5
+echo "$as_me: WARNING: SQLite3 Library not found" >&2;}; true;;
+    *)
+     if test -d ${with_sqlite3}/lib; then
+         LIB_SQLITE3="-L${with_sqlite3}/lib -R${with_sqlite3}/lib"
+     else
+         LIB_SQLITE3="-L${with_sqlite3} -R${with_sqlite3}"
+     fi
+
+     LIB_SQLITE3_DIR=$LIB_SQLITE3
+     LIB_SQLITE3="$LIB_SQLITE3 -lsqlite3"
+
+     if test -d ${with_sqlite3}/include; then
+         CPPFLAGS="${CPPFLAGS} -I${with_sqlite3}/include"
+     else
+         CPPFLAGS="${CPPFLAGS} -I${with_sqlite3}"
+     fi
+       echo "$as_me:$LINENO: checking for sqlite3_open in -lsqlite3" >&5
+echo $ECHO_N "checking for sqlite3_open in -lsqlite3... $ECHO_C" >&6
+if test "${ac_cv_lib_sqlite3_sqlite3_open+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lsqlite3 $LIB_SQLITE3_DIR $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char sqlite3_open ();
+int
+main ()
+{
+sqlite3_open ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_sqlite3_sqlite3_open=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_lib_sqlite3_sqlite3_open=no
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_sqlite3_sqlite3_open" >&5
+echo "${ECHO_T}$ac_cv_lib_sqlite3_sqlite3_open" >&6
+if test $ac_cv_lib_sqlite3_sqlite3_open = yes; then
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_SQLITE3
+_ACEOF
+
+else
+  { echo "$as_me:$LINENO: WARNING: SQLite3 Library sqlite3 does not work" >&5
+echo "$as_me: WARNING: SQLite3 Library sqlite3 does not work" >&2;}
+	    with_sqlite3=no
+fi
+;;
+
+esac
+
+
+if test "$sql" = yes -a "$with_pgsql" = no -a "$with_mysql" = no -a "$with_sqlite" = no -a "$with_sqlite3" = no; then
+    { { echo "$as_me:$LINENO: error: --enable-sql chosen but neither Postgres nor MySQL nor SQLite nor SQLite3 found" >&5
+echo "$as_me: error: --enable-sql chosen but neither Postgres nor MySQL nor SQLite nor SQLite3 found" >&2;}
    { (exit 1); exit 1; }; }
 fi
 
@@ -12144,10 +12272,10 @@ echo "$as_me: error: Cannot enable LDAPDB plugin: You need to specify --with-lda
         CPPFLAGS="${CPPFLAGS} -I${with_ldap}/include"
 
   # this is CMU ADD LIBPATH
-  if test "$andrew_runpath_switch" = "none" ; then
+  if test "$andrew_cv_runpath_switch" = "none" ; then
 	LDFLAGS="-L${with_ldap}/lib ${LDFLAGS}"
   else
-	LDFLAGS="-L${with_ldap}/lib $andrew_runpath_switch${with_ldap}/lib ${LDFLAGS}"
+	LDFLAGS="-L${with_ldap}/lib $andrew_cv_runpath_switch${with_ldap}/lib ${LDFLAGS}"
   fi
 
     fi
@@ -12449,7 +12577,7 @@ echo "$as_me: error: Cannot enable LDAPDB plugin: OpenLDAP library located but i
 
             SASL_MECHS="$SASL_MECHS libldapdb.la"
             if test "$enable_static" = yes; then
-                SASL_STATIC_SRCS="$SASL_STATIC_SRCS ../plugins/ldapdb.c"
+                SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/ldapdb.c"
                 SASL_STATIC_OBJS="$SASL_STATIC_OBJS ldapdb.o"
 
 cat >>confdefs.h <<\_ACEOF
@@ -15288,7 +15416,8 @@ echo "${ECHO_T}$ipv6_cv_socklen_t" >&6
 
 
 
-for ac_func in gethostname getdomainname getpwnam getspnam gettimeofday inet_aton memcpy mkdir select socket strchr strdup strerror strspn strstr strtol jrand48
+
+for ac_func in gethostname getdomainname getpwnam getspnam gettimeofday inet_aton memcpy mkdir select socket strchr strdup strerror strspn strstr strtol jrand48 getpassphrase
 do
 as_ac_var=`echo "ac_cv_func_$ac_func" | $as_tr_sh`
 echo "$as_me:$LINENO: checking for $ac_func" >&5
@@ -16216,6 +16345,7 @@ s,@PASSDSS_LIBS@,$PASSDSS_LIBS,;t t
 s,@LIB_MYSQL@,$LIB_MYSQL,;t t
 s,@LIB_PGSQL@,$LIB_PGSQL,;t t
 s,@LIB_SQLITE@,$LIB_SQLITE,;t t
+s,@LIB_SQLITE3@,$LIB_SQLITE3,;t t
 s,@LIB_LDAP@,$LIB_LDAP,;t t
 s,@SASL_MECHS@,$SASL_MECHS,;t t
 s,@SASL_STATIC_SRCS@,$SASL_STATIC_SRCS,;t t

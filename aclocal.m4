@@ -843,7 +843,7 @@ AC_DEFUN([CMU_INIT_AUTOMAKE], [
 	])
 
 dnl
-dnl $Id: c-attribute.m4,v 1.3 2003/10/08 20:35:24 rjs3 Exp $
+dnl $Id: c-attribute.m4,v 1.4 2007/08/30 16:57:55 murch Exp $
 dnl
 
 dnl
@@ -855,8 +855,6 @@ AC_MSG_CHECKING(for __attribute__)
 AC_CACHE_VAL(ac_cv___attribute__, [
 AC_TRY_COMPILE([
 #include <stdlib.h>
-],
-[
 static void foo(void) __attribute__ ((noreturn));
 
 static void
@@ -864,6 +862,8 @@ foo(void)
 {
   exit(1);
 }
+],
+[
 ],
 ac_cv___attribute__=yes,
 ac_cv___attribute__=no)])
@@ -876,7 +876,7 @@ AC_MSG_RESULT($ac_cv___attribute__)
 
 dnl
 dnl Additional macros for configure.in packaged up for easier theft.
-dnl $Id: cyrus.m4,v 1.4 2003/10/08 20:35:24 rjs3 Exp $
+dnl $Id: cyrus.m4,v 1.5 2009/03/31 04:09:47 brong Exp $
 dnl tjs@andrew.cmu.edu 6-may-1998
 dnl
 
@@ -887,10 +887,10 @@ dnl add -L(arg), and possibly (runpath switch)(arg), to LDFLAGS
 dnl (so the runpath for shared libraries is set).
 AC_DEFUN([CMU_ADD_LIBPATH], [
   # this is CMU ADD LIBPATH
-  if test "$andrew_runpath_switch" = "none" ; then
+  if test "$andrew_cv_runpath_switch" = "none" ; then
 	LDFLAGS="-L$1 ${LDFLAGS}"
   else
-	LDFLAGS="-L$1 $andrew_runpath_switch$1 ${LDFLAGS}"
+	LDFLAGS="-L$1 $andrew_cv_runpath_switch$1 ${LDFLAGS}"
   fi
 ])
 
@@ -898,24 +898,24 @@ dnl add -L(1st arg), and possibly (runpath switch)(1st arg), to (2nd arg)
 dnl (so the runpath for shared libraries is set).
 AC_DEFUN([CMU_ADD_LIBPATH_TO], [
   # this is CMU ADD LIBPATH TO
-  if test "$andrew_runpath_switch" = "none" ; then
+  if test "$andrew_cv_runpath_switch" = "none" ; then
 	$2="-L$1 ${$2}"
   else
-	$2="-L$1 ${$2} $andrew_runpath_switch$1"
+	$2="-L$1 ${$2} $andrew_cv_runpath_switch$1"
   fi
 ])
 
 dnl runpath initialization
 AC_DEFUN([CMU_GUESS_RUNPATH_SWITCH], [
    # CMU GUESS RUNPATH SWITCH
-  AC_CACHE_CHECK(for runpath switch, andrew_runpath_switch, [
+  AC_CACHE_CHECK(for runpath switch, andrew_cv_runpath_switch, [
     # first, try -R
     SAVE_LDFLAGS="${LDFLAGS}"
     LDFLAGS="-R /usr/lib"
-    AC_TRY_LINK([],[],[andrew_runpath_switch="-R"], [
+    AC_TRY_LINK([],[],[andrew_cv_runpath_switch="-R"], [
   	LDFLAGS="-Wl,-rpath,/usr/lib"
-    AC_TRY_LINK([],[],[andrew_runpath_switch="-Wl,-rpath,"],
-    [andrew_runpath_switch="none"])
+    AC_TRY_LINK([],[],[andrew_cv_runpath_switch="-Wl,-rpath,"],
+    [andrew_cv_runpath_switch="none"])
     ])
   LDFLAGS="${SAVE_LDFLAGS}"
   ])])
@@ -1468,7 +1468,7 @@ AC_MSG_RESULT($dblib)
 
 SASL_DB_BACKEND="db_${dblib}.lo"
 SASL_DB_BACKEND_STATIC="db_${dblib}.o allockey.o"
-SASL_DB_BACKEND_STATIC_SRCS="../sasldb/db_${dblib}.c ../sasldb/allockey.c"
+SASL_DB_BACKEND_STATIC_SRCS="\$(top_srcdir)/sasldb/db_${dblib}.c \$(top_srcdir)/sasldb/allockey.c"
 SASL_DB_UTILS="saslpasswd2 sasldblistusers2"
 SASL_DB_MANS="saslpasswd2.8 sasldblistusers2.8"
 
@@ -1491,7 +1491,7 @@ case "$dblib" in
     dnl will just fail to load anyway.
     SASL_DB_BACKEND="db_none.lo"
     SASL_DB_BACKEND_STATIC="db_none.o"
-    SASL_DB_BACKEND_STATIC_SRCS="../sasldb/db_none.c"
+    SASL_DB_BACKEND_STATIC_SRCS="\$(top_srcdir)/sasldb/db_none.c"
     SASL_DB_UTILS=""
     SASL_DB_MANS=""
     SASL_DB_LIB=""
@@ -1500,7 +1500,7 @@ esac
 
 if test "$enable_static" = yes; then
     if test "$dblib" != "none"; then
-      SASL_STATIC_SRCS="$SASL_STATIC_SRCS ../plugins/sasldb.c $SASL_DB_BACKEND_STATIC_SRCS"
+      SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/sasldb.c $SASL_DB_BACKEND_STATIC_SRCS"
       SASL_STATIC_OBJS="$SASL_STATIC_OBJS sasldb.o $SASL_DB_BACKEND_STATIC"
       AC_DEFINE(STATIC_SASLDB,[],[Link SASLdb Staticly])
     else
@@ -1526,7 +1526,7 @@ AC_MSG_CHECKING(DB path to use)
 AC_MSG_RESULT($dbpath)
 AC_DEFINE_UNQUOTED(SASL_DB_PATH, "$dbpath", [Path to default SASLdb database])])
 
-dnl $Id: berkdb.m4,v 1.20 2005/04/26 19:14:07 shadow Exp $
+dnl $Id: berkdb.m4,v 1.22 2007/08/15 17:18:01 murch Exp $
 
 AC_DEFUN([CMU_DB_INC_WHERE1], [
 saved_CPPFLAGS=$CPPFLAGS
@@ -1741,10 +1741,11 @@ AC_DEFUN([CYRUS_BERKELEY_DB_CHK_LIB],
 	fi
 
 	saved_LIBS=$LIBS
-        for dbname in db-4.4 db4.4 db44 db-4.3 db4.3 db43 db-4.2 db4.2 db42 db-4.1 db4.1 db41 db-4.0 db4.0 db-4 db40 db4 db-3.3 db3.3 db33 db-3.2 db3.2 db32 db-3.1 db3.1 db31 db-3 db30 db3 db
+        for dbname in ${with_bdb} db-4.6 db4.6 db46 db-4.5 db4.5 db45 db-4.4 db4.4 db44 db-4.3 db4.3 db43 db-4.2 db4.2 db42 db-4.1 db4.1 db41 db-4.0 db4.0 db-4 db40 db4 db-3.3 db3.3 db33 db-3.2 db3.2 db32 db-3.1 db3.1 db31 db-3 db30 db3 db
           do
 	    LIBS="$saved_LIBS -l$dbname"
-	    AC_TRY_LINK([#include <db.h>],
+	    AC_TRY_LINK([#include <stdio.h>
+#include <db.h>],
 	    [db_create(NULL, NULL, 0);],
 	    BDB_LIBADD="$BDB_LIBADD -l$dbname"; dblib="berkeley"; dbname=db,
             dblib="no")
@@ -1752,7 +1753,8 @@ AC_DEFUN([CYRUS_BERKELEY_DB_CHK_LIB],
           done
         if test "$dblib" = "no"; then
 	    LIBS="$saved_LIBS -ldb"
-	    AC_TRY_LINK([#include <db.h>],
+	    AC_TRY_LINK([#include <stdio.h>
+#include <db.h>],
 	    [db_open(NULL, 0, 0, 0, NULL, NULL, NULL);],
 	    BDB_LIBADD="$BDB_LIBADD -ldb"; dblib="berkeley"; dbname=db,
             dblib="no")
@@ -2803,7 +2805,7 @@ AC_DEFUN([SASL_KERBEROS_V4_CHK], [
   if test "$krb4" != no; then
     AC_MSG_RESULT(enabled)
     SASL_MECHS="$SASL_MECHS libkerberos4.la"
-    SASL_STATIC_SRCS="$SASL_STATIC_SRCS ../plugins/kerberos4.c"
+    SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/kerberos4.c"
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS kerberos4.o"
     AC_DEFINE(STATIC_KERBEROS4,[],[User KERBEROS_V4 Staticly])
     AC_DEFINE(HAVE_KRB,[],[Do we have Kerberos 4 Support?])
@@ -2817,7 +2819,7 @@ AC_DEFUN([SASL_KERBEROS_V4_CHK], [
 
 # sasl2.m4--sasl2 libraries and includes
 # Rob Siemborski
-# $Id: sasl2.m4,v 1.52 2006/05/18 19:25:00 murch Exp $
+# $Id: sasl2.m4,v 1.54 2009/05/20 12:24:48 murch Exp $
 
 # SASL2_CRYPT_CHK
 # ---------------
@@ -2879,9 +2881,7 @@ if test "$gssapi" != no; then
       fi
     fi
   fi
-  AC_CHECK_HEADER([gssapi.h],
-                  [AC_DEFINE(HAVE_GSSAPI_H,,
-                             [Define if you have the gssapi.h header file])],
+  AC_CHECK_HEADER([gssapi.h],,
                   [AC_CHECK_HEADER([gssapi/gssapi.h],,
                                    [AC_WARN([Disabling GSSAPI - no include files found]); gssapi=no])])
 
@@ -2890,6 +2890,10 @@ if test "$gssapi" != no; then
 fi
 
 if test "$gssapi" != no; then
+  if test "$ac_cv_header_gssapi_h" = "yes" -o "$ac_cv_header_gssapi_gssapi_h" = "yes"; then
+    AC_DEFINE(HAVE_GSSAPI_H,,[Define if you have the gssapi.h header file])
+  fi
+
   # We need to find out which gssapi implementation we are
   # using. Supported alternatives are: MIT Kerberos 5,
   # Heimdal Kerberos 5 (http://www.pdc.kth.se/heimdal),
@@ -3067,7 +3071,7 @@ if test "$gssapi" != no; then
   AC_CHECK_LIB(resolv,res_search,GSSAPIBASE_LIBS="$GSSAPIBASE_LIBS -lresolv")
   SASL_MECHS="$SASL_MECHS libgssapiv2.la"
   SASL_STATIC_OBJS="$SASL_STATIC_OBJS gssapi.o"
-  SASL_STATIC_SRCS="$SASL_STATIC_SRCS ../plugins/gssapi.c"
+  SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/gssapi.c"
 
   cmu_save_LIBS="$LIBS"
   LIBS="$LIBS $GSSAPIBASE_LIBS"
@@ -3310,7 +3314,7 @@ dnl PLAIN
   SASL_MECHS="$SASL_MECHS libplain.la"
   if test "$enable_static" = yes; then
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS plain.o"
-    SASL_STATIC_SRCS="$SASL_STATIC_SRCS ../plugins/plain.c"
+    SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/plain.c"
     AC_DEFINE(STATIC_PLAIN,[],[Link PLAIN Staticly])
   fi
  else

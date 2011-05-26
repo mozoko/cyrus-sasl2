@@ -55,7 +55,7 @@
 #define PACKAGE "cyrus-sasl"
 
 /* Our version */
-#define VERSION "2.1.23"
+#define VERSION "2.1.24"
 
 /* Visual Studio supports prototypes */
 #define PROTOTYPES     1
@@ -196,7 +196,14 @@ struct sockaddr_storage {
 
 #include <time.h>
 
-typedef int ssize_t;
+/* Keep in sync with SleepyCat definitions */
+typedef int int32_t;
+typedef __int64 int64_t;
+#ifdef _WIN64
+typedef int64_t ssize_t;
+#else
+typedef int32_t ssize_t;
+#endif
 
 #define HIER_DELIMITER '\\'
 
