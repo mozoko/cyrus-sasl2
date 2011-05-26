@@ -1,3 +1,11 @@
+cyrus-sasl2 (2.1.24~rc1.dfsg1+cvs2011-05-23-1) experimental; urgency=low
+
+  * Imported Upstream version 2.1.24~rc1.dfsg1+cvs2011-05-23
+  * Adapt patches to new CVS checkout
+  * Upload to experimental first to be sure everything works
+
+ -- Ondřej Surý <ondrej@debian.org>  Thu, 26 May 2011 10:38:59 +0200
+
 cyrus-sasl2 (2.1.24~rc1.dfsg1-1) unstable; urgency=low
 
   [ Roberto C. Sanchez ]
