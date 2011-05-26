@@ -1,7 +1,7 @@
 /* common.c - Functions that are common to server and clinet
  * Rob Siemborski
  * Tim Martin
- * $Id: common.c,v 1.124 2009/02/20 23:10:53 mel Exp $
+ * $Id: common.c,v 1.132 2011/01/25 20:36:42 murch Exp $
  */
 /* 
  * Copyright (c) 1998-2003 Carnegie Mellon University.  All rights reserved.
@@ -386,7 +386,7 @@ _sasl_encodev (sasl_conn_t *conn,
         conn->multipacket_encoded_data.curlen += *outputlen;
 
         *output = conn->multipacket_encoded_data.data;
-        *outputlen = conn->multipacket_encoded_data.curlen;
+        *outputlen = (unsigned)conn->multipacket_encoded_data.curlen;
     }
 
     (*p_num_packets)++;
@@ -410,7 +410,7 @@ int sasl_encodev(sasl_conn_t *conn,
     struct iovec last_invec;
     unsigned cur_numiov;
     char * next_buf = NULL;
-    unsigned remainder_len;
+    size_t remainder_len;
     unsigned index_offset;
     unsigned allocated = 0;
     /* Number of generated SASL packets */
@@ -482,7 +482,7 @@ int sasl_encodev(sasl_conn_t *conn,
 
             if (next_buf != NULL) {
                 cur_invec[0].iov_base = next_buf;
-                cur_invec[0].iov_len = remainder_len;
+                cur_invec[0].iov_len = (long)remainder_len;
                 cur_numiov++;
                 index_offset = 1;
             } else {
@@ -566,7 +566,7 @@ int sasl_encodev(sasl_conn_t *conn,
     /* Force encoding of any partial buffer. Might not be optimal on the wire. */
     if (next_buf != NULL) {
         last_invec.iov_base = next_buf;
-        last_invec.iov_len = remainder_len;
+        last_invec.iov_len = (long)remainder_len;
 
         result = _sasl_encodev (conn,
 	                        &last_invec,
@@ -1018,6 +1018,18 @@ int sasl_getprop(sasl_conn_t *conn, int propnum, const void **pvalue)
       else
 	  *((const char **)pvalue) = conn->oparams.client_creds;
       break;
+  case SASL_GSS_PEER_NAME:
+      if(! conn->oparams.gss_peer_name)
+	  result = SASL_NOTDONE;
+      else
+	  *((const char **)pvalue) = conn->oparams.gss_peer_name;
+      break;
+  case SASL_GSS_LOCAL_NAME:
+      if(! conn->oparams.gss_peer_name)
+	  result = SASL_NOTDONE;
+      else
+	  *((const char **)pvalue) = conn->oparams.gss_local_name;
+      break;
   case SASL_SSF_EXTERNAL:
       *((const sasl_ssf_t **)pvalue) = &conn->external.ssf;
       break;
@@ -1027,6 +1039,23 @@ int sasl_getprop(sasl_conn_t *conn, int propnum, const void **pvalue)
   case SASL_SEC_PROPS:
       *((const sasl_security_properties_t **)pvalue) = &conn->props;
       break;
+  case SASL_GSS_CREDS:
+      if(conn->type == SASL_CONN_CLIENT)
+	  *(void **)pvalue = 
+              ((sasl_client_conn_t *)conn)->cparams->gss_creds;
+      else
+	  *(void **)pvalue = 
+              ((sasl_server_conn_t *)conn)->sparams->gss_creds;
+      break;
+  case SASL_HTTP_REQUEST: {
+      if (conn->type == SASL_CONN_SERVER)
+	  *(const sasl_http_request_t **)pvalue =
+	      ((sasl_server_conn_t *)conn)->sparams->http_request;
+      else
+	  *(const sasl_http_request_t **)pvalue =
+	      ((sasl_client_conn_t *)conn)->cparams->http_request;
+      break;
+  }
   default: 
       result = SASL_BADPARAM;
   }
@@ -1238,6 +1267,33 @@ int sasl_setprop(sasl_conn_t *conn, int propnum, const void *value)
       }
       break;
 
+  case SASL_GSS_CREDS:
+      if(conn->type == SASL_CONN_CLIENT)
+          ((sasl_client_conn_t *)conn)->cparams->gss_creds = value;
+      else
+          ((sasl_server_conn_t *)conn)->sparams->gss_creds = value;
+      break;
+
+  case SASL_CHANNEL_BINDING: {
+    const struct sasl_channel_binding *cb = (const struct sasl_channel_binding *)value;
+
+    if (conn->type == SASL_CONN_SERVER)
+        ((sasl_server_conn_t *)conn)->sparams->cbinding = cb;
+    else
+        ((sasl_client_conn_t *)conn)->cparams->cbinding = cb;
+    break;
+  }
+
+  case SASL_HTTP_REQUEST: {
+      const sasl_http_request_t *req = (const sasl_http_request_t *)value;
+
+      if (conn->type == SASL_CONN_SERVER)
+	  ((sasl_server_conn_t *)conn)->sparams->http_request = req;
+      else
+	  ((sasl_client_conn_t *)conn)->cparams->http_request = req;
+      break;
+  }
+
   default:
       sasl_seterror(conn, 0, "Unknown parameter type");
       result = SASL_BADPARAM;
@@ -1272,11 +1328,11 @@ const char *sasl_errstring(int saslerr,
     case SASL_BUFOVER:  return "overflowed buffer";
     case SASL_NOMECH:   return "no mechanism available";
     case SASL_BADPROT:  return "bad protocol / cancel";
-    case SASL_NOTDONE:  return "can't request info until later in exchange";
+    case SASL_NOTDONE:  return "can't request information until later in exchange";
     case SASL_BADPARAM: return "invalid parameter supplied";
     case SASL_TRYAGAIN: return "transient failure (e.g., weak key)";
     case SASL_BADMAC:   return "integrity check failed";
-    case SASL_NOTINIT:  return "SASL library not initialized";
+    case SASL_NOTINIT:  return "SASL library is not initialized";
                              /* -- client only codes -- */
     case SASL_INTERACT:   return "needs user interaction";
     case SASL_BADSERV:    return "server failed mutual authentication step";
@@ -1301,6 +1357,7 @@ const char *sasl_errstring(int saslerr,
 				"to perform password change";
     case SASL_CONSTRAINT_VIOLAT: return "sasl_setpass can't store a property because "
 			        "of a constraint violation";
+    case SASL_BADBINDING: return "channel binding failure";
 
     default:   return "undefined error!";
     }
@@ -2351,6 +2408,24 @@ int sasl_listmech(sasl_conn_t *conn,
     PARAMERROR(conn);
 }
 
+int _sasl_is_equal_mech(const char *req_mech,
+                        const char *plug_mech,
+			size_t req_mech_len,
+                        int *plus)
+{
+    size_t n;
+
+    if (req_mech_len > 5 &&
+        strcasecmp(&req_mech[req_mech_len - 5], "-PLUS") == 0) {
+        n = req_mech_len - 5;
+        *plus = 1;
+    } else {
+        n = req_mech_len;
+        *plus = 0;
+    }
+
+    return (strncasecmp(req_mech, plug_mech, n) == 0);
+}
 
 #ifndef WIN32
 static char *

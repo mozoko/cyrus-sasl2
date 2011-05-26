@@ -1,7 +1,7 @@
 /* pluginviewer.c -- Plugin Viewer for CMU SASL
  * Alexey Melnikov, Isode Ltd.
  *
- * $Id: pluginviewer.c,v 1.7 2009/02/14 14:42:46 mel Exp $
+ * $Id: pluginviewer.c,v 1.10 2011/01/19 12:01:42 mel Exp $
  */
 /* 
  * Copyright (c) 2004 Carnegie Mellon University.  All rights reserved.
@@ -135,14 +135,6 @@ static const char *flag_subopts[] = {
   NULL
 };
 
-static const char *ip_subopts[] = {
-#define OPT_IP_LOCAL (0)
-  "local",
-#define OPT_IP_REMOTE (1)
-  "remote",
-  NULL
-};
-
 /* Whitespace separated list of mechanisms to allow (e.g. 'plain otp').
    Used to restrict the mechanisms to a subset of the installed plugins.
    Default: NULL (i.e. all available) */
@@ -216,7 +208,7 @@ getpath(void *context,
 }
 
 static int
-sasl_getopt (
+plugview_sasl_getopt (
     void *context,
     const char *plugin_name,
     const char *option,
@@ -275,13 +267,6 @@ fail(const char *what)
 {
     fprintf(stderr, "%s: %s\n",
 	    progname, what);
-    exit(EXIT_FAILURE);
-}
-
-static void
-osfail()
-{
-    perror(progname);
     exit(EXIT_FAILURE);
 }
 
@@ -379,7 +364,7 @@ main(int argc, char *argv[])
   char *options, *value;
   const char *available_mechs = NULL;
   unsigned len;
-  unsigned count;
+  int count;
   sasl_callback_t callbacks[N_CALLBACKS], *callback;
   char *searchpath = NULL;
   char *service = "test";
@@ -582,7 +567,7 @@ main(int argc, char *argv[])
     /* NOTE: this will return "sasl_mech" option, however this HAS NO EFFECT
        on client side SASL plugins, which just never query this option */
     callback->id = SASL_CB_GETOPT;
-    callback->proc = &sasl_getopt;
+    callback->proc = &plugview_sasl_getopt;
     callback->context = NULL;
     ++callback;
 
@@ -706,7 +691,7 @@ main(int argc, char *argv[])
 			    &len,
 			    &count);
         if (result != SASL_OK) {
-            saslfail(result, "Setting security properties", NULL);
+            saslfail(result, "Listing SASL mechanisms", NULL);
         }
 
 	/* NOTE: available_mechs contains subset of sasl_mech */
@@ -788,7 +773,7 @@ main(int argc, char *argv[])
 			       &len,
 			       &count);
         if (result != SASL_OK) {
-            saslfail(result, "Setting security properties", NULL);
+            saslfail(result, "Listing SASL mechanisms", NULL);
         }
 
         if (count > 0) {

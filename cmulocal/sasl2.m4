@@ -1,6 +1,6 @@
 # sasl2.m4--sasl2 libraries and includes
 # Rob Siemborski
-# $Id: sasl2.m4,v 1.54 2009/05/20 12:24:48 murch Exp $
+# $Id: sasl2.m4,v 1.60 2011/05/23 14:47:11 mel Exp $
 
 # SASL2_CRYPT_CHK
 # ---------------
@@ -68,7 +68,7 @@ if test "$gssapi" != no; then
   AC_CHECK_HEADER([gssapi.h],,
                   [AC_CHECK_HEADER([gssapi/gssapi.h],,
                                    [AC_WARN([Disabling GSSAPI - no include files found]); gssapi=no])])
-
+  AC_CHECK_HEADERS(gssapi/gssapi_ext.h)
   CPPFLAGS=$cmu_saved_CPPFLAGS
 
 fi
@@ -215,17 +215,17 @@ if test "$gssapi" != "no"; then
                     hostbased_service_gss_nt_yes
                   #endif],
                  [AC_DEFINE(HAVE_GSS_C_NT_HOSTBASED_SERVICE,,
-                            [Define if your GSSAPI implimentation defines GSS_C_NT_HOSTBASED_SERVICE])],
+                            [Define if your GSSAPI implementation defines GSS_C_NT_HOSTBASED_SERVICE])],
                  [AC_WARN([Cybersafe define not found])])
 
   elif test "$ac_cv_header_gssapi_h" = "yes"; then
     AC_EGREP_HEADER(GSS_C_NT_HOSTBASED_SERVICE, gssapi.h,
                     [AC_DEFINE(HAVE_GSS_C_NT_HOSTBASED_SERVICE,,
-                               [Define if your GSSAPI implimentation defines GSS_C_NT_HOSTBASED_SERVICE])])
+                               [Define if your GSSAPI implementation defines GSS_C_NT_HOSTBASED_SERVICE])])
   elif test "$ac_cv_header_gssapi_gssapi_h"; then
     AC_EGREP_HEADER(GSS_C_NT_HOSTBASED_SERVICE, gssapi/gssapi.h,
                     [AC_DEFINE(HAVE_GSS_C_NT_HOSTBASED_SERVICE,,
-                               [Define if your GSSAPI implimentation defines GSS_C_NT_HOSTBASED_SERVICE])])
+                               [Define if your GSSAPI implementation defines GSS_C_NT_HOSTBASED_SERVICE])])
   fi
 
   if test "$gss_impl" = "cybersafe" -o "$gss_impl" = "cybersafe03"; then
@@ -235,16 +235,20 @@ if test "$gssapi" != "no"; then
                    user_name_yes_gss_nt
                   #endif],
                  [AC_DEFINE(HAVE_GSS_C_NT_USER_NAME,,
-                            [Define if your GSSAPI implimentation defines GSS_C_NT_USER_NAME])],
+                            [Define if your GSSAPI implementation defines GSS_C_NT_USER_NAME])],
                  [AC_WARN([Cybersafe define not found])])
   elif test "$ac_cv_header_gssapi_h" = "yes"; then
     AC_EGREP_HEADER(GSS_C_NT_USER_NAME, gssapi.h,
                     [AC_DEFINE(HAVE_GSS_C_NT_USER_NAME,,
-                               [Define if your GSSAPI implimentation defines GSS_C_NT_USER_NAME])])
+                               [Define if your GSSAPI implementation defines GSS_C_NT_USER_NAME])])
+    AC_EGREP_HEADER(gss_inquire_attrs_for_mech, gssapi.h, rfc5587=yes)
+    AC_EGREP_HEADER(gss_inquire_mech_for_saslname, gssapi.h, rfc5801=yes)
   elif test "$ac_cv_header_gssapi_gssapi_h"; then
     AC_EGREP_HEADER(GSS_C_NT_USER_NAME, gssapi/gssapi.h,
                     [AC_DEFINE(HAVE_GSS_C_NT_USER_NAME,,
-                               [Define if your GSSAPI implimentation defines GSS_C_NT_USER_NAME])])
+                               [Define if your GSSAPI implementation defines GSS_C_NT_USER_NAME])])
+    AC_EGREP_HEADER(gss_inquire_attrs_for_mech, gssapi/gssapi.h, rfc5587=yes)
+    AC_EGREP_HEADER(gss_inquire_mech_for_saslname, gssapi.h, rfc5801=yes)
   fi
 fi
 
@@ -256,11 +260,25 @@ if test "$gssapi" != no; then
   SASL_MECHS="$SASL_MECHS libgssapiv2.la"
   SASL_STATIC_OBJS="$SASL_STATIC_OBJS gssapi.o"
   SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/gssapi.c"
+  if test "$rfc5587" = "yes" -a "$rfc5801" = "yes"; then
+    SASL_MECHS="$SASL_MECHS libgs2.la"
+    SASL_STATIC_OBJS="$SASL_STATIC_OBJS gs2.o"
+    SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/gs2.c"
+  fi
 
   cmu_save_LIBS="$LIBS"
   LIBS="$LIBS $GSSAPIBASE_LIBS"
   AC_CHECK_FUNCS(gsskrb5_register_acceptor_identity)
+  AC_CHECK_FUNCS(gss_decapsulate_token)
+  AC_CHECK_FUNCS(gss_encapsulate_token)
+  AC_CHECK_FUNCS(gss_oid_equal)
   LIBS="$cmu_save_LIBS"
+
+  cmu_save_LIBS="$LIBS"
+  LIBS="$LIBS $GSSAPIBASE_LIBS"
+  AC_CHECK_FUNCS(gss_get_name_attribute)
+  LIBS="$cmu_save_LIBS"
+
 else
   AC_MSG_RESULT([disabled])
 fi

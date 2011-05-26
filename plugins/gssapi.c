@@ -1,7 +1,7 @@
 /* GSSAPI SASL plugin
  * Leif Johansson
  * Rob Siemborski (SASL v2 Conversion)
- * $Id: gssapi.c,v 1.100 2009/08/04 17:17:26 mel Exp $
+ * $Id: gssapi.c,v 1.112 2011/04/19 09:19:18 mel Exp $
  */
 /* 
  * Copyright (c) 1998-2003 Carnegie Mellon University.  All rights reserved.
@@ -82,11 +82,11 @@
 
 /*****************************  Common Section  *****************************/
 
-static const char plugin_id[] = "$Id: gssapi.c,v 1.100 2009/08/04 17:17:26 mel Exp $";
+static const char plugin_id[] = "$Id: gssapi.c,v 1.112 2011/04/19 09:19:18 mel Exp $";
 
 static const char * GSSAPI_BLANK_STRING = "";
 
-#ifndef HAVE_GSS_C_NT_HOSTBASED_SERVICE
+#if !defined(HAVE_GSS_C_NT_HOSTBASED_SERVICE) && !defined(GSS_C_NT_HOSTBASED_SERVICE)
 extern gss_OID gss_nt_service_name;
 #define GSS_C_NT_HOSTBASED_SERVICE gss_nt_service_name
 #endif
@@ -150,6 +150,8 @@ typedef struct context {
 
     sasl_ssf_t limitssf, requiressf; /* application defined bounds, for the
 					server */
+    unsigned char qop;		     /* as allowed by GSSAPI */
+
     const sasl_utils_t *utils;
     
     /* layers buffering */
@@ -177,6 +179,10 @@ enum {
     SASL_GSSAPI_STATE_AUTHENTICATED = 4
 };
 
+#define LAYER_CONFIDENTIALITY	4
+#define LAYER_INTEGRITY		2
+#define LAYER_NONE		1
+
 /* sasl_gss_log: only logs status string returned from gss_display_status() */
 #define sasl_gss_log(x,y,z) sasl_gss_seterror_(x,y,z,1)
 #define sasl_gss_seterror(x,y,z) sasl_gss_seterror_(x,y,z,0)
@@ -192,10 +198,12 @@ sasl_gss_seterror_(const sasl_utils_t *utils, OM_uint32 maj, OM_uint32 min,
     char *out = NULL;
     size_t len, curlen = 0;
     const char prefix[] = "GSSAPI Error: ";
+
+    if (!utils) return SASL_OK;
     
     len = sizeof(prefix);
     ret = _plug_buf_alloc(utils, &out, &curlen, 256);
-    if(ret != SASL_OK) return SASL_OK;
+    if (ret != SASL_OK) return SASL_NOMEM;
     
     strcpy(out, prefix);
     
@@ -225,7 +233,7 @@ sasl_gss_seterror_(const sasl_utils_t *utils, OM_uint32 maj, OM_uint32 min,
 	
 	if(ret != SASL_OK) {
 	    utils->free(out);
-	    return SASL_OK;
+	    return SASL_NOMEM;
 	}
 	
 	strcat(out, msg.value);
@@ -318,7 +326,7 @@ sasl_gss_encode(void *context, const struct iovec *invec, unsigned numiov,
     int ret;
     struct buffer_info *inblob, bufinfo;
     
-    if(!output) return SASL_BADPARAM;
+    if (!output) return SASL_BADPARAM;
     
     if (numiov > 1) {
 	ret = _plug_iovec_to_buf(text->utils, invec, numiov, &text->enc_in_buf);
@@ -362,10 +370,12 @@ sasl_gss_encode(void *context, const struct iovec *invec, unsigned numiov,
     }
     
     if (output_token->value && output) {
-	int len;
+	unsigned char * p = (unsigned char *) text->encode_buf;
 	
-	ret = _plug_buf_alloc(text->utils, &(text->encode_buf),
-			      &(text->encode_buf_len), output_token->length + 4);
+	ret = _plug_buf_alloc(text->utils,
+			      &(text->encode_buf),
+			      &(text->encode_buf_len),
+			      output_token->length + 4);
 	
 	if (ret != SASL_OK) {
 	    GSS_LOCK_MUTEX(text->utils);
@@ -374,8 +384,11 @@ sasl_gss_encode(void *context, const struct iovec *invec, unsigned numiov,
 	    return ret;
 	}
 	
-	len = htonl(output_token->length);
-	memcpy(text->encode_buf, &len, 4);
+	p[0] = (output_token->length>>24) & 0xFF;
+	p[1] = (output_token->length>>16) & 0xFF;
+	p[2] = (output_token->length>>8) & 0xFF;
+	p[3] = output_token->length & 0xFF;
+
 	memcpy(text->encode_buf + 4, output_token->value, output_token->length);
     }
     
@@ -644,6 +657,7 @@ gssapi_server_mech_step(void *conn_context,
     OM_uint32 max_input;
     gss_buffer_desc name_token;
     int ret, out_flags = 0 ;
+    gss_cred_id_t server_creds = params->gss_creds;
     
     input_token = &real_input_token;
     output_token = &real_output_token;
@@ -658,10 +672,20 @@ gssapi_server_mech_step(void *conn_context,
     *serverout = NULL;
     *serveroutlen = 0;	
 	    
+    if (text == NULL) {
+	return SASL_BADPROT;
+    }
+
     switch (text->state) {
 
     case SASL_GSSAPI_STATE_AUTHNEG:
 	if (text->server_name == GSS_C_NO_NAME) { /* only once */
+	    if (params->serverFQDN == NULL
+		|| strlen(params->serverFQDN) == 0) {
+		SETERROR(text->utils, "GSSAPI Failure: no serverFQDN");
+		sasl_gss_free_context_contents(text);
+		return SASL_FAIL;
+	    }
 	    name_token.length = strlen(params->service) + 1 + strlen(params->serverFQDN);
 	    name_token.value = (char *)params->utils->malloc((name_token.length + 1) * sizeof(char));
 	    if (name_token.value == NULL) {
@@ -693,22 +717,26 @@ gssapi_server_mech_step(void *conn_context,
 	    	GSS_UNLOCK_MUTEX(params->utils);
 		text->server_creds = GSS_C_NO_CREDENTIAL;
 	    }
+
+	    /* If caller didn't provide creds already */
+	    if ( server_creds == GSS_C_NO_CREDENTIAL) {
+		GSS_LOCK_MUTEX(params->utils);
+		maj_stat = gss_acquire_cred(&min_stat, 
+					    text->server_name,
+					    GSS_C_INDEFINITE, 
+					    GSS_C_NO_OID_SET,
+					    GSS_C_ACCEPT,
+					    &text->server_creds, 
+					    NULL, 
+					    NULL);
+		GSS_UNLOCK_MUTEX(params->utils);
 	    
-	    GSS_LOCK_MUTEX(params->utils);
-	    maj_stat = gss_acquire_cred(&min_stat, 
-					text->server_name,
-					GSS_C_INDEFINITE, 
-					GSS_C_NO_OID_SET,
-					GSS_C_ACCEPT,
-					&text->server_creds, 
-					NULL, 
-					NULL);
-	    GSS_UNLOCK_MUTEX(params->utils);
-	    
-	    if (GSS_ERROR(maj_stat)) {
-		sasl_gss_seterror(text->utils, maj_stat, min_stat);
-		sasl_gss_free_context_contents(text);
-		return SASL_FAIL;
+		if (GSS_ERROR(maj_stat)) {
+		    sasl_gss_seterror(text->utils, maj_stat, min_stat);
+		    sasl_gss_free_context_contents(text);
+		    return SASL_FAIL;
+		}
+		server_creds = text->server_creds;
 	    }
 	}
 	
@@ -722,7 +750,7 @@ gssapi_server_mech_step(void *conn_context,
 	maj_stat =
 	    gss_accept_sec_context(&min_stat,
 				   &(text->gss_ctx),
-				   text->server_creds,
+				   server_creds,
 				   input_token,
 				   GSS_C_NO_CHANNEL_BINDINGS,
 				   &text->client_name,
@@ -744,7 +772,26 @@ gssapi_server_mech_step(void *conn_context,
 	    sasl_gss_free_context_contents(text);
 	    return SASL_BADAUTH;
 	}
-	    
+
+	/* When GSS_Accept_sec_context returns GSS_S_COMPLETE, the server
+	   examines the context to ensure that it provides a level of protection
+	   permitted by the server's security policy.  In particular, if the
+	   integ_avail flag is not set in the context, then no security layer
+	   can be offered or accepted.  If the conf_avail flag is not set in the
+	   context, then no security layer with confidentiality can be offered
+	   or accepted. */
+	if ((out_flags & GSS_C_INTEG_FLAG) == 0) {
+	    /* if the integ_avail flag is not set in the context,
+	       then no security layer can be offered or accepted. */
+	    text->qop = LAYER_NONE;
+	} else if ((out_flags & GSS_C_CONF_FLAG) == 0) {
+	    /* If the conf_avail flag is not set in the context,
+	       then no security layer with confidentiality can be offered
+	       or accepted. */
+	    text->qop = LAYER_NONE | LAYER_INTEGRITY;
+	} else {
+	    text->qop = LAYER_NONE | LAYER_INTEGRITY | LAYER_CONFIDENTIALITY;
+	}
 
 	if ((params->props.security_flags & SASL_SEC_PASS_CREDENTIALS) &&
 	    (!(out_flags & GSS_C_DELEG_FLAG) ||
@@ -931,7 +978,7 @@ gssapi_server_mech_step(void *conn_context,
 	if (name_without_realm.value) {
 	    params->utils->free(name_without_realm.value);
 	}
-	
+
 	/* we have to decide what sort of encryption/integrity/etc.,
 	   we support */
 	if (params->props.max_ssf < params->external_ssf) {
@@ -946,7 +993,8 @@ gssapi_server_mech_step(void *conn_context,
 	}
 	
 	/* build up our security properties token */
-	if (text->requiressf != 0) {
+	if (text->requiressf != 0 &&
+	    (text->qop & (LAYER_INTEGRITY|LAYER_CONFIDENTIALITY))) {
 	    if (params->props.maxbufsize > 0xFFFFFF) {
 		/* make sure maxbufsize isn't too large */
 		/* maxbufsize = 0xFFFFFF */
@@ -970,15 +1018,19 @@ gssapi_server_mech_step(void *conn_context,
 	}
 	
 	if (text->requiressf == 0) {
-	    sasldata[0] |= 1; /* authentication */
+	    sasldata[0] |= LAYER_NONE; /* authentication */
 	}
-	if (text->requiressf <= 1 && text->limitssf >= 1
-	    && params->props.maxbufsize) {
-	    sasldata[0] |= 2;
+	if ((text->qop & LAYER_INTEGRITY) &&
+	    text->requiressf <= 1 &&
+	    text->limitssf >= 1 &&
+	    params->props.maxbufsize) {
+	    sasldata[0] |= LAYER_INTEGRITY;
 	}
-	if (text->requiressf <= K5_MAX_SSF && text->limitssf >= K5_MAX_SSF
-	    && params->props.maxbufsize) {
-	    sasldata[0] |= 4;
+	if ((text->qop & LAYER_CONFIDENTIALITY) &&
+	    text->requiressf <= K5_MAX_SSF &&
+	    text->limitssf >= K5_MAX_SSF &&
+	    params->props.maxbufsize) {
+	    sasldata[0] |= LAYER_CONFIDENTIALITY;
 	}
 	
 	real_input_token.value = (void *)sasldata;
@@ -1027,6 +1079,9 @@ gssapi_server_mech_step(void *conn_context,
 	    GSS_UNLOCK_MUTEX(params->utils);
 	}
 	
+	/* Remember what we want and can offer */
+	text->qop = sasldata[0];
+
 	/* Wait for ssf request and authid */
 	text->state = SASL_GSSAPI_STATE_SSFREQ; 
 	
@@ -1065,17 +1120,20 @@ gssapi_server_mech_step(void *conn_context,
 	}
 	
 	layerchoice = (int)(((char *)(output_token->value))[0]);
-	if (layerchoice == 1 && text->requiressf == 0) { /* no encryption */
+	if (layerchoice == LAYER_NONE &&
+	    (text->qop & LAYER_NONE)) { /* no encryption */
 	    oparams->encode = NULL;
 	    oparams->decode = NULL;
 	    oparams->mech_ssf = 0;
-	} else if (layerchoice == 2 && text->requiressf <= 1 &&
-		   text->limitssf >= 1) { /* integrity */
-	    oparams->encode=&gssapi_integrity_encode;
-	    oparams->decode=&gssapi_decode;
-	    oparams->mech_ssf=1;
-	} else if (layerchoice == 4 && text->requiressf <= K5_MAX_SSF &&
-		   text->limitssf >= K5_MAX_SSF) { /* privacy */
+	} else if (layerchoice == LAYER_INTEGRITY &&
+		   (text->qop & LAYER_INTEGRITY)) { /* integrity */
+	    oparams->encode = &gssapi_integrity_encode;
+	    oparams->decode = &gssapi_decode;
+	    oparams->mech_ssf = 1;
+	} else if ((layerchoice == LAYER_CONFIDENTIALITY ||
+		    /* For compatibility with broken clients setting both bits */
+		    layerchoice == (LAYER_CONFIDENTIALITY|LAYER_INTEGRITY)) &&
+		   (text->qop & LAYER_CONFIDENTIALITY)) { /* privacy */
 	    oparams->encode = &gssapi_privacy_encode;
 	    oparams->decode = &gssapi_decode;
 	    /* FIX ME: Need to extract the proper value here */
@@ -1327,6 +1385,7 @@ static int gssapi_client_mech_step(void *conn_context,
     output_token->value = NULL;
     input_token->value = NULL; 
     input_token->length = 0;
+    gss_cred_id_t client_creds = (gss_cred_id_t)params->gss_creds;
     
     *clientout = NULL;
     *clientoutlen = 0;
@@ -1373,6 +1432,7 @@ static int gssapi_client_mech_step(void *conn_context,
 	    if (params->serverFQDN == NULL
 		|| strlen(params->serverFQDN) == 0) {
 		SETERROR(text->utils, "GSSAPI Failure: no serverFQDN");
+		sasl_gss_free_context_contents(text);
 		return SASL_FAIL;
 	    }
 	    name_token.length = strlen(params->service) + 1 + strlen(params->serverFQDN);
@@ -1418,27 +1478,28 @@ static int gssapi_client_mech_step(void *conn_context,
 	    GSS_UNLOCK_MUTEX(params->utils);
 	    text->gss_ctx = GSS_C_NO_CONTEXT;
 	}
-	    
+
 	/* Setup req_flags properly */
-	req_flags = GSS_C_MUTUAL_FLAG | GSS_C_SEQUENCE_FLAG;
-	if(params->props.max_ssf > params->external_ssf) {
+	req_flags = GSS_C_INTEG_FLAG;
+	if (params->props.max_ssf > params->external_ssf) {
 	    /* We are requesting a security layer */
-	    req_flags |= GSS_C_INTEG_FLAG;
+	    req_flags |= GSS_C_MUTUAL_FLAG | GSS_C_SEQUENCE_FLAG;
 	    /* Any SSF bigger than 1 is confidentiality. */
 	    /* Let's check if the client of the API requires confidentiality,
 	       and it wasn't already provided by an external layer */
-	    if(params->props.max_ssf - params->external_ssf > 1) {
+	    if (params->props.max_ssf - params->external_ssf > 1) {
 		/* We want to try for privacy */
 		req_flags |= GSS_C_CONF_FLAG;
 	    }
 	}
-	
-	if (params->props.security_flags & SASL_SEC_PASS_CREDENTIALS)
+
+	if (params->props.security_flags & SASL_SEC_PASS_CREDENTIALS) {
 	    req_flags = req_flags |  GSS_C_DELEG_FLAG;
+	}
 
 	GSS_LOCK_MUTEX(params->utils);
 	maj_stat = gss_init_sec_context(&min_stat,
-					GSS_C_NO_CREDENTIAL,
+					client_creds, /* GSS_C_NO_CREDENTIAL */
 					&text->gss_ctx,
 					text->server_name,
 					GSS_C_NO_OID,
@@ -1461,6 +1522,19 @@ static int gssapi_client_mech_step(void *conn_context,
 	    }
 	    sasl_gss_free_context_contents(text);
 	    return SASL_FAIL;
+	}
+
+	if ((out_req_flags & GSS_C_INTEG_FLAG) == 0) {
+	    /* if the integ_avail flag is not set in the context,
+	       then no security layer can be offered or accepted. */
+	    text->qop = LAYER_NONE;
+	} else if ((out_req_flags & GSS_C_CONF_FLAG) == 0) {
+	    /* If the conf_avail flag is not set in the context,
+	       then no security layer with confidentiality can be offered
+	       or accepted. */
+	    text->qop = LAYER_NONE | LAYER_INTEGRITY;
+	} else {
+	    text->qop = LAYER_NONE | LAYER_INTEGRITY | LAYER_CONFIDENTIALITY;
 	}
 
 	if ((out_req_flags & GSS_C_DELEG_FLAG) != (req_flags & GSS_C_DELEG_FLAG)) {
@@ -1616,26 +1690,50 @@ static int gssapi_client_mech_step(void *conn_context,
 	/* bit mask of server support */
 	serverhas = ((char *)output_token->value)[0];
 	
-	/* if client didn't set use strongest layer available */
-	if (allowed >= K5_MAX_SSF && need <= K5_MAX_SSF && (serverhas & 4)) {
+	/* use the strongest layer available */
+	if ((text->qop & LAYER_CONFIDENTIALITY) &&
+	    allowed >= K5_MAX_SSF &&
+	    need <= K5_MAX_SSF &&
+	    (serverhas & LAYER_CONFIDENTIALITY)) {
+	    
+	    const char *ad_compat;
+
 	    /* encryption */
 	    oparams->encode = &gssapi_privacy_encode;
 	    oparams->decode = &gssapi_decode;
 	    /* FIX ME: Need to extract the proper value here */
 	    oparams->mech_ssf = K5_MAX_SSF;
-	    mychoice = 4;
-	} else if (allowed >= 1 && need <= 1 && (serverhas & 2)) {
+	    mychoice = LAYER_CONFIDENTIALITY;
+
+	    if (serverhas & LAYER_INTEGRITY) {
+		/* should we send an AD compatible choice of security layers? */
+		params->utils->getopt(params->utils->getopt_context,
+				      "GSSAPI",
+				      "ad_compat",
+				      &ad_compat,
+				      NULL);
+		if (ad_compat &&
+		    (ad_compat[0] == '1' || ad_compat[0] == 'y' ||
+		     (ad_compat[0] == 'o' && ad_compat[1] == 'n') ||
+		     ad_compat[0] == 't')) {
+		    mychoice = LAYER_INTEGRITY|LAYER_CONFIDENTIALITY;
+		}
+	    }
+	} else if ((text->qop & LAYER_INTEGRITY) &&
+		    allowed >= 1 &&
+		    need <= 1 &&
+		    (serverhas & LAYER_INTEGRITY)) {
 	    /* integrity */
 	    oparams->encode = &gssapi_integrity_encode;
 	    oparams->decode = &gssapi_decode;
 	    oparams->mech_ssf = 1;
-	    mychoice = 2;
-	} else if (need <= 0 && (serverhas & 1)) {
+	    mychoice = LAYER_INTEGRITY;
+	} else if (need <= 0 && (serverhas & LAYER_NONE)) {
 	    /* no layer */
 	    oparams->encode = NULL;
 	    oparams->decode = NULL;
 	    oparams->mech_ssf = 0;
-	    mychoice = 1;
+	    mychoice = LAYER_NONE;
 	} else {
 	    /* there's no appropriate layering for us! */
 	    sasl_gss_free_context_contents(text);
