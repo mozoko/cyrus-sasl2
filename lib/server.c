@@ -1,7 +1,7 @@
 /* SASL server API implementation
  * Rob Siemborski
  * Tim Martin
- * $Id: server.c,v 1.161 2009/08/04 17:45:55 mel Exp $
+ * $Id: server.c,v 1.171 2011/01/21 15:19:36 mel Exp $
  */
 /* 
  * Copyright (c) 1998-2003 Carnegie Mellon University.  All rights reserved.
@@ -303,52 +303,64 @@ int sasl_setpass(sasl_conn_t *conn,
 /* local mechanism which disposes of server */
 static void server_dispose(sasl_conn_t *pconn)
 {
-  sasl_server_conn_t *s_conn=  (sasl_server_conn_t *) pconn;
-  context_list_t *cur, *cur_next;
+    sasl_server_conn_t *s_conn=  (sasl_server_conn_t *) pconn;
+    context_list_t *cur, *cur_next;
+
+    /* Just sanity check that sasl_server_done wasn't called yet */
+    if (_sasl_server_active != 0) {
+	if (s_conn->mech) {
+	    void (*mech_dispose)(void *conn_context, const sasl_utils_t *utils);
+
+	    mech_dispose = s_conn->mech->m.plug->mech_dispose;
+
+	    if (mech_dispose) {
+		mech_dispose(pconn->context, s_conn->sparams->utils);
+	    }
+	}
+	pconn->context = NULL;
+
+	for(cur = s_conn->mech_contexts; cur; cur=cur_next) {
+	    cur_next = cur->next;
+	    if (cur->context) {
+		cur->mech->m.plug->mech_dispose(cur->context, s_conn->sparams->utils);
+	    }
+	    sasl_FREE(cur);
+	}  
+	s_conn->mech_contexts = NULL;
+    }
   
-  if (s_conn->mech
-      && s_conn->mech->m.plug->mech_dispose) {
-    s_conn->mech->m.plug->mech_dispose(pconn->context,
-				     s_conn->sparams->utils);
-  }
-  pconn->context = NULL;
+    _sasl_free_utils(&s_conn->sparams->utils);
 
-  for(cur = s_conn->mech_contexts; cur; cur=cur_next) {
-      cur_next = cur->next;
-      if(cur->context)
-	  cur->mech->m.plug->mech_dispose(cur->context, s_conn->sparams->utils);
-      sasl_FREE(cur);
-  }  
-  s_conn->mech_contexts = NULL;
-  
-  _sasl_free_utils(&s_conn->sparams->utils);
+    if (s_conn->sparams->propctx) {
+	prop_dispose(&s_conn->sparams->propctx);
+    }
 
-  if (s_conn->sparams->propctx)
-      prop_dispose(&s_conn->sparams->propctx);
+    if (s_conn->appname) {
+	sasl_FREE(s_conn->appname);
+    }
 
-  if (s_conn->appname)
-      sasl_FREE(s_conn->appname);
+    if (s_conn->user_realm) {
+	sasl_FREE(s_conn->user_realm);
+    }
 
-  if (s_conn->user_realm)
-      sasl_FREE(s_conn->user_realm);
+    if (s_conn->sparams) {
+	sasl_FREE(s_conn->sparams);
+    }
 
-  if (s_conn->sparams)
-      sasl_FREE(s_conn->sparams);
+    if (s_conn->mech_list != mechlist->mech_list) {
+	/* free connection-specific mech_list */
+	mechanism_t *m, *prevm;
 
-  if (s_conn->mech_list != mechlist->mech_list) {
-      /* free connection-specific mech_list */
-      mechanism_t *m, *prevm;
+	m = s_conn->mech_list; /* m point to beginning of the list */
 
-      m = s_conn->mech_list; /* m point to beginning of the list */
+	while (m) {
+	     prevm = m;
+	     m = m->next;
+	     sasl_FREE(prevm);
+	}
+    }
 
-      while (m) {
-	  prevm = m;
-	  m = m->next;
-	  sasl_FREE(prevm);    
-      }
-  }
-
-  _sasl_conn_dispose(pconn);
+    _sasl_conn_dispose(pconn);
 }
 
 static int init_mechlist(void)
@@ -363,8 +375,8 @@ static int init_mechlist(void)
     newutils->checkpass = &_sasl_checkpass;
 
     mechlist->utils = newutils;
-    mechlist->mech_list=NULL;
-    mechlist->mech_length=0;
+    mechlist->mech_list = NULL;
+    mechlist->mech_length = 0;
 
     return SASL_OK;
 }
@@ -373,26 +385,31 @@ static int mech_compare(const sasl_server_plug_t *a,
 			const sasl_server_plug_t *b)
 {
     unsigned sec_diff;
-
-    if (a->max_ssf > b->max_ssf) return 1;
-    if (a->max_ssf < b->max_ssf) return -1;
+    unsigned features_diff;
 
     /* XXX  the following is fairly arbitrary, but its independent
        of the order in which the plugins are loaded
     */
     sec_diff = a->security_flags ^ b->security_flags;
-    if (sec_diff & a->security_flags & SASL_SEC_FORWARD_SECRECY) return 1;
-    if (sec_diff & b->security_flags & SASL_SEC_FORWARD_SECRECY) return -1;
-    if (sec_diff & a->security_flags & SASL_SEC_NOACTIVE) return 1;
-    if (sec_diff & b->security_flags & SASL_SEC_NOACTIVE) return -1;
-    if (sec_diff & a->security_flags & SASL_SEC_NODICTIONARY) return 1;
-    if (sec_diff & b->security_flags & SASL_SEC_NODICTIONARY) return -1;
-    if (sec_diff & a->security_flags & SASL_SEC_MUTUAL_AUTH) return 1;
-    if (sec_diff & b->security_flags & SASL_SEC_MUTUAL_AUTH) return -1;
     if (sec_diff & a->security_flags & SASL_SEC_NOANONYMOUS) return 1;
     if (sec_diff & b->security_flags & SASL_SEC_NOANONYMOUS) return -1;
     if (sec_diff & a->security_flags & SASL_SEC_NOPLAINTEXT) return 1;
     if (sec_diff & b->security_flags & SASL_SEC_NOPLAINTEXT) return -1;
+    if (sec_diff & a->security_flags & SASL_SEC_MUTUAL_AUTH) return 1;
+    if (sec_diff & b->security_flags & SASL_SEC_MUTUAL_AUTH) return -1;
+    if (sec_diff & a->security_flags & SASL_SEC_NOACTIVE) return 1;
+    if (sec_diff & b->security_flags & SASL_SEC_NOACTIVE) return -1;
+    if (sec_diff & a->security_flags & SASL_SEC_NODICTIONARY) return 1;
+    if (sec_diff & b->security_flags & SASL_SEC_NODICTIONARY) return -1;
+    if (sec_diff & a->security_flags & SASL_SEC_FORWARD_SECRECY) return 1;
+    if (sec_diff & b->security_flags & SASL_SEC_FORWARD_SECRECY) return -1;
+
+    features_diff = a->features ^ b->features;
+    if (features_diff & a->features & SASL_FEAT_CHANNEL_BINDING) return 1;
+    if (features_diff & b->features & SASL_FEAT_CHANNEL_BINDING) return -1;
+
+    if (a->max_ssf > b->max_ssf) return 1;
+    if (a->max_ssf < b->max_ssf) return -1;
 
     return 0;
 }
@@ -530,7 +547,7 @@ static int server_done(void) {
 				     mechlist->utils);
 	  }
 
-	  sasl_FREE(prevm->m.plugname);	  	  
+	  sasl_FREE(prevm->m.plugname);
 	  sasl_FREE(prevm);    
       }
       _sasl_free_utils(&mechlist->utils);
@@ -549,18 +566,23 @@ static int server_done(void) {
 
 static int server_idle(sasl_conn_t *conn)
 {
+    sasl_server_conn_t *s_conn = (sasl_server_conn_t *) conn;
     mechanism_t *m;
-    if (! mechlist)
+
+    if (! mechlist) {
 	return 0;
-    
-    for (m = mechlist->mech_list;
+    }
+
+    for (m = s_conn->mech_list;
 	 m != NULL;
-	 m = m->next)
+	 m = m->next) {
 	if (m->m.plug->idle
 	    &&  m->m.plug->idle(m->m.plug->glob_context,
-			      conn,
-			      conn ? ((sasl_server_conn_t *)conn)->sparams : NULL))
+				conn,
+				conn ? ((sasl_server_conn_t *)conn)->sparams : NULL)) {
 	    return 1;
+	}
+    }
 
     return 0;
 }
@@ -995,6 +1017,7 @@ int sasl_server_new(const char *service,
   void *context;
   const char *log_level, *auto_trans;
   const char *mlist = NULL;
+  int plus = 0;
 
   if (_sasl_server_active==0) return SASL_NOTINIT;
   if (! pconn) return SASL_FAIL;
@@ -1103,10 +1126,10 @@ int sasl_server_new(const char *service,
 	  for (mptr = mechlist->mech_list; mptr; mptr = mptr->next) {
 	      const sasl_server_plug_t *plug = mptr->m.plug;
 
-	      if (((size_t) (cp - mlist) == strlen(plug->mech_name)) &&
-		  !strncasecmp(mlist, plug->mech_name, strlen(plug->mech_name)))
+	      if (_sasl_is_equal_mech(mlist, plug->mech_name, (size_t) (cp - mlist), &plus)) {
 		  /* found a match */
 		  break;
+	      }
 	  }
 	  if (mptr) {
 	      mechanism_t *new = sasl_ALLOC(sizeof(mechanism_t));
@@ -1205,13 +1228,14 @@ static int mech_permitted(sasl_conn_t *conn,
     }
 
     context = NULL;
-    if(plug->mech_avail
-       && (ret = plug->mech_avail(plug->glob_context,
-			   s_conn->sparams, (void **)&context)) != SASL_OK ) {
-	if(ret == SASL_NOMECH) {
+    if (plug->mech_avail
+        && (ret = plug->mech_avail(plug->glob_context,
+				   s_conn->sparams,
+				   (void **)&context)) != SASL_OK ) {
+	if (ret == SASL_NOMECH) {
 	    /* Mark this mech as no good for this connection */
 	    cur = sasl_ALLOC(sizeof(context_list_t));
-	    if(!cur) {
+	    if (!cur) {
 		MEMERROR(conn);
 		return SASL_NOMECH;
 	    }
@@ -1225,10 +1249,10 @@ static int mech_permitted(sasl_conn_t *conn,
 
 	/* Error should be set by mech_avail call */
 	return SASL_NOMECH;
-    } else if(context) {
+    } else if (context) {
 	/* Save this context */
 	cur = sasl_ALLOC(sizeof(context_list_t));
-	if(!cur) {
+	if (!cur) {
 	    MEMERROR(conn);
 	    return SASL_NOMECH;
 	}
@@ -1256,6 +1280,10 @@ static int mech_permitted(sasl_conn_t *conn,
 	!(plug->features & SASL_FEAT_ALLOWS_PROXY)) {
 	return SASL_NOMECH;
     }
+    if ((conn->flags & SASL_NEED_HTTP) &&
+	!(plug->features & SASL_FEAT_SUPPORTS_HTTP)) {
+	return SASL_NOMECH;
+    }
     
     /* security properties---if there are any flags that differ and are
        in what the connection are requesting, then fail */
@@ -1277,7 +1305,7 @@ static int mech_permitted(sasl_conn_t *conn,
     }
 
     /* Check Features */
-    if(plug->features & SASL_FEAT_GETSECRET) {
+    if (plug->features & SASL_FEAT_GETSECRET) {
 	/* We no longer support sasl_server_{get,put}secret */
 	sasl_seterror(conn, 0,
 		      "mech %s requires unprovided secret facility",
@@ -1342,13 +1370,15 @@ int sasl_server_start(sasl_conn_t *conn,
     int result;
     context_list_t *cur, **prev;
     mechanism_t *m;
+    size_t mech_len;
+    int plus = 0;
 
     if (_sasl_server_active==0) return SASL_NOTINIT;
 
     /* check parameters */
     if(!conn) return SASL_BADPARAM;
     
-    if (!mech || ((clientin==NULL) && (clientinlen>0)))
+    if (!mech || ((clientin == NULL) && (clientinlen > 0)))
 	PARAMERROR(conn);
 
     if (serverout) *serverout = NULL;
@@ -1357,17 +1387,17 @@ int sasl_server_start(sasl_conn_t *conn,
     /* make sure mech is valid mechanism
        if not return appropriate error */
     m = s_conn->mech_list;
+    mech_len = strlen(mech);
 
-    while (m!=NULL)
-    {
-	if ( strcasecmp(mech, m->m.plug->mech_name)==0)
-	{
+    while (m != NULL) {
+	if (_sasl_is_equal_mech(mech, m->m.plug->mech_name, mech_len, &plus)) {
 	    break;
 	}
-	m=m->next;
+
+	m = m->next;
     }
   
-    if (m==NULL) {
+    if (m == NULL) {
 	sasl_seterror(conn, 0, "Couldn't find mech %s", mech);
 	result = SASL_NOMECH;
 	goto done;
@@ -1453,24 +1483,25 @@ int sasl_server_start(sasl_conn_t *conn,
 
     s_conn->mech = m;
     
-    if(!conn->context) {
+    if (!conn->context) {
 	/* Note that we don't hand over a new challenge */
 	result = s_conn->mech->m.plug->mech_new(s_conn->mech->m.plug->glob_context,
-					      s_conn->sparams,
-					      NULL,
-					      0,
-					      &(conn->context));
+						s_conn->sparams,
+						NULL,
+						0,
+						&(conn->context));
     } else {
 	/* the work was already done by mech_avail! */
 	result = SASL_OK;
     }
     
     if (result == SASL_OK) {
-         if(clientin) {
-            if(s_conn->mech->m.plug->features & SASL_FEAT_SERVER_FIRST) {
+         if (clientin) {
+            if (s_conn->mech->m.plug->features & SASL_FEAT_SERVER_FIRST) {
                 /* Remote sent first, but mechanism does not support it.
                  * RFC 2222 says we fail at this point. */
-                sasl_seterror(conn, 0,
+                sasl_seterror(conn,
+			      0,
                               "Remote sent first but mech does not allow it.");
                 result = SASL_BADPROT;
             } else {
@@ -1482,10 +1513,10 @@ int sasl_server_start(sasl_conn_t *conn,
 					  serveroutlen);
             }
         } else {
-            if(s_conn->mech->m.plug->features & SASL_FEAT_WANT_CLIENT_FIRST) {
+            if (s_conn->mech->m.plug->features & SASL_FEAT_WANT_CLIENT_FIRST) {
                 /* Mech wants client first anyway, so we should do that */
-                *serverout = "";
-                *serveroutlen = 0;
+		if (serverout) *serverout = "";
+		if (serveroutlen) *serveroutlen = 0;
                 result = SASL_CONTINUE;
             } else {
                 /* Mech wants server-first, so let them have it */
@@ -1499,12 +1530,12 @@ int sasl_server_start(sasl_conn_t *conn,
     }
 
  done:
-    if(   result != SASL_OK
+    if (  result != SASL_OK
        && result != SASL_CONTINUE
        && result != SASL_INTERACT) {
-	if(conn->context) {
+	if (conn->context) {
 	    s_conn->mech->m.plug->mech_dispose(conn->context,
-					     s_conn->sparams->utils);
+					       s_conn->sparams->utils);
 	    conn->context = NULL;
 	}
     }
@@ -1586,7 +1617,39 @@ int sasl_server_step(sasl_conn_t *conn,
 	    conn->oparams.maxoutbuf = conn->props.maxbufsize;
 	}
 
-	if(conn->oparams.user == NULL || conn->oparams.authid == NULL) {
+        /* Validate channel bindings */
+	switch (conn->oparams.cbindingdisp) {
+	case SASL_CB_DISP_NONE:
+	    if (SASL_CB_CRITICAL(s_conn->sparams)) {
+		sasl_seterror(conn, 0,
+			      "server requires channel binding but client provided none");
+		ret = SASL_BADBINDING;
+	    }
+	    break;
+	case SASL_CB_DISP_WANT:
+	    if (SASL_CB_PRESENT(s_conn->sparams)) {
+		sasl_seterror(conn, 0,
+			      "client incorrectly assumed server had no channel binding");
+		ret = SASL_BADAUTH;
+	    }
+	    break;
+	case SASL_CB_DISP_USED:
+	    if (!SASL_CB_PRESENT(s_conn->sparams)) {
+		sasl_seterror(conn, 0,
+			      "client provided channel binding but server had none");
+		ret = SASL_BADBINDING;
+	    } else if (strcmp(conn->oparams.cbindingname,
+		       s_conn->sparams->cbinding->name) != 0) {
+		sasl_seterror(conn, 0,
+			      "client channel binding %s does not match server %s",
+			      conn->oparams.cbindingname, s_conn->sparams->cbinding->name);
+		ret = SASL_BADBINDING;
+	    }
+	    break;
+	}
+
+        if (ret == SASL_OK &&
+	    (conn->oparams.user == NULL || conn->oparams.authid == NULL)) {
 	    sasl_seterror(conn, 0,
 			  "mech did not call canon_user for both authzid " \
 			  "and authid");
@@ -1637,7 +1700,7 @@ int _sasl_server_listmech(sasl_conn_t *conn,
 			  unsigned *plen,
 			  int *pcount)
 {
-  sasl_server_conn_t *s_conn = (sasl_server_conn_t *)conn;
+  sasl_server_conn_t *s_conn = (sasl_server_conn_t *) conn;  /* cast */
   int lup;
   mechanism_t *listptr;
   int ret;
@@ -1668,10 +1731,12 @@ int _sasl_server_listmech(sasl_conn_t *conn,
       INTERROR(conn, SASL_NOMECH);
 
   resultlen = (prefix ? strlen(prefix) : 0)
-            + (strlen(mysep) * (s_conn->mech_length - 1))
-	    + mech_names_len(s_conn->mech_list)
+            + (strlen(mysep) * (s_conn->mech_length - 1) * 2)
+	    + (mech_names_len(s_conn->mech_list) * 2) /* including -PLUS variant */
+	    + (s_conn->mech_length * (sizeof("-PLUS") - 1))
             + (suffix ? strlen(suffix) : 0)
 	    + 1;
+
   ret = _buf_alloc(&conn->mechlist_buf,
 		   &conn->mechlist_buf_len, resultlen);
   if(ret != SASL_OK) MEMERROR(conn);
@@ -1688,18 +1753,44 @@ int _sasl_server_listmech(sasl_conn_t *conn,
   for (lup = 0; lup < s_conn->mech_length; lup++) {
       /* currently, we don't use the "user" parameter for anything */
       if (mech_permitted(conn, listptr) == SASL_OK) {
-	  if (pcount != NULL)
-	      (*pcount)++;
 
-	  /* print separator */
-	  if (flag) {
-	      strcat(conn->mechlist_buf, mysep);
-	  } else {
-	      flag = 1;
+          /*
+           * If the server would never succeed in the authentication of
+           * the non-PLUS-variant due to policy reasons, it MUST advertise
+           * only the PLUS-variant.
+           */
+	  if ((listptr->m.plug->features & SASL_FEAT_CHANNEL_BINDING) &&
+	      SASL_CB_PRESENT(s_conn->sparams)) {
+	    if (pcount != NULL) {
+		(*pcount)++;
+	    }
+	    if (flag) {
+              strcat(conn->mechlist_buf, mysep);
+	    } else {
+              flag = 1;
+	    }
+	    strcat(conn->mechlist_buf, listptr->m.plug->mech_name);
+	    strcat(conn->mechlist_buf, "-PLUS");
 	  }
 
-	  /* now print the mechanism name */
-	  strcat(conn->mechlist_buf, listptr->m.plug->mech_name);
+          /*
+           * If the server cannot support channel binding, it SHOULD
+           * advertise only the non-PLUS-variant. Here, supporting channel
+           * binding means the underlying SASL mechanism supports it and
+           * the application has set some channel binding data.
+           */
+          if (!SASL_CB_PRESENT(s_conn->sparams) ||
+              !SASL_CB_CRITICAL(s_conn->sparams)) {
+            if (pcount != NULL) {
+	      (*pcount)++;
+	    }
+	    if (flag) {
+              strcat(conn->mechlist_buf, mysep);
+	    } else {
+              flag = 1;
+	    }
+	    strcat(conn->mechlist_buf, listptr->m.plug->mech_name);
+          }
       }
 
       listptr = listptr->next;
@@ -1819,7 +1910,7 @@ static int _sasl_checkpass(sasl_conn_t *conn,
 
     if (result == SASL_NOMECH) {
 	/* no mechanism available ?!? */
-	_sasl_log(conn, SASL_LOG_ERR, "unknown password verifier %s", mech);
+	_sasl_log(conn, SASL_LOG_ERR, "unknown password verifier(s) %s", mlist);
     }
 
     if (result != SASL_OK)
@@ -2185,6 +2276,21 @@ _sasl_print_mechanism (
 
         if (m->plug->features & SASL_FEAT_GETSECRET) {
 	    printf ("%cNEED_GETSECRET", delimiter);
+	    delimiter = '|';
+	}
+
+        if (m->plug->features & SASL_FEAT_GSS_FRAMING) {
+	    printf ("%cGSS_FRAMING", delimiter);
+	    delimiter = '|';
+	}
+
+        if (m->plug->features & SASL_FEAT_CHANNEL_BINDING) {
+	    printf ("%cCHANNEL_BINDING", delimiter);
+	    delimiter = '|';
+	}
+
+        if (m->plug->features & SASL_FEAT_SUPPORTS_HTTP) {
+	    printf ("%cSUPPORTS_HTTP", delimiter);
 	    delimiter = '|';
 	}
     }

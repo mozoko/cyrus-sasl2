@@ -193,12 +193,12 @@ typedef struct sasl_out_params {
     void *client_creds;
 
     /* for additions which don't require a version upgrade; set to 0 */
-    void *spare_ptr2;
-    void *spare_ptr3;
-    void *spare_ptr4;
+    const void *gss_peer_name;
+    const void *gss_local_name;
+    const char *cbindingname;   /* channel binding name from packet */
     int (*spare_fptr1)();
     int (*spare_fptr2)();
-    int spare_int1;
+    unsigned int cbindingdisp;  /* channel binding disposition from client */
     int spare_int2;
     int spare_int3;
     int spare_int4;
@@ -219,7 +219,21 @@ typedef enum  {
     SASL_INFO_LIST_END
 } sasl_info_callback_stage_t;
 
+/******************************
+ * Channel binding macros     **
+ ******************************/
 
+typedef enum {
+    SASL_CB_DISP_NONE = 0,          /* client did not support CB */
+    SASL_CB_DISP_WANT,              /* client supports CB, thinks server does not */
+    SASL_CB_DISP_USED               /* client supports and used CB */
+} sasl_cbinding_disp_t;
+
+/* TRUE if channel binding is non-NULL */
+#define SASL_CB_PRESENT(params)     ((params)->cbinding != NULL)
+/* TRUE if channel binding is marked critical */
+#define SASL_CB_CRITICAL(params)    (SASL_CB_PRESENT(params) && \
+				     (params)->cbinding->critical)
 
 /******************************
  * Client Mechanism Functions *
@@ -254,9 +268,9 @@ typedef struct sasl_client_params {
     sasl_ssf_t external_ssf;	/* external SSF active */
 
     /* for additions which don't require a version upgrade; set to 0 */
-    void *spare_ptr1;
-    void *spare_ptr2;
-    void *spare_ptr3;
+    const void *gss_creds;                  /* GSS credential handle */
+    const sasl_channel_binding_t *cbinding; /* client channel binding */
+    const sasl_http_request_t *http_request;/* HTTP Digest request method */
     void *spare_ptr4;
 
     /* Canonicalize a user name from on-wire to internal format
@@ -289,7 +303,7 @@ typedef struct sasl_client_params {
 
     int (*spare_fptr1)();
 
-    int spare_int1;
+    unsigned int cbindingdisp;
     int spare_int2;
     int spare_int3;
 
@@ -308,32 +322,43 @@ typedef struct sasl_client_params {
 
 /* This indicates that the mechanism prefers to do client-send-first
  * if the protocol allows it. */
-#define SASL_FEAT_WANT_CLIENT_FIRST 0x0002
+#define SASL_FEAT_WANT_CLIENT_FIRST	0x0002
 
-/* This feature is deprecated, instead, plugins should set *serverout to
+/* This feature is deprecated.  Instead, plugins should set *serverout to
  * non-NULL and return SASL_OK intelligently to allow flexible use of
- * server-last semantics */
-/* #define SASL_FEAT_WANT_SERVER_LAST 0x0004 */
+ * server-last semantics
+#define SASL_FEAT_WANT_SERVER_LAST	0x0004
+*/
 
-/* This feature is deprecated, instead plugins should correctly set
- * SASL_FEAT_SERVER_FIRST as needed */
-/* #define SASL_FEAT_INTERNAL_CLIENT_FIRST 0x0008 */
+/* This feature is deprecated.  Instead, plugins should correctly set
+ * SASL_FEAT_SERVER_FIRST as needed
+#define SASL_FEAT_INTERNAL_CLIENT_FIRST	0x0008
+*/
 
 /* This indicates that the plugin is server-first only. 
  * Not defining either of SASL_FEAT_SERVER_FIRST or 
- * SASL_FEAT_WANT_CLIENT_FIRST indicates that the mechanism will take care 
- * of the client-first situation internally.
+ * SASL_FEAT_WANT_CLIENT_FIRST indicates that the mechanism
+ * will handle the client-first situation internally.
  */
-#define SASL_FEAT_SERVER_FIRST 0x0010
+#define SASL_FEAT_SERVER_FIRST		0x0010
 
 /* This plugin allows proxying */
-#define SASL_FEAT_ALLOWS_PROXY 0x0020
+#define SASL_FEAT_ALLOWS_PROXY		0x0020
 
 /* server plugin don't use cleartext userPassword attribute */
-#define SASL_FEAT_DONTUSE_USERPASSWD 0x0080
+#define SASL_FEAT_DONTUSE_USERPASSWD 	0x0080
+
+/* Underlying mechanism uses GSS framing */
+#define SASL_FEAT_GSS_FRAMING	 	0x0100
+
+/* Underlying mechanism supports channel binding */
+#define SASL_FEAT_CHANNEL_BINDING	0x0800
+
+/* This plugin can be used for HTTP authentication */
+#define SASL_FEAT_SUPPORTS_HTTP	    	0x1000
 
 /* client plug-in features */
-#define SASL_FEAT_NEEDSERVERFQDN 0x0001
+#define SASL_FEAT_NEEDSERVERFQDN	0x0001
 
 /* a C object for a client mechanism
  */
@@ -553,9 +578,9 @@ typedef struct sasl_server_params {
     struct propctx *propctx;
 
     /* for additions which don't require a version upgrade; set to 0 */
-    void *spare_ptr1;
-    void *spare_ptr2;
-    void *spare_ptr3;
+    const void *gss_creds;                  /* GSS credential handle */
+    const sasl_channel_binding_t *cbinding; /* server channel binding */
+    const sasl_http_request_t *http_request;/* HTTP Digest request method */
     void *spare_ptr4;
     int (*spare_fptr1)();
     int (*spare_fptr2)();

@@ -1,7 +1,7 @@
 # Makefile.am for the SASL plugins
 # Rob Siemborski
 # Rob Earhart
-# $Id: Makefile.am,v 1.80 2009/05/07 13:49:31 murch Exp $
+# $Id: Makefile.am,v 1.85 2011/04/19 15:23:52 mel Exp $
 #
 ################################################################
 # Copyright (c) 2000 Carnegie Mellon University.  All rights reserved.
@@ -65,8 +65,8 @@ common_sources = plugin_common.c plugin_common.h
 sasldir = $(prefix)/lib/sasl2
 sasl_LTLIBRARIES = @SASL_MECHS@
 EXTRA_LTLIBRARIES = libplain.la libanonymous.la libkerberos4.la libcrammd5.la \
-	libgssapiv2.la libdigestmd5.la liblogin.la libsrp.la libotp.la \
-	libntlm.la libpassdss.la libsasldb.la libsql.la libldapdb.la
+	libgs2.la libgssapiv2.la libdigestmd5.la liblogin.la libsrp.la libotp.la \
+	libscram.la libntlm.la libpassdss.la libsasldb.la libsql.la libldapdb.la
 
 libplain_la_SOURCES = plain.c plain_init.c $(common_sources)
 libplain_la_DEPENDENCIES = $(COMPAT_OBJS)
@@ -80,6 +80,10 @@ libkerberos4_la_SOURCES = kerberos4.c kerberos4_init.c $(common_sources)
 libkerberos4_la_DEPENDENCIES = $(COMPAT_OBJS)
 libkerberos4_la_LIBADD = $(SASL_KRB_LIB) $(LIB_SOCKET) $(COMPAT_OBJS)
 
+libgs2_la_SOURCES = gs2.c gs2_init.c gs2_token.c gs2_token.h $(common_sources)
+libgs2_la_DEPENDENCIES = $(COMPAT_OBJS)
+libgs2_la_LIBADD = $(GSSAPIBASE_LIBS) $(GSSAPI_LIBS) $(LIB_SOCKET) $(COMPAT_OBJS)
+
 libgssapiv2_la_SOURCES = gssapi.c gssapiv2_init.c $(common_sources)
 libgssapiv2_la_DEPENDENCIES = $(COMPAT_OBJS)
 libgssapiv2_la_LIBADD = $(GSSAPIBASE_LIBS) $(GSSAPI_LIBS) $(LIB_SOCKET) $(COMPAT_OBJS)
@@ -91,6 +95,10 @@ libcrammd5_la_LIBADD = $(COMPAT_OBJS)
 libdigestmd5_la_SOURCES = digestmd5.c digestmd5_init.c $(common_sources)
 libdigestmd5_la_DEPENDENCIES = $(COMPAT_OBJS)
 libdigestmd5_la_LIBADD = $(LIB_DES) $(LIB_SOCKET) $(COMPAT_OBJS)
+
+libscram_la_SOURCES = scram.c scram_init.c $(common_sources)
+libscram_la_DEPENDENCIES = $(COMPAT_OBJS)
+libscram_la_LIBADD = $(SCRAM_LIBS) $(COMPAT_OBJS)
 
 liblogin_la_SOURCES = login.c login_init.c $(common_sources)
 liblogin_la_DEPENDENCIES = $(COMPAT_OBJS)
@@ -119,17 +127,18 @@ libsasldb_la_LIBADD = ../sasldb/libsasldb.la $(SASL_DB_LIB) $(COMPAT_OBJS)
 
 libldapdb_la_SOURCES = ldapdb.c ldapdb_init.c $(common_sources)
 libldapdb_la_DEPENDENCIES = $(COMPAT_OBJS)
-libldapdb_la_LIBADD = $(COMPAT_OBJS)
+libldapdb_la_LIBADD = $(LIB_LDAP) $(COMPAT_OBJS)
 
 libsql_la_SOURCES = sql.c sql_init.c $(common_sources)
-libsql_la_LDFLAGS = $(LIB_MYSQL) $(LIB_PGSQL) $(LIB_SQLITE) $(AM_LDFLAGS)
+libsql_la_LDFLAGS = $(LIB_MYSQL) $(LIB_PGSQL) $(LIB_SQLITE) $(LIB_SQLITE3) \
+	$(AM_LDFLAGS)
 libsql_la_DEPENDENCIES = $(COMPAT_OBJS)
 libsql_la_LIBADD = $(COMPAT_OBJS)
 
 
 # Instructions for making the _init files
 
-init_src=anonymous_init.c crammd5_init.c digestmd5_init.c gssapiv2_init.c \
+init_src=anonymous_init.c crammd5_init.c digestmd5_init.c scram_init.c gs2_init.c gssapiv2_init.c \
 kerberos4_init.c login_init.c plain_init.c srp_init.c otp_init.c ntlm_init.c \
 passdss_init.c sasldb_init.c sql_init.c ldapdb_init.c
 

@@ -1,6 +1,6 @@
 /* NTLM SASL plugin
  * Ken Murchison
- * $Id: ntlm.c,v 1.33 2008/10/30 14:19:46 mel Exp $
+ * $Id: ntlm.c,v 1.36 2011/01/14 14:35:57 murch Exp $
  *
  * References:
  *   http://www.innovation.ch/java/ntlm.html
@@ -100,7 +100,7 @@
 
 /*****************************  Common Section  *****************************/
 
-static const char plugin_id[] = "$Id: ntlm.c,v 1.33 2008/10/30 14:19:46 mel Exp $";
+static const char plugin_id[] = "$Id: ntlm.c,v 1.36 2011/01/14 14:35:57 murch Exp $";
 
 #ifdef WIN32
 static ssize_t writev (SOCKET fd, const struct iovec *iov, size_t iovcnt);
@@ -1689,6 +1689,10 @@ static int ntlm_server_mech_step(void *conn_context,
     *serverout = NULL;
     *serveroutlen = 0;
     
+    if (text == NULL) {
+	return SASL_BADPROT;
+    }
+
     sparams->utils->log(NULL, SASL_LOG_DEBUG,
 		       "NTLM server step %d\n", text->state);
 
@@ -1731,7 +1735,8 @@ static sasl_server_plug_t ntlm_server_plugins[] =
 	0,				/* max_ssf */
 	SASL_SEC_NOPLAINTEXT
 	| SASL_SEC_NOANONYMOUS,		/* security_flags */
-	SASL_FEAT_WANT_CLIENT_FIRST,	/* features */
+	SASL_FEAT_WANT_CLIENT_FIRST
+	| SASL_FEAT_SUPPORTS_HTTP,	/* features */
 	NULL,				/* glob_context */
 	&ntlm_server_mech_new,		/* mech_new */
 	&ntlm_server_mech_step,		/* mech_step */
@@ -2018,8 +2023,8 @@ static int ntlm_client_mech_step2(client_context_t *text,
     params->utils->getopt(params->utils->getopt_context,
 			  "NTLM", "ntlm_v2", &sendv2, NULL);
     if (sendv2 &&
-	(*sendv2 == '1' || *sendv2 == 'y' ||
-	 (*sendv2 == 'o' && *sendv2 == 'n') || *sendv2 == 't')) {
+	(sendv2[0] == '1' || sendv2[0] == 'y' ||
+	 (sendv2[0] == 'o' && sendv2[1] == 'n') || sendv2[0] == 't')) {
 
 	/* put the cnonce in place after the LMv2 HMAC */
 	char *cnonce = resp + MD5_DIGEST_LENGTH;
