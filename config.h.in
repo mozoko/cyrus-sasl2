@@ -101,6 +101,9 @@
 /* Do we have a getnameinfo() function? */
 #undef HAVE_GETNAMEINFO
 
+/* Define to 1 if you have the `getpassphrase' function. */
+#undef HAVE_GETPASSPHRASE
+
 /* Define to 1 if you have the `getpwnam' function. */
 #undef HAVE_GETPWNAM
 
@@ -212,6 +215,9 @@
 
 /* Do we have SQLite support? */
 #undef HAVE_SQLITE
+
+/* Do we have SQLite3 support? */
+#undef HAVE_SQLITE3
 
 /* Is there an ss_family in sockaddr_storage? */
 #undef HAVE_SS_FAMILY

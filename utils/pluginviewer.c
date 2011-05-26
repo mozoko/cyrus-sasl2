@@ -1,7 +1,7 @@
 /* pluginviewer.c -- Plugin Viewer for CMU SASL
  * Alexey Melnikov, Isode Ltd.
  *
- * $Id: pluginviewer.c,v 1.4 2006/04/26 15:34:34 mel Exp $
+ * $Id: pluginviewer.c,v 1.7 2009/02/14 14:42:46 mel Exp $
  */
 /* 
  * Copyright (c) 2004 Carnegie Mellon University.  All rights reserved.
@@ -93,7 +93,7 @@ build_ident[] = "$Build: pluginviewer " PACKAGE "-" VERSION " $";
 
 static const char *progname = NULL;
 /* SASL authentication methods (client or server side). NULL means all. */
-static char *mech = NULL;
+static char *sasl_mech = NULL;
 /* auxprop methods. NULL means all. */
 static char *auxprop_mech = NULL;
 
@@ -229,12 +229,12 @@ sasl_getopt (
            Used to restrict the mechanisms to a subset of the installed plugins.
            Default: NULL (i.e. all available) */
         if (result != NULL) {
-	    *result = mech;
+	    *result = sasl_mech;
         }
 
         if (len != NULL) {
     /* This might be NULL, which means "all mechanisms" */
-	    *len = mech ? strlen(mech) : 0;
+	    *len = sasl_mech ? strlen(sasl_mech) : 0;
         }
         return (SASL_OK);
     } 
@@ -485,7 +485,7 @@ main(int argc, char *argv[])
             break;
 
         case 'm':
-            mech = optarg;
+            sasl_mech = optarg;
             break;
 
         case 'f':
@@ -536,7 +536,7 @@ main(int argc, char *argv[])
         fprintf(stderr, "%s: Usage: %s [-a] [-s] [-c] [-b min=N,max=N] [-e ssf=N,id=ID] [-m MECHS] [-x AUXPROP_MECH] [-f FLAGS] [-i local=IP,remote=IP] [-p PATH]\n"
 	        "\t-a\tlist auxprop plugins\n"
                 "\t-s\tlist server authentication (SASL) plugins\n"
-                "\t-s\tlist client authentication (SASL) plugins\n"
+                "\t-c\tlist client authentication (SASL) plugins\n"
 	        "\t-b ...\t#bits to use for encryption\n"
 	        "\t\tmin=N\tminumum #bits to use (1 => integrity)\n"
 	        "\t\tmax=N\tmaximum #bits to use\n"
@@ -555,7 +555,7 @@ main(int argc, char *argv[])
 #ifdef WIN32
 	        "\t-p PATH\tsemicolon-separated search path for mechanisms\n",
 #else
-	        "\t-p PATH\tcolon-seperated search path for mechanisms\n",
+	        "\t-p PATH\tcolon-separated search path for mechanisms\n",
 #endif
 	        progname, progname);
         exit(EXIT_FAILURE);
@@ -579,6 +579,8 @@ main(int argc, char *argv[])
     }
 
     /* getopt */
+    /* NOTE: this will return "sasl_mech" option, however this HAS NO EFFECT
+       on client side SASL plugins, which just never query this option */
     callback->id = SASL_CB_GETOPT;
     callback->proc = &sasl_getopt;
     callback->context = NULL;
@@ -620,9 +622,38 @@ main(int argc, char *argv[])
         saslfail(result, "Initializing server side of libsasl", NULL);
     }
 
-    if (list_all_plugins || list_server_auth_plugins) {
+    if (list_all_plugins || list_auxprop_plugins) {
+	list_of_auxprop_mechs = NULL;
 
+	auxprop_plugin_info (NULL,  /* list all auxprop mechanisms */
+			    &list_installed_auxprop_mechanisms,
+			    (void *) &list_of_auxprop_mechs);
+
+	printf ("Installed and properly configured auxprop mechanisms are:\n%s\n",
+		(list_of_auxprop_mechs == NULL) ? "<none>" : list_of_auxprop_mechs);
+
+	free (list_of_auxprop_mechs);
+
+        
+        auxprop_plugin_info (auxprop_mech, NULL, NULL);
+    }
+
+    /* TODO: add listing of canonicalization plugins, if needed. */
+
+    if (list_all_plugins || list_server_auth_plugins) {
         /* SASL server plugins */
+	/* List all loaded plugins first */
+        list_of_server_mechs = NULL;
+
+        sasl_server_plugin_info (NULL,  /* list all SASL mechanisms */
+				 &list_installed_server_mechanisms,
+				 (void *) &list_of_server_mechs);
+
+        printf ("Installed and properly configured SASL (server side) mechanisms are:\n  %s\n", list_of_server_mechs);
+
+        free (list_of_server_mechs);
+
+	/* Now list plugins matching the criteria */
         result = sasl_server_new(service,
 				/* Has to be any non NULL value */
 			        "test.example.com",	/* localdomain */
@@ -636,7 +667,7 @@ main(int argc, char *argv[])
             saslfail(result, "Allocating sasl connection state (server side)", NULL);
         }
 
-        /* The following two options are required for SSF */
+        /* The following two options are required for SASL EXTERNAL */
         if (extssf) {
             result = sasl_setprop(server_conn,
 			        SASL_SSF_EXTERNAL,
@@ -665,7 +696,7 @@ main(int argc, char *argv[])
             saslfail(result, "Setting security properties", NULL);
         }
 
-        /* This will use getopt callback, which is using the "mech" global variable */
+	/* NOTE - available_mechs must not be freed */
         result = sasl_listmech(server_conn,
 			    ext_authid,
 			    NULL,
@@ -678,44 +709,33 @@ main(int argc, char *argv[])
             saslfail(result, "Setting security properties", NULL);
         }
 
+	/* NOTE: available_mechs contains subset of sasl_mech */
+
         if (count > 0) {
-            list_of_server_mechs = NULL;
-
-            sasl_server_plugin_info (NULL,  /* list all SASL mechanisms */
-			            &list_installed_server_mechanisms,
-			            (void *) &list_of_server_mechs);
-
-            printf ("Installed SASL (server side) mechanisms are:\n%s\n", list_of_server_mechs);
-
-            free (list_of_server_mechs);
+            printf ("Available SASL (server side) mechanisms matching your criteria are:\n  %s\n", available_mechs);
 
 	    /* Dump information about the requested SASL mechanism */
-		/* NOTE - available_mechs must not be freed */
 	    sasl_server_plugin_info (available_mechs, NULL, NULL);
         } else {
-	    printf ("No server side SASL mechanisms installed\n");
+	    printf ("No server side SASL mechanisms matching your criteria found\n");
         }
     }
 
-    if (list_all_plugins || list_auxprop_plugins) {
-	list_of_auxprop_mechs = NULL;
-
-	auxprop_plugin_info (NULL,  /* list all auxprop mechanisms */
-			    &list_installed_auxprop_mechanisms,
-			    (void *) &list_of_auxprop_mechs);
-
-	printf ("Installed auxprop mechanisms are:\n%s\n", list_of_auxprop_mechs);
-
-	free (list_of_auxprop_mechs);
-
-        
-        auxprop_plugin_info (auxprop_mech, NULL, NULL);
-    }
-
-    /* TODO: add listing of canonicalization plugins, if needed. */
-
     if (list_all_plugins || list_client_auth_plugins) {
         /* SASL client plugins */
+	/* List all loaded plugins first */
+	list_of_client_mechs = NULL;
+
+	sasl_client_plugin_info (NULL,  /* list all SASL mechanisms */
+				 &list_installed_client_mechanisms,
+				 (void *) &list_of_client_mechs);
+
+	printf ("Installed and properly configured SASL (client side) mechanisms are:\n  %s\n",
+		(list_of_client_mechs != NULL) ? list_of_client_mechs : "<none>");
+
+	free (list_of_client_mechs);
+
+	/* Now list plugins matching the criteria */
         result = sasl_client_new(service,
 				/* Has to be any non NULL value */
 			        "test.example.com",	/* fqdn */
@@ -758,36 +778,26 @@ main(int argc, char *argv[])
             saslfail(result, "Setting security properties", NULL);
         }
 
-        /* This will use getopt callback, which is using the "mech" global variable */
+	/* NOTE - available_mechs must not be freed */
         result = sasl_listmech(client_conn,
-			    ext_authid,
-			    NULL,
-			    " ",
-			    NULL,
-			    &available_mechs,
-			    &len,
-			    &count);
+			       ext_authid,
+			       NULL,
+			       " ",
+			       NULL,
+			       &available_mechs,
+			       &len,
+			       &count);
         if (result != SASL_OK) {
             saslfail(result, "Setting security properties", NULL);
         }
 
         if (count > 0) {
-	    list_of_client_mechs = NULL;
-
-	    sasl_client_plugin_info (NULL,  /* list all SASL mechanisms */
-			        &list_installed_client_mechanisms,
-			        (void *) &list_of_client_mechs);
-
-	    printf ("Installed SASL (client side) mechanisms are:\n%s\n", list_of_client_mechs);
-
-	    free (list_of_client_mechs);
-
+            printf ("Available SASL (client side) mechanisms matching your criteria are:\n  %s\n", available_mechs);
 
 	    /* Dump information about the requested SASL mechanism */
-		/* NOTE - available_mechs must not be freed */
-	    sasl_client_plugin_info (available_mechs, NULL, NULL);
+	    sasl_client_plugin_info (sasl_mech, NULL, NULL);
         } else {
-	    printf ("No client side SASL mechanisms installed\n");
+	    printf ("No client side SASL mechanisms matching your criteria found\n");
         }
     }
 

@@ -1651,7 +1651,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=saslauthd
- VERSION=2.1.23
+ VERSION=2.1.24
 
 
 cat >>confdefs.h <<_ACEOF
@@ -3226,11 +3226,6 @@ cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 
 #include <stdlib.h>
-
-int
-main ()
-{
-
 static void foo(void) __attribute__ ((noreturn));
 
 static void
@@ -3238,6 +3233,11 @@ foo(void)
 {
   exit(1);
 }
+
+int
+main ()
+{
+
 
   ;
   return 0;
@@ -3279,7 +3279,7 @@ echo "${ECHO_T}$ac_cv___attribute__" >&6
    # CMU GUESS RUNPATH SWITCH
   echo "$as_me:$LINENO: checking for runpath switch" >&5
 echo $ECHO_N "checking for runpath switch... $ECHO_C" >&6
-if test "${andrew_runpath_switch+set}" = set; then
+if test "${andrew_cv_runpath_switch+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
 
@@ -3314,7 +3314,7 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  andrew_runpath_switch="-R"
+  andrew_cv_runpath_switch="-R"
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
@@ -3349,12 +3349,12 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  andrew_runpath_switch="-Wl,-rpath,"
+  andrew_cv_runpath_switch="-Wl,-rpath,"
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-andrew_runpath_switch="none"
+andrew_cv_runpath_switch="none"
 fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 
@@ -3363,8 +3363,8 @@ rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
   LDFLAGS="${SAVE_LDFLAGS}"
 
 fi
-echo "$as_me:$LINENO: result: $andrew_runpath_switch" >&5
-echo "${ECHO_T}$andrew_runpath_switch" >&6
+echo "$as_me:$LINENO: result: $andrew_cv_runpath_switch" >&5
+echo "${ECHO_T}$andrew_cv_runpath_switch" >&6
 
 
 	save_LIBS="$LIBS"
@@ -4428,10 +4428,10 @@ fi;
 	  CPPFLAGS="${CPPFLAGS} -I${with_openssl}/include"
 
   # this is CMU ADD LIBPATH
-  if test "$andrew_runpath_switch" = "none" ; then
+  if test "$andrew_cv_runpath_switch" = "none" ; then
 	LDFLAGS="-L${with_openssl}/$CMU_LIB_SUBDIR ${LDFLAGS}"
   else
-	LDFLAGS="-L${with_openssl}/$CMU_LIB_SUBDIR $andrew_runpath_switch${with_openssl}/$CMU_LIB_SUBDIR ${LDFLAGS}"
+	LDFLAGS="-L${with_openssl}/$CMU_LIB_SUBDIR $andrew_cv_runpath_switch${with_openssl}/$CMU_LIB_SUBDIR ${LDFLAGS}"
   fi
 
 	fi
@@ -6265,7 +6265,7 @@ echo $ECHO_N "checking KERBEROS_V4... $ECHO_C" >&6
     echo "$as_me:$LINENO: result: enabled" >&5
 echo "${ECHO_T}enabled" >&6
     SASL_MECHS="$SASL_MECHS libkerberos4.la"
-    SASL_STATIC_SRCS="$SASL_STATIC_SRCS ../plugins/kerberos4.c"
+    SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/kerberos4.c"
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS kerberos4.o"
 
 cat >>confdefs.h <<\_ACEOF
@@ -6618,11 +6618,7 @@ echo "${ECHO_T}$ac_cv_header_gssapi_h" >&6
 
 fi
 if test $ac_cv_header_gssapi_h = yes; then
-
-cat >>confdefs.h <<\_ACEOF
-#define HAVE_GSSAPI_H
-_ACEOF
-
+  :
 else
   if test "${ac_cv_header_gssapi_gssapi_h+set}" = set; then
   echo "$as_me:$LINENO: checking for gssapi/gssapi.h" >&5
@@ -6770,6 +6766,14 @@ fi
 fi
 
 if test "$gssapi" != no; then
+  if test "$ac_cv_header_gssapi_h" = "yes" -o "$ac_cv_header_gssapi_gssapi_h" = "yes"; then
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_GSSAPI_H
+_ACEOF
+
+  fi
+
   # We need to find out which gssapi implementation we are
   # using. Supported alternatives are: MIT Kerberos 5,
   # Heimdal Kerberos 5 (http://www.pdc.kth.se/heimdal),
@@ -7520,7 +7524,7 @@ fi
 
   SASL_MECHS="$SASL_MECHS libgssapiv2.la"
   SASL_STATIC_OBJS="$SASL_STATIC_OBJS gssapi.o"
-  SASL_STATIC_SRCS="$SASL_STATIC_SRCS ../plugins/gssapi.c"
+  SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/gssapi.c"
 
   cmu_save_LIBS="$LIBS"
   LIBS="$LIBS $GSSAPIBASE_LIBS"
@@ -8013,18 +8017,18 @@ if test $ac_cv_header_db_h = yes; then
 	if test -d $with_bdb_lib; then
 
   # this is CMU ADD LIBPATH TO
-  if test "$andrew_runpath_switch" = "none" ; then
+  if test "$andrew_cv_runpath_switch" = "none" ; then
 	LDFLAGS="-L$with_bdb_lib ${LDFLAGS}"
   else
-	LDFLAGS="-L$with_bdb_lib ${LDFLAGS} $andrew_runpath_switch$with_bdb_lib"
+	LDFLAGS="-L$with_bdb_lib ${LDFLAGS} $andrew_cv_runpath_switch$with_bdb_lib"
   fi
 
 
   # this is CMU ADD LIBPATH TO
-  if test "$andrew_runpath_switch" = "none" ; then
+  if test "$andrew_cv_runpath_switch" = "none" ; then
 	BDB_LIBADD="-L$with_bdb_lib ${BDB_LIBADD}"
   else
-	BDB_LIBADD="-L$with_bdb_lib ${BDB_LIBADD} $andrew_runpath_switch$with_bdb_lib"
+	BDB_LIBADD="-L$with_bdb_lib ${BDB_LIBADD} $andrew_cv_runpath_switch$with_bdb_lib"
   fi
 
 	else
@@ -8032,7 +8036,7 @@ if test $ac_cv_header_db_h = yes; then
 	fi
 
 	saved_LIBS=$LIBS
-        for dbname in db-4.4 db4.4 db44 db-4.3 db4.3 db43 db-4.2 db4.2 db42 db-4.1 db4.1 db41 db-4.0 db4.0 db-4 db40 db4 db-3.3 db3.3 db33 db-3.2 db3.2 db32 db-3.1 db3.1 db31 db-3 db30 db3 db
+        for dbname in ${with_bdb} db-4.6 db4.6 db46 db-4.5 db4.5 db45 db-4.4 db4.4 db44 db-4.3 db4.3 db43 db-4.2 db4.2 db42 db-4.1 db4.1 db41 db-4.0 db4.0 db-4 db40 db4 db-3.3 db3.3 db33 db-3.2 db3.2 db32 db-3.1 db3.1 db31 db-3 db30 db3 db
           do
 	    LIBS="$saved_LIBS -l$dbname"
 	    cat >conftest.$ac_ext <<_ACEOF
@@ -8042,6 +8046,7 @@ _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
+#include <stdio.h>
 #include <db.h>
 int
 main ()
@@ -8082,6 +8087,7 @@ _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
+#include <stdio.h>
 #include <db.h>
 int
 main ()
@@ -8770,18 +8776,18 @@ if test $ac_cv_header_db_h = yes; then
 	if test -d $with_bdb_lib; then
 
   # this is CMU ADD LIBPATH TO
-  if test "$andrew_runpath_switch" = "none" ; then
+  if test "$andrew_cv_runpath_switch" = "none" ; then
 	LDFLAGS="-L$with_bdb_lib ${LDFLAGS}"
   else
-	LDFLAGS="-L$with_bdb_lib ${LDFLAGS} $andrew_runpath_switch$with_bdb_lib"
+	LDFLAGS="-L$with_bdb_lib ${LDFLAGS} $andrew_cv_runpath_switch$with_bdb_lib"
   fi
 
 
   # this is CMU ADD LIBPATH TO
-  if test "$andrew_runpath_switch" = "none" ; then
+  if test "$andrew_cv_runpath_switch" = "none" ; then
 	BDB_LIBADD="-L$with_bdb_lib ${BDB_LIBADD}"
   else
-	BDB_LIBADD="-L$with_bdb_lib ${BDB_LIBADD} $andrew_runpath_switch$with_bdb_lib"
+	BDB_LIBADD="-L$with_bdb_lib ${BDB_LIBADD} $andrew_cv_runpath_switch$with_bdb_lib"
   fi
 
 	else
@@ -8789,7 +8795,7 @@ if test $ac_cv_header_db_h = yes; then
 	fi
 
 	saved_LIBS=$LIBS
-        for dbname in db-4.4 db4.4 db44 db-4.3 db4.3 db43 db-4.2 db4.2 db42 db-4.1 db4.1 db41 db-4.0 db4.0 db-4 db40 db4 db-3.3 db3.3 db33 db-3.2 db3.2 db32 db-3.1 db3.1 db31 db-3 db30 db3 db
+        for dbname in ${with_bdb} db-4.6 db4.6 db46 db-4.5 db4.5 db45 db-4.4 db4.4 db44 db-4.3 db4.3 db43 db-4.2 db4.2 db42 db-4.1 db4.1 db41 db-4.0 db4.0 db-4 db40 db4 db-3.3 db3.3 db33 db-3.2 db3.2 db32 db-3.1 db3.1 db31 db-3 db30 db3 db
           do
 	    LIBS="$saved_LIBS -l$dbname"
 	    cat >conftest.$ac_ext <<_ACEOF
@@ -8799,6 +8805,7 @@ _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
+#include <stdio.h>
 #include <db.h>
 int
 main ()
@@ -8839,6 +8846,7 @@ _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
+#include <stdio.h>
 #include <db.h>
 int
 main ()
@@ -9386,7 +9394,7 @@ echo "${ECHO_T}$dblib" >&6
 
 SASL_DB_BACKEND="db_${dblib}.lo"
 SASL_DB_BACKEND_STATIC="db_${dblib}.o allockey.o"
-SASL_DB_BACKEND_STATIC_SRCS="../sasldb/db_${dblib}.c ../sasldb/allockey.c"
+SASL_DB_BACKEND_STATIC_SRCS="\$(top_srcdir)/sasldb/db_${dblib}.c \$(top_srcdir)/sasldb/allockey.c"
 SASL_DB_UTILS="saslpasswd2 sasldblistusers2"
 SASL_DB_MANS="saslpasswd2.8 sasldblistusers2.8"
 
@@ -9420,7 +9428,7 @@ _ACEOF
 echo "$as_me: WARNING: Disabling SASL authentication database support" >&2;}
             SASL_DB_BACKEND="db_none.lo"
     SASL_DB_BACKEND_STATIC="db_none.o"
-    SASL_DB_BACKEND_STATIC_SRCS="../sasldb/db_none.c"
+    SASL_DB_BACKEND_STATIC_SRCS="\$(top_srcdir)/sasldb/db_none.c"
     SASL_DB_UTILS=""
     SASL_DB_MANS=""
     SASL_DB_LIB=""
@@ -9429,7 +9437,7 @@ esac
 
 if test "$enable_static" = yes; then
     if test "$dblib" != "none"; then
-      SASL_STATIC_SRCS="$SASL_STATIC_SRCS ../plugins/sasldb.c $SASL_DB_BACKEND_STATIC_SRCS"
+      SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/sasldb.c $SASL_DB_BACKEND_STATIC_SRCS"
       SASL_STATIC_OBJS="$SASL_STATIC_OBJS sasldb.o $SASL_DB_BACKEND_STATIC"
 
 cat >>confdefs.h <<\_ACEOF
@@ -9801,10 +9809,10 @@ if test -d $with_ldap; then
     CPPFLAGS="$CPPFLAGS -I${with_ldap}/include"
 
   # this is CMU ADD LIBPATH
-  if test "$andrew_runpath_switch" = "none" ; then
+  if test "$andrew_cv_runpath_switch" = "none" ; then
 	LDFLAGS="-L${with_ldap}/lib ${LDFLAGS}"
   else
-	LDFLAGS="-L${with_ldap}/lib $andrew_runpath_switch${with_ldap}/lib ${LDFLAGS}"
+	LDFLAGS="-L${with_ldap}/lib $andrew_cv_runpath_switch${with_ldap}/lib ${LDFLAGS}"
   fi
 
 fi

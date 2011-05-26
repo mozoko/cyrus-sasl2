@@ -16,7 +16,7 @@
 
 # Makefile.am for the SASL library
 # Rob Earhart
-# $Id: Makefile.am,v 1.85.2.1 2009/04/27 17:58:26 murch Exp $
+# $Id: Makefile.am,v 1.87 2009/05/20 12:24:49 murch Exp $
 # Copyright (c) 2000 Carnegie Mellon University.  All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -131,6 +131,7 @@ LIB_MYSQL = @LIB_MYSQL@
 LIB_PGSQL = @LIB_PGSQL@
 LIB_SOCKET = @LIB_SOCKET@
 LIB_SQLITE = @LIB_SQLITE@
+LIB_SQLITE3 = @LIB_SQLITE3@
 LN_S = @LN_S@
 LTGETADDRINFOOBJS = @LTGETADDRINFOOBJS@
 LTGETNAMEINFOOBJS = @LTGETNAMEINFOOBJS@
@@ -232,7 +233,7 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 
 # Library version info - here at the top, for sanity
-sasl_version = 2:23:0
+sasl_version = 2:24:0
 
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/plugins -I$(top_builddir)/include -I$(top_srcdir)/sasldb
 
@@ -240,6 +241,8 @@ EXTRA_DIST = windlopen.c staticopen.h NTMakefile
 EXTRA_LIBRARIES = libsasl2.a
 noinst_LIBRARIES = @SASL_STATIC_LIBS@
 libsasl2_a_SOURCES = 
+
+BUILT_SOURCES = $(SASL_STATIC_SRCS)
 
 common_headers = saslint.h
 common_sources = auxprop.c canonusr.c checkpw.c client.c common.c config.c external.c md5.c saslutil.c server.c seterror.c dlopen.c ../plugins/plugin_common.c
@@ -297,7 +300,8 @@ DIST_COMMON = $(srcdir)/Makefile.in Makefile.am getaddrinfo.c \
 	getnameinfo.c getsubopt.c snprintf.c
 SOURCES = $(libsasl2_a_SOURCES) $(libsasl2_la_SOURCES)
 
-all: all-am
+all: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
@@ -528,12 +532,14 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
-check: check-am
+check: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) check-am
 all-am: Makefile $(LIBRARIES) $(LTLIBRARIES)
 
 installdirs:
 	$(mkinstalldirs) $(DESTDIR)$(libdir)
-install: install-am
+install: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -557,6 +563,7 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
 clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
@@ -646,7 +653,7 @@ libsasl2.a: libsasl2.la $(SASL_STATIC_OBJS)
 	rm -f $@
 	ln -s .libs/$@ $@
 
-$(SASL_STATIC_OBJS): linksrcs
+$(SASL_STATIC_SRCS): linksrcs
 
 linksrcs:
 	-ln -s $(SASL_STATIC_SRCS) .
