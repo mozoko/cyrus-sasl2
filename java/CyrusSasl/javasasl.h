@@ -7,8 +7,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/* Inaccessible static: client_factory */
-/* Inaccessible static: server_factory */
 #ifdef __cplusplus
 }
 #endif
@@ -20,14 +18,6 @@ extern "C" {
 #ifdef __cplusplus
 extern "C" {
 #endif
-/* Inaccessible static: SASL_SSF */
-/* Inaccessible static: SASL_MAXOUTBUF */
-/* Inaccessible static: SASL_REALM */
-/* Inaccessible static: SASL_GETOPTCTX */
-/* Inaccessible static: SASL_IP_LOCAL */
-/* Inaccessible static: SASL_IP_REMOTE */
-/* Inaccessible static: SASL_SSF_EXTERNAL */
-/* Inaccessible static: SASL_SEC_PROPS */
 /*
  * Class:     CyrusSasl_GenericClient
  * Method:    jni_sasl_client_start
@@ -82,14 +72,6 @@ JNIEXPORT jint JNICALL Java_CyrusSasl_ClientFactory_jni_1sasl_1client_1new
 #ifdef __cplusplus
 extern "C" {
 #endif
-/* Inaccessible static: SASL_SSF */
-/* Inaccessible static: SASL_MAXOUTBUF */
-/* Inaccessible static: SASL_REALM */
-/* Inaccessible static: SASL_GETOPTCTX */
-/* Inaccessible static: SASL_IP_LOCAL */
-/* Inaccessible static: SASL_IP_REMOTE */
-/* Inaccessible static: SASL_SSF_EXTERNAL */
-/* Inaccessible static: SASL_SEC_PROPS */
 /*
  * Class:     CyrusSasl_GenericCommon
  * Method:    jni_sasl_set_prop_string
@@ -220,12 +202,10 @@ extern "C" {
 #endif
 #undef CyrusSasl_SaslInputStream_SKIP_BUFFER_SIZE
 #define CyrusSasl_SaslInputStream_SKIP_BUFFER_SIZE 2048L
-/* Inaccessible static: skipBuffer */
 #undef CyrusSasl_SaslInputStream_DoEncrypt
 #define CyrusSasl_SaslInputStream_DoEncrypt 1L
 #undef CyrusSasl_SaslInputStream_DoDebug
 #define CyrusSasl_SaslInputStream_DoDebug 0L
-/* Inaccessible static: BUFFERSIZE */
 #ifdef __cplusplus
 }
 #endif
@@ -241,7 +221,6 @@ extern "C" {
 #define CyrusSasl_SaslOutputStream_DoEncrypt 1L
 #undef CyrusSasl_SaslOutputStream_DoDebug
 #define CyrusSasl_SaslOutputStream_DoDebug 0L
-/* Inaccessible static: MAXBUFFERSIZE */
 #ifdef __cplusplus
 }
 #endif
@@ -253,8 +232,6 @@ extern "C" {
 #ifdef __cplusplus
 extern "C" {
 #endif
-/* Inaccessible static: enc_table */
-/* Inaccessible static: dec_table */
 #ifdef __cplusplus
 }
 #endif
@@ -323,14 +300,6 @@ extern "C" {
 #ifdef __cplusplus
 extern "C" {
 #endif
-/* Inaccessible static: SASL_SSF */
-/* Inaccessible static: SASL_MAXOUTBUF */
-/* Inaccessible static: SASL_REALM */
-/* Inaccessible static: SASL_GETOPTCTX */
-/* Inaccessible static: SASL_IP_LOCAL */
-/* Inaccessible static: SASL_IP_REMOTE */
-/* Inaccessible static: SASL_SSF_EXTERNAL */
-/* Inaccessible static: SASL_SEC_PROPS */
 /*
  * Class:     CyrusSasl_GenericServer
  * Method:    jni_sasl_server_start

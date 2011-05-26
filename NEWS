@@ -1,3 +1,8 @@
+New in 2.1.23
+-------------
+* Fixed CERT VU#238019 (make sure sasl_encode64() always NUL
+  terminates output or returns SASL_BUFOVER)
+
 New in 2.1.22
 -------------
 

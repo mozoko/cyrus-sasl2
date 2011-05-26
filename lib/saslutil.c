@@ -1,7 +1,7 @@
 /* saslutil.c
  * Rob Siemborski
  * Tim Martin
- * $Id: saslutil.c,v 1.44 2006/03/13 18:26:36 mel Exp $
+ * $Id: saslutil.c,v 1.44.2.1 2009/04/27 17:47:17 murch Exp $
  */
 /* 
  * Copyright (c) 1998-2003 Carnegie Mellon University.  All rights reserved.
@@ -125,10 +125,12 @@ int sasl_encode64(const char *_in, unsigned inlen,
     
     /* Will it fit? */
     olen = (inlen + 2) / 3 * 4;
-    if (outlen)
+    if (outlen) {
       *outlen = olen;
-    if (outmax < olen)
+    }
+    if (outmax <= olen) {
       return SASL_BUFOVER;
+    }
 
     /* Do the work... */
     blah=(char *) out;
@@ -151,8 +153,7 @@ int sasl_encode64(const char *_in, unsigned inlen,
         *out++ = '=';
     }
 
-    if (olen < outmax)
-      *out = '\0';
+    *out = '\0';
     
     return SASL_OK;
 }

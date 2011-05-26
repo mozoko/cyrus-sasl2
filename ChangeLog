@@ -1,3 +1,10 @@
+2009-04-27  Ken Murchison <murch@andrew.cmu.edu>
+	* Ready for 2.1.23
+
+2009-04-27  Ken Murchison <murch@andrew.cmu.edu>
+	* lib/saslutil.c: Fixed CERT VU#238019 (make sure sasl_encode64()
+	  always NUL terminates output or returns SASL_BUFOVER).
+
 2006-05-19  Ken Murchison <murch@andrew.cmu.edu>
 	* Makefile.am: include INSTALL.TXT in distro
 	*** Ready for 2.1.22
