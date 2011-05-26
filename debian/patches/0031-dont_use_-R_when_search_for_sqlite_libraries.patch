@@ -1,6 +1,6 @@
 --- a/configure.in
 +++ b/configure.in
-@@ -829,9 +829,9 @@ case "$with_sqlite" in
+@@ -856,9 +856,9 @@ case "$with_sqlite" in
      notfound) AC_WARN([SQLite Library not found]); true;;
      *)
       if test -d ${with_sqlite}/lib; then
@@ -12,7 +12,7 @@
       fi
  
       LIB_SQLITE_DIR=$LIB_SQLITE
-@@ -881,9 +881,9 @@ case "$with_sqlite3" in
+@@ -908,9 +908,9 @@ case "$with_sqlite3" in
      notfound) AC_WARN([SQLite3 Library not found]); true;;
      *)
       if test -d ${with_sqlite3}/lib; then

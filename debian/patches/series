@@ -1,7 +1,6 @@
 0001_versioned_symbols.diff
 0002_testsuite.diff
 0003_saslauthd_mdoc.diff
-0004_missing_man_pages.diff
 0005_dbconverter.diff
 0006_library_mutexes.diff
 0009_sasldb_al.diff
@@ -10,7 +9,6 @@
 0012_xopen_crypt_prototype.diff
 0014_avoid_pic_overwrite.diff
 0017_db4.8.diff
-0024_allow_detection_of_heimdal.diff
 0025_ld_as_needed.diff
 0026_drop_krb5support_dependency.diff
 0027_db5_support.diff
@@ -18,4 +16,3 @@
 0029-ldap_fixes.patch
 0030-dont_use_la_files_for_opening_plugins.patch
 0031-dont_use_-R_when_search_for_sqlite_libraries.patch
-0032-missing_SQLITE3_in_plugins_Makefile.am.patch
