@@ -1,3 +1,16 @@
+cyrus-sasl2 (2.1.24~rc1.dfsg1+cvs2011-05-23-2) unstable; urgency=low
+
+  * Upload to unstable
+  * One more AC_CACHE_VAL without _cv_ fix
+  * Update Vcs-* links
+  * Add gs2 and scram modules to libsasl2-modules-gssapi-mit
+    (Closes: #628067)
+  * Revert "Change gbp.conf for experimental branch"
+  * Add lintian-override for libsasl2-modules-gssapi-mit: possible-gpl-
+    code-linked-with-openssl
+
+ -- Ondřej Surý <ondrej@debian.org>  Fri, 27 May 2011 17:05:30 +0200
+
 cyrus-sasl2 (2.1.24~rc1.dfsg1+cvs2011-05-23-1) experimental; urgency=low
 
   * Imported Upstream version 2.1.24~rc1.dfsg1+cvs2011-05-23
