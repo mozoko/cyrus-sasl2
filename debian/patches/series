@@ -16,3 +16,4 @@
 0029-ldap_fixes.patch
 0030-dont_use_la_files_for_opening_plugins.patch
 0031-dont_use_-R_when_search_for_sqlite_libraries.patch
+0032-revert_1.103_revision_to_unbreak_GSSAPI.patch
