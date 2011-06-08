@@ -1,3 +1,10 @@
+cyrus-sasl2 (2.1.24~rc1.dfsg1+cvs2011-05-23-4) unstable; urgency=low
+
+  * Fix yet another upstream segfault breakage in GSSAPI from CVS
+    (Closes: #629589)
+
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 08 Jun 2011 08:37:13 +0200
+
 cyrus-sasl2 (2.1.24~rc1.dfsg1+cvs2011-05-23-3) unstable; urgency=low
 
   [ Dan White ]
