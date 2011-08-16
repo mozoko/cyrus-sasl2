@@ -20,6 +20,8 @@ export DH_ALWAYS_EXCLUDE=CVS
 #export DH_VERBOSE=1 # uncomment this to turn on verbose mode
 export DEB_BUILD_HARDENING=1
 
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
 # Save Berkeley DB used for building the package
 BDB_VERSION ?= $(shell LC_ALL=C dpkg-query -l 'libdb[45].[0-9]-dev' | grep ^ii | sed -e 's|.*\s\libdb\([45]\.[0-9]\)-dev\s.*|\1|')
 
@@ -78,7 +80,8 @@ CONFIGURE_COMMON_OPTIONS= \
 	--with-pam \
 	--with-saslauthd=/var/run/saslauthd \
 	$(CONFIGURE_LDAP) \
-	--with-configdir=/etc/sasl2:/etc/sasl:/usr/lib/sasl2 \
+	--with-configdir=/etc/sasl2:/etc/sasl:/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2:/usr/lib/sasl2 \
+	--with-plugindir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2:/usr/lib/sasl2 \
 	--sysconfdir=/etc \
 	--with-devrandom=/dev/urandom
 
@@ -109,7 +112,7 @@ AUTOTOOLS_REVERSE=for i in $(AUTOFILES); do \
 ### The Makefile targets begin. ###
 
 %:
-	dh --with=quilt $@
+	dh $@ --with=quilt
 
 override_dh_auto_clean:
 	dh_auto_clean -B$(TMPBUILD_MIT)
@@ -156,8 +159,8 @@ override_dh_auto_configure:
 		>> debian/README.configure-options
 
 override_dh_auto_build:
-	dh_auto_build -B$(TMPBUILD_MIT)
-	dh_auto_build -B$(TMPBUILD_HEIMDAL)
+	dh_auto_build -B$(TMPBUILD_MIT) -- sasldir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
+	dh_auto_build -B$(TMPBUILD_HEIMDAL) -- sasldir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
 
 	# Build sample-{client,server}
 	$(MAKE) -f $(CURDIR)/debian/sample/Makefile -C $(CURDIR)/sample T=$(TMPBUILD_MIT)
@@ -171,10 +174,12 @@ override_dh_auto_build:
 	/usr/bin/pod2man --stderr debian/gen-auth/gen-auth >gen-auth.1
 
 override_dh_auto_install:
-	dh_auto_install -B$(TMPBUILD_MIT) -- DESTDIR=$(TMPPKG_MIT)
-	dh_auto_install -B$(TMPBUILD_HEIMDAL) -- DESTDIR=$(TMPPKG_HEIMDAL)
+	dh_auto_install -B$(TMPBUILD_MIT) -- DESTDIR=$(TMPPKG_MIT) sasldir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
+	dh_auto_install -B$(TMPBUILD_HEIMDAL) -- DESTDIR=$(TMPPKG_HEIMDAL) sasldir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
+
 
 	# Note the version of Berkeley DB used to build this package
+	mkdir -p $(TMPPKG_MIT)/usr/lib/sasl2
 	echo $(BDB_VERSION) > $(TMPPKG_MIT)/usr/lib/sasl2/berkeley_db.txt
 
 	# Alter the default location and names of files to fit Debian
@@ -199,7 +204,7 @@ override_dh_auto_install:
 	# Alter the rpath of certain binaries and shared libraries.
 	chrpath -d $(TMPPKG_MIT)/usr/sbin/sasldblistusers2 \
 		$(TMPPKG_MIT)/usr/sbin/saslpasswd2
-	chrpath -d $(TMPPKG_MIT)/usr/lib/sasl2/libsql.so.2.0.24
+	chrpath -d $(TMPPKG_MIT)/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2/libsql.so.2.0.24
 
 	# Install the sasl-sample-client and -server man pages.
 	dh_installman -psasl2-bin sasl-sample-client.8 sasl-sample-server.8
@@ -224,10 +229,11 @@ override_dh_installinit:
 override_dh_strip:
 	dh_strip -psasl2-bin -plibsasl2-2 -plibsasl2-modules -plibsasl2-modules-ldap -plibsasl2-modules-otp -plibsasl2-modules-sql -plibsasl2-modules-gssapi-mit -plibsasl2-dev -Nlibsasl2-modules-gssapi-heimdal --dbg-package=cyrus-sasl2-dbg
 	dh_strip -plibsasl2-modules-gssapi-heimdal -Nsasl2-bin -Nlibsasl2-2 -Nlibsasl2-modules -Nlibsasl2-modules-ldap -Nlibsasl2-modules-otp -Nlibsasl2-modules-sql -Nlibsasl2-modules-gssapi-mit -Nlibsasl2-dev --dbg-package=cyrus-sasl2-heimdal-dbg
-	mv debian/cyrus-sasl2-dbg/usr/lib/debug/usr/lib/sasl2/libgssapiv2.so.2.0.24 debian/cyrus-sasl2-mit-dbg/usr/lib/debug/usr/lib/sasl2/
+	mkdir -p debian/cyrus-sasl2-mit-dbg/usr/lib/debug/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
+	mv debian/cyrus-sasl2-dbg/usr/lib/debug/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2/libgssapiv2.so.2.0.24 debian/cyrus-sasl2-mit-dbg/usr/lib/debug/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2/
 
 override_dh_makeshlibs:
-	dh_makeshlibs -X/usr/lib/sasl2
+	dh_makeshlibs -X/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
 
 override_dh_auto_test:
 	cd $(TMPBUILD_MIT)/saslauthd && $(MAKE) testsaslauthd

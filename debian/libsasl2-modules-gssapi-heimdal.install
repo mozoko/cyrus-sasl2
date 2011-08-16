@@ -1,1 +1,1 @@
-usr/lib/sasl2/libgssapiv2.so*
+usr/lib/*/sasl2/libgssapiv2.so*
