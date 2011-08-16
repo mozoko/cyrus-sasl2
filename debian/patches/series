@@ -18,3 +18,4 @@
 0031-dont_use_-R_when_search_for_sqlite_libraries.patch
 0032-revert_1.103_revision_to_unbreak_GSSAPI.patch
 0033-fix_segfault_in_GSSAPI.patch
+0034-fix_dovecot_authentication.patch
