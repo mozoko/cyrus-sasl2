@@ -1,3 +1,10 @@
+cyrus-sasl2 (2.1.24~rc1.dfsg1+cvs2011-05-23-6) unstable; urgency=low
+
+  * Add Breaks: postfix (<= 2.8.3-1) so it doesn't get upgraded until
+    postfix sasl code is ready for MultiArch
+
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 17 Aug 2011 16:03:29 +0200
+
 cyrus-sasl2 (2.1.24~rc1.dfsg1+cvs2011-05-23-5) unstable; urgency=low
 
   * Add MultiArch support (Courtesy of Steve Langasek) (Closes: #637968)
