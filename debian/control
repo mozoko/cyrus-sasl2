@@ -39,6 +39,7 @@ Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: libsasl2-modules (= ${binary:Version})
+Breaks: postfix (<= 2.8.3-1)
 Replaces: libsasl2
 Description: Cyrus SASL - authentication abstraction library
  This is the Cyrus SASL API implementation, version 2.1.
