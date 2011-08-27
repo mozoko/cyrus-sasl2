@@ -1,3 +1,9 @@
+cyrus-sasl2 (2.1.24~rc1.dfsg1+cvs2011-05-23-7) UNRELEASED; urgency=low
+
+  * Update README.source to reflect quilt usage instead of dpatch
+
+ -- Roberto C. Sanchez <roberto@connexer.com>  Sat, 27 Aug 2011 19:52:37 -0400
+
 cyrus-sasl2 (2.1.24~rc1.dfsg1+cvs2011-05-23-6) unstable; urgency=low
 
   * Add Breaks: postfix (<= 2.8.3-1) so it doesn't get upgraded until
