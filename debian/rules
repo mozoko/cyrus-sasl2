@@ -88,6 +88,8 @@ CONFIGURE_COMMON_OPTIONS= \
 # Some convenience variables
 export TMPBUILD_MIT := $(CURDIR)/build-mit
 export TMPBUILD_HEIMDAL := $(CURDIR)/build-heimdal
+export HEIMDAL_LDFLAGS := $(shell krb5-config.heimdal --libs gssapi | sed -e 's/ -l.*//')
+export HEIMDAL_CPPFLAGS := $(shell krb5-config.heimdal --cflags gssapi)
 export TMPPKG_MIT := $(CURDIR)/debian/tmp-mit
 export TMPPKG_HEIMDAL := $(CURDIR)/debian/tmp-heimdal
 
@@ -146,8 +148,8 @@ override_dh_auto_configure:
 	CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS) -I/usr/include/mit-krb5" \
 	dh_auto_configure -B$(TMPBUILD_MIT) -- $(CONFIGURE_COMMON_OPTIONS) --with-gss_impl=mit
 
-	LDFLAGS="$(LDFLAGS) -L/usr/lib/heimdal -Wl,-z,defs" \
-	CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS) -I/usr/include/heimdal" \
+	LDFLAGS="$(LDFLAGS) $(HEIMDAL_LDFLAGS) -Wl,-z,defs" \
+	CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS) $(HEIMDAL_CPPFLAGS)" \
 	dh_auto_configure -B$(TMPBUILD_HEIMDAL) -- $(CONFIGURE_COMMON_OPTIONS) --with-gss_impl=heimdal
 
 	# Record the build-time settings for later reference
