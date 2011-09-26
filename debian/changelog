@@ -2,8 +2,10 @@ cyrus-sasl2 (2.1.25.dfsg1-1) unstable; urgency=low
 
   * Imported Upstream version 2.1.25.dfsg1
   * Refresh patches to the new release
+  * sasldbconverter2.8 man page was removed from upstream tarball
+  * Adapt debian/rules to SONAME change
 
- -- Ondřej Surý <ondrej@debian.org>  Mon, 26 Sep 2011 09:16:05 +0200
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 26 Sep 2011 09:27:55 +0200
 
 cyrus-sasl2 (2.1.24~rc1.dfsg1+cvs2011-05-23-6) unstable; urgency=low
 
