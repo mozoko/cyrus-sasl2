@@ -192,8 +192,6 @@ override_dh_auto_install:
 	install -m 644 $(CURDIR)/debian/testsaslauthd.8 \
 		$(TMPPKG_MIT)/usr/share/man/man8/testsaslauthd.8
 	mv $(TMPPKG_MIT)/usr/sbin/dbconverter-2 $(TMPPKG_MIT)/usr/sbin/sasldbconverter2
-	install -m 644 utils/sasldbconverter2.8 \
-		$(TMPPKG_MIT)/usr/share/man/man8/sasldbconverter2.8
 
 	# Install sample-{client,server} with Debianized names
 	install -m 755 -D $(CURDIR)/sample/sample-client \
