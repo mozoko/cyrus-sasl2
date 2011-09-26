@@ -1,3 +1,10 @@
+cyrus-sasl2 (2.1.25.dfsg1-2) unstable; urgency=low
+
+  [ Roberto C. Sanchez ]  
+  * Update README.source to reflect quilt usage instead of dpatch
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 26 Sep 2011 10:08:47 +0200
+
 cyrus-sasl2 (2.1.25.dfsg1-1) unstable; urgency=low
 
   * Imported Upstream version 2.1.25.dfsg1
@@ -7,7 +14,7 @@ cyrus-sasl2 (2.1.25.dfsg1-1) unstable; urgency=low
   * Fix FTBFS with MultiArch heimdal libraries (Closes: #642681)
   * Add Catalan translation (Closes: #641826)
 
- -- Ondřej Surý <ondrej@debian.org>  Mon, 26 Sep 2011 09:54:39 +0200
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 26 Sep 2011 10:08:32 +0200
 
 cyrus-sasl2 (2.1.24~rc1.dfsg1+cvs2011-05-23-6) unstable; urgency=low
 
