@@ -1,7 +1,7 @@
 /* SASL server API implementation
  * Rob Siemborski
  * Tim Martin
- * $Id: server.c,v 1.171 2011/01/21 15:19:36 mel Exp $
+ * $Id: server.c,v 1.176 2011/09/01 16:33:10 mel Exp $
  */
 /* 
  * Copyright (c) 1998-2003 Carnegie Mellon University.  All rights reserved.
@@ -200,7 +200,7 @@ int sasl_setpass(sasl_conn_t *conn,
 
     /* call userdb callback function */
     tmpresult = _sasl_getcallback(conn, SASL_CB_SERVER_USERDB_SETPASS,
-			       &setpass_cb, &context);
+			       (sasl_callback_ft *)&setpass_cb, &context);
     if (tmpresult == SASL_OK && setpass_cb) {
 
 	tried_setpass++;
@@ -447,8 +447,11 @@ int sasl_server_add_plugin(const char *plugname,
     /* Make sure plugin is using the same SASL version as us */
     if (version != SASL_SERVER_PLUG_VERSION)
     {
-	_sasl_log(NULL, SASL_LOG_ERR,
-		  "version mismatch on plugin");
+	_sasl_log(NULL,
+		  SASL_LOG_ERR,
+		  "version mismatch on plugin: %d expected, but %d reported",
+		  SASL_SERVER_PLUG_VERSION,
+		  version);
 	return SASL_BADVERS;
     }
 
@@ -886,7 +889,7 @@ int sasl_server_init(const sasl_callback_t *callbacks,
 #ifdef PIC
     /* delayed loading of plugins? (DSO only, as it doesn't
      * make much [any] sense to delay in the static library case) */
-    if (_sasl_getcallback(NULL, SASL_CB_GETOPT, &getopt, &context) 
+    if (_sasl_getcallback(NULL, SASL_CB_GETOPT, (sasl_callback_ft *)&getopt, &context) 
 	   == SASL_OK) {
 	/* No sasl_conn_t was given to getcallback, so we provide the
 	 * global callbacks structure */
@@ -955,7 +958,7 @@ _sasl_transition(sasl_conn_t * conn,
 	PARAMERROR(conn);
 
     /* check if this is enabled: default to false */
-    if (_sasl_getcallback(conn, SASL_CB_GETOPT, &getopt, &context) == SASL_OK)
+    if (_sasl_getcallback(conn, SASL_CB_GETOPT, (sasl_callback_ft *)&getopt, &context) == SASL_OK)
     {
 	getopt(context, NULL, "auto_transition", &dotrans, NULL);
 	if (dotrans == NULL) dotrans = "n";
@@ -1096,7 +1099,7 @@ int sasl_server_new(const char *service,
   serverconn->sparams->callbacks = callbacks;
 
   log_level = auto_trans = NULL;
-  if(_sasl_getcallback(*pconn, SASL_CB_GETOPT, &getopt, &context) == SASL_OK) {
+  if(_sasl_getcallback(*pconn, SASL_CB_GETOPT, (sasl_callback_ft *)&getopt, &context) == SASL_OK) {
     getopt(context, NULL, "log_level", &log_level, NULL);
     getopt(context, NULL, "auto_transition", &auto_trans, NULL);
     getopt(context, NULL, "mech_list", &mlist, NULL);
@@ -1186,7 +1189,8 @@ static int mech_permitted(sasl_conn_t *conn,
     int ret;
     int myflags;
     context_list_t *cur;
-    void *context;
+    context_list_t *mech_context_list_entry = NULL;
+    void *context = NULL;
     sasl_ssf_t minssf = 0;
 
     if(!conn) return SASL_NOMECH;
@@ -1206,10 +1210,15 @@ static int mech_permitted(sasl_conn_t *conn,
     s_conn->sparams->external_ssf=conn->external.ssf;
 
     /* Check if we have banished this one already */
-    for(cur = s_conn->mech_contexts; cur; cur=cur->next) {
-	if(cur->mech == mech) {
+    for (cur = s_conn->mech_contexts; cur; cur=cur->next) {
+	if (cur->mech == mech) {
 	    /* If it's not mech_avail'd, then stop now */
-	    if(!cur->context) return SASL_NOMECH;
+	    if (!cur->context) {
+		return SASL_NOMECH;
+	    } else {
+		context = cur->context;
+		mech_context_list_entry = cur;
+	    }
 	    break;
 	}
     }
@@ -1227,7 +1236,6 @@ static int mech_permitted(sasl_conn_t *conn,
 	return SASL_TOOWEAK; /* too weak */
     }
 
-    context = NULL;
     if (plug->mech_avail
         && (ret = plug->mech_avail(plug->glob_context,
 				   s_conn->sparams,
@@ -1250,16 +1258,21 @@ static int mech_permitted(sasl_conn_t *conn,
 	/* Error should be set by mech_avail call */
 	return SASL_NOMECH;
     } else if (context) {
-	/* Save this context */
-	cur = sasl_ALLOC(sizeof(context_list_t));
-	if (!cur) {
-	    MEMERROR(conn);
-	    return SASL_NOMECH;
+	if (mech_context_list_entry != NULL) {
+	    /* Update the context. It shouldn't have changed, but who knows */
+	    mech_context_list_entry->context = context;
+	} else {
+	    /* Save this context */
+	    cur = sasl_ALLOC(sizeof(context_list_t));
+	    if (!cur) {
+		MEMERROR(conn);
+		return SASL_NOMECH;
+	    }
+	    cur->context = context;
+	    cur->mech = mech;
+	    cur->next = s_conn->mech_contexts;
+	    s_conn->mech_contexts = cur;
 	}
-	cur->context = context;
-	cur->mech = mech;
-	cur->next = s_conn->mech_contexts;
-	s_conn->mech_contexts = cur;
     }
     
     /* Generic mechanism */
@@ -1331,7 +1344,7 @@ static int do_authorization(sasl_server_conn_t *s_conn)
     
     /* check the proxy callback */
     if (_sasl_getcallback(&s_conn->base, SASL_CB_PROXY_POLICY,
-			  &authproc, &auth_context) != SASL_OK) {
+			  (sasl_callback_ft *)&authproc, &auth_context) != SASL_OK) {
 	INTERROR(&s_conn->base, SASL_NOAUTHZ);
     }
 
@@ -1463,21 +1476,28 @@ int sasl_server_start(sasl_conn_t *conn,
 	}
     }
 
+    if (conn->context) {
+	s_conn->mech->m.plug->mech_dispose(conn->context,
+					   s_conn->sparams->utils);
+	conn->context = NULL;
+    }
+
     /* We used to setup sparams HERE, but now it's done
        inside of mech_permitted (which is called above) */
     prev = &s_conn->mech_contexts;
-    for(cur = *prev; cur; prev=&cur->next,cur=cur->next) {
-	if(cur->mech == m) {
-	    if(!cur->context) {
+    for (cur = *prev; cur; prev=&cur->next,cur=cur->next) {
+	if (cur->mech == m) {
+	    if (!cur->context) {
 		sasl_seterror(conn, 0,
 			      "Got past mech_permitted with a disallowed mech!");
 		return SASL_NOMECH;
 	    }
 	    /* If we find it, we need to pull cur out of the
 	       list so it won't be freed later! */
-	    (*prev)->next = cur->next;
+	    *prev = cur->next;
 	    conn->context = cur->context;
 	    sasl_FREE(cur);
+	    break;
 	}
     }
 
@@ -1538,6 +1558,7 @@ int sasl_server_start(sasl_conn_t *conn,
 					       s_conn->sparams->utils);
 	    conn->context = NULL;
 	}
+	conn->oparams.doneflag = 0;
     }
     
     RETURN(conn,result);
@@ -1657,14 +1678,15 @@ int sasl_server_step(sasl_conn_t *conn,
 	}	
     }
     
-    if(   ret != SASL_OK
+    if (  ret != SASL_OK
        && ret != SASL_CONTINUE
        && ret != SASL_INTERACT) {
-	if(conn->context) {
+	if (conn->context) {
 	    s_conn->mech->m.plug->mech_dispose(conn->context,
 					     s_conn->sparams->utils);
 	    conn->context = NULL;
 	}
+	conn->oparams.doneflag = 0;
     }
 
     RETURN(conn, ret);
@@ -1871,7 +1893,7 @@ static int _sasl_checkpass(sasl_conn_t *conn,
 
     /* call userdb callback function, if available */
     result = _sasl_getcallback(conn, SASL_CB_SERVER_USERDB_CHECKPASS,
-			       &checkpass_cb, &context);
+			       (sasl_callback_ft *)&checkpass_cb, &context);
     if(result == SASL_OK && checkpass_cb) {
 	result = checkpass_cb(conn, context, user, pass, passlen,
 			      s_conn->sparams->propctx);
@@ -1880,7 +1902,7 @@ static int _sasl_checkpass(sasl_conn_t *conn,
     }
 
     /* figure out how to check (i.e. auxprop or saslauthd or pwcheck) */
-    if (_sasl_getcallback(conn, SASL_CB_GETOPT, &getopt, &context)
+    if (_sasl_getcallback(conn, SASL_CB_GETOPT, (sasl_callback_ft *)&getopt, &context)
             == SASL_OK) {
         getopt(context, NULL, "pwcheck_method", &mlist, NULL);
     }
@@ -2004,7 +2026,7 @@ int sasl_user_exists(sasl_conn_t *conn,
     if(!service) service = conn->service;
     
     /* figure out how to check (i.e. auxprop or saslauthd or pwcheck) */
-    if (_sasl_getcallback(conn, SASL_CB_GETOPT, &getopt, &context)
+    if (_sasl_getcallback(conn, SASL_CB_GETOPT, (sasl_callback_ft *)&getopt, &context)
             == SASL_OK) {
         getopt(context, NULL, "pwcheck_method", &mlist, NULL);
     }

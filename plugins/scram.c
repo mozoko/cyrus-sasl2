@@ -1,6 +1,6 @@
 /* SCRAM-SHA-1 SASL plugin
  * Alexey Melnikov
- * $Id: scram.c,v 1.22 2011/01/21 15:37:44 mel Exp $
+ * $Id: scram.c,v 1.26 2011/09/07 16:09:40 murch Exp $
  */
 /* 
  * Copyright (c) 2009-2010 Carnegie Mellon University.  All rights reserved.
@@ -69,7 +69,7 @@
 
 /*****************************  Common Section  *****************************/
 
-static const char plugin_id[] = "$Id: scram.c,v 1.22 2011/01/21 15:37:44 mel Exp $";
+static const char plugin_id[] = "$Id: scram.c,v 1.26 2011/09/07 16:09:40 murch Exp $";
 
 #define NONCE_SIZE (32)		    /* arbitrary */
 #define SALT_SIZE  (16)		    /* arbitrary */
@@ -445,6 +445,7 @@ typedef struct server_context {
     char * authorization_id;
 
     char * out_buf;
+    unsigned out_buf_len;
     char * auth_message;
     size_t auth_message_len;
     char * nonce;
@@ -1028,8 +1029,11 @@ scram_server_mech_step1(server_context_t *text,
 			      base64len +
 			      ITERATION_COUNTER_BUF_LEN +
 			      strlen("r=,s=,i=");
-    text->out_buf = (char *) sparams->utils->malloc(estimated_challenge_len + 1);
-    if (text->out_buf == NULL) {
+    result = _plug_buf_alloc(sparams->utils,
+			     &(text->out_buf),
+			     &(text->out_buf_len),
+			     (unsigned) estimated_challenge_len + 1);
+    if (result != SASL_OK) {
 	MEMERROR( sparams->utils );
 	result = SASL_NOMEM;
 	goto cleanup;
@@ -1089,7 +1093,7 @@ scram_server_mech_step2(server_context_t *text,
     char *channel_binding = NULL;
     size_t channel_binding_len = 0;
     char *binary_channel_binding = NULL;
-    size_t binary_channel_binding_len = 0;
+    unsigned binary_channel_binding_len = 0;
     char *client_proof = NULL;
     char *inbuf = NULL;
     char *p;
@@ -1184,7 +1188,7 @@ scram_server_mech_step2(server_context_t *text,
 
     switch (text->cb_flags & SCRAM_CB_FLAG_MASK) {
     case SCRAM_CB_FLAG_P:
-	binary_channel_binding_len -= text->gs2_header_length;
+	binary_channel_binding_len -= (unsigned)text->gs2_header_length;
 	if (binary_channel_binding_len == 0) {
 	    SETERROR(sparams->utils, "Channel bindings data expected in " SCRAM_SASL_MECH);
 	    result = SASL_BADPROT;
@@ -1362,8 +1366,11 @@ scram_server_mech_step2(server_context_t *text,
     }
 
     server_proof_len = (SCRAM_HASH_SIZE / 3 * 4 + (SCRAM_HASH_SIZE % 3 ? 4 : 0));
-    text->out_buf = (char *) sparams->utils->malloc(server_proof_len + strlen("v=") + 1);
-    if (text->out_buf == NULL) {
+    result = _plug_buf_alloc(sparams->utils,
+			     &(text->out_buf),
+			     &(text->out_buf_len),
+			     (unsigned) server_proof_len + strlen("v=") + 1);
+    if (result != SASL_OK) {
 	MEMERROR( sparams->utils );
 	result = SASL_NOMEM;
 	goto cleanup;
@@ -1417,6 +1424,9 @@ scram_server_mech_step2(server_context_t *text,
     result = SASL_OK;
     
 cleanup:
+    if (inbuf != NULL) {
+	sparams->utils->free(inbuf);
+    }
     if (binary_channel_binding != NULL) {
 	sparams->utils->free(binary_channel_binding);
     }
@@ -1833,7 +1843,7 @@ scram_client_mech_step1(client_context_t *text,
     char * freeme = NULL;
     char * freeme2 = NULL;
     char channel_binding_state = 'n';
-    char * channel_binding_name = NULL;
+    const char * channel_binding_name = NULL;
     char * encoded_authorization_id = NULL;
 
     /* check if sec layer strong enough */
@@ -2082,7 +2092,7 @@ scram_client_mech_step2(client_context_t *text,
     size_t cb_bin_length;
     size_t channel_binding_data_len = 0;
     size_t cb_encoded_length;
-    char * channel_binding_data = NULL;
+    const char * channel_binding_data = NULL;
     char * cb_encoded = NULL;
     char * cb_bin = NULL;
     int result;
@@ -2314,8 +2324,11 @@ scram_client_mech_step2(client_context_t *text,
 			     strlen(text->nonce)+
 			     client_proof_len +
 			     strlen("c=,r=,p=");
-    text->out_buf = (char *) params->utils->malloc(estimated_response_len + 1);
-    if (text->out_buf == NULL) {
+    result = _plug_buf_alloc(params->utils,
+			     &(text->out_buf),
+			     &(text->out_buf_len),
+			     (unsigned) estimated_response_len + 1);
+    if (result != SASL_OK) {
 	MEMERROR( params->utils );
 	result = SASL_NOMEM;
 	goto cleanup;
