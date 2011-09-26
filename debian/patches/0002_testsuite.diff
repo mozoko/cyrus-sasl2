@@ -3,7 +3,7 @@ Description: Rename the testsuite program to sasltestsuite and use /etc/sasldb2
 instead of ./sasldb as default path for the sasldb database file.
 --- a/utils/testsuite.c
 +++ b/utils/testsuite.c
-@@ -464,9 +464,9 @@ int good_getopt(void *context __attribut
+@@ -462,9 +462,9 @@ int good_getopt(void *context __attribut
  	    *len = (unsigned) strlen("sasldb");
  	return SASL_OK;
      } else if (!strcmp(option, "sasldb_path")) {
@@ -15,7 +15,7 @@ instead of ./sasldb as default path for the sasldb database file.
  	return SASL_OK;
      } else if (!strcmp(option, "canon_user_plugin")) {
  	*result = cu_plugin;
-@@ -2926,7 +2926,7 @@ void notes(void)
+@@ -2924,7 +2924,7 @@ void notes(void)
  void usage(void)
  {
      printf("Usage:\n" \
