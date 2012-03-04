@@ -232,7 +232,7 @@ override_dh_strip:
 	dh_strip -plibsasl2-modules-gssapi-heimdal -Nsasl2-bin -Nlibsasl2-2 -Nlibsasl2-modules -Nlibsasl2-modules-ldap -Nlibsasl2-modules-otp -Nlibsasl2-modules-sql -Nlibsasl2-modules-gssapi-mit -Nlibsasl2-dev --dbg-package=cyrus-sasl2-heimdal-dbg
 
 override_dh_makeshlibs:
-	dh_makeshlibs -X/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
+	dh_makeshlibs -V "libsasl2-2 (>= 2.1.24)" -X/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
 
 override_dh_auto_test:
 	cd $(TMPBUILD_MIT)/saslauthd && $(MAKE) testsaslauthd
