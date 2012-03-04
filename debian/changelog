@@ -1,3 +1,15 @@
+cyrus-sasl2 (2.1.25.dfsg1-4) unstable; urgency=medium
+
+  [ Ondřej Surý ]
+  * Lintian says we need debhelper >= 9, so we need debhelper >= 9
+
+  [ Helmut Grohne ]
+  * Breaks: slapd < 2.4.25-4 (Closes: #655845)
+  * Introduce shlib dependency on 2.1.24 for libsasl2-2. (Closes:
+    #628237)
+
+ -- Ondřej Surý <ondrej@debian.org>  Sun, 04 Mar 2012 09:30:55 +0100
+
 cyrus-sasl2 (2.1.25.dfsg1-3) unstable; urgency=low
 
   [ Thomas Preud'homme ]
