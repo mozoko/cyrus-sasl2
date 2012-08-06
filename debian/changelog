@@ -1,3 +1,13 @@
+cyrus-sasl2 (2.1.25.dfsg1-5) unstable; urgency=low
+
+  * New sourceful upload (Closes: #676914)
+  * Relabel /run directory for SE Linux (Closes: #677685)
+  * Add a NEWS file about auxprop_plugin mysql->sql change
+    (Closes: #680476)
+  * Improve documentation on LDAP_SASLAUTHD file (Closes: #671015)
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 06 Aug 2012 13:34:27 +0200
+
 cyrus-sasl2 (2.1.25.dfsg1-4) unstable; urgency=medium
 
   [ Ondřej Surý ]
