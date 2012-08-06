@@ -339,6 +339,7 @@ createdir()
 {
 	# In the future, use -P/-Z to have SE Linux enhancement
 	install -d --group="$2" --mode="$3" --owner="$1" "$4"
+	[ -x /sbin/restorecon ] && /sbin/restorecon "$4"
 }
 
 # Action switch
