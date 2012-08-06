@@ -20,3 +20,4 @@
 0033-fix_segfault_in_GSSAPI.patch
 0034-fix_dovecot_authentication.patch
 0035-temporary_multiarch_fixes.patch
+0036-add-reference-to-LDAP_SASLAUTHD-file.patch
