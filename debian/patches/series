@@ -21,3 +21,4 @@
 0034-fix_dovecot_authentication.patch
 0035-temporary_multiarch_fixes.patch
 0036-add-reference-to-LDAP_SASLAUTHD-file.patch
+0037-abort_if_no_fqdn_fix.patch
