@@ -23,3 +23,4 @@
 0036-add-reference-to-LDAP_SASLAUTHD-file.patch
 0037-abort_if_no_fqdn_fix.patch
 0038-send_imap_logout.patch
+0039-fix-canonuser-ldapdb-garbage-in-out-buffer.patch
