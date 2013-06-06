@@ -1,4 +1,4 @@
-cyrus-sasl2 (2.1.26.dfsg1-1) unstable; urgency=low
+cyrus-sasl2 (2.1.26.dfsg1-1) experimental; urgency=low
 
   * New upstream version 2.1.26.dfsg1
   * Update patches for 2.1.26 release
