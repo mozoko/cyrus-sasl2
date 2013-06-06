@@ -1,8 +1,8 @@
 Author: Fabian Fagerholm <fabbe@debian.org>
 Description: Rename the testsuite program to sasltestsuite and use /etc/sasldb2
 instead of ./sasldb as default path for the sasldb database file.
---- a/utils/testsuite.c
-+++ b/utils/testsuite.c
+--- cyrus-sasl2.orig/utils/testsuite.c
++++ cyrus-sasl2/utils/testsuite.c
 @@ -462,9 +462,9 @@ int good_getopt(void *context __attribut
  	    *len = (unsigned) strlen("sasldb");
  	return SASL_OK;

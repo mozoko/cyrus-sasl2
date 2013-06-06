@@ -1,17 +1,16 @@
---- a/plugins/gssapi.c
-+++ b/plugins/gssapi.c
-@@ -370,7 +370,7 @@ sasl_gss_encode(void *context, const str
+--- cyrus-sasl2.orig/plugins/gssapi.c
++++ cyrus-sasl2/plugins/gssapi.c
+@@ -376,6 +376,7 @@ sasl_gss_encode(void *context, const str
      }
      
      if (output_token->value && output) {
--	unsigned char * p = (unsigned char *) text->encode_buf;
 +	int len;
+ 	unsigned char * p;
  	
  	ret = _plug_buf_alloc(text->utils,
- 			      &(text->encode_buf),
-@@ -384,11 +384,8 @@ sasl_gss_encode(void *context, const str
- 	    return ret;
- 	}
+@@ -392,11 +393,8 @@ sasl_gss_encode(void *context, const str
+ 
+ 	p = (unsigned char *) text->encode_buf;
  	
 -	p[0] = (output_token->length>>24) & 0xFF;
 -	p[1] = (output_token->length>>16) & 0xFF;

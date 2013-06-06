@@ -1,5 +1,5 @@
---- a/plugins/ldapdb.c
-+++ b/plugins/ldapdb.c
+--- cyrus-sasl2.orig/plugins/ldapdb.c
++++ cyrus-sasl2/plugins/ldapdb.c
 @@ -251,6 +251,8 @@ static int ldapdb_auxprop_lookup(void *g
  
  #if defined(LDAP_PROXY_AUTHZ_FAILURE)

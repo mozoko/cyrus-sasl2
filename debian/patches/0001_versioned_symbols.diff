@@ -1,8 +1,8 @@
 Author: Fabian Fagerholm <fabbe@debian.org>
 Description: Use versioned symbols for libsasl2.
---- a/lib/Makefile.am
-+++ b/lib/Makefile.am
-@@ -62,8 +62,8 @@ LIB_DOOR= @LIB_DOOR@
+--- cyrus-sasl2.orig/lib/Makefile.am
++++ cyrus-sasl2/lib/Makefile.am
+@@ -64,8 +64,8 @@ LIB_DOOR= @LIB_DOOR@
  lib_LTLIBRARIES = libsasl2.la
  
  libsasl2_la_SOURCES = $(common_sources) $(common_headers)
@@ -14,7 +14,7 @@ Description: Use versioned symbols for libsasl2.
  
  if MACOSX
 --- /dev/null
-+++ b/Versions
++++ cyrus-sasl2/Versions
 @@ -0,0 +1,7 @@
 +SASL2 {
 +    global:

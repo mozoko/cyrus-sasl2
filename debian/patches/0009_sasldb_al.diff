@@ -1,8 +1,8 @@
 Author: Fabian Fagerholm <fabbe@debian.org>
 Description: Fix linking with libsasldb.a when saslauthd is built with sasldb
 support.
---- a/saslauthd/configure.in
-+++ b/saslauthd/configure.in
+--- cyrus-sasl2.orig/saslauthd/configure.in
++++ cyrus-sasl2/saslauthd/configure.in
 @@ -77,7 +77,7 @@ if test "$authsasldb" != no; then
    AC_DEFINE(AUTH_SASLDB,[],[Include SASLdb Support])
    SASL_DB_PATH_CHECK()

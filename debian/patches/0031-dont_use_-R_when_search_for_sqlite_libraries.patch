@@ -1,5 +1,5 @@
---- a/configure.in
-+++ b/configure.in
+--- cyrus-sasl2.orig/configure.in
++++ cyrus-sasl2/configure.in
 @@ -865,9 +865,9 @@ case "$with_sqlite" in
      notfound) AC_WARN([SQLite Library not found]); true;;
      *)

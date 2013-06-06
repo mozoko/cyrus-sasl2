@@ -1,5 +1,5 @@
---- a/configure.in
-+++ b/configure.in
+--- cyrus-sasl2.orig/configure.in
++++ cyrus-sasl2/configure.in
 @@ -44,6 +44,8 @@ dnl
  AC_INIT(lib/saslint.h)
  AC_PREREQ([2.54])
@@ -9,8 +9,8 @@
  dnl use ./config.cache as the default cache file.
  dnl we require a cache file to successfully configure our build.
  if test $cache_file = "/dev/null"; then
---- a/Makefile.am
-+++ b/Makefile.am
+--- cyrus-sasl2.orig/Makefile.am
++++ cyrus-sasl2/Makefile.am
 @@ -43,6 +43,8 @@ AUTOMAKE_OPTIONS = 1.7
  #
  ################################################################
@@ -20,8 +20,8 @@
  if SASLAUTHD
  SAD = saslauthd
  else
---- a/saslauthd/configure.in
-+++ b/saslauthd/configure.in
+--- cyrus-sasl2.orig/saslauthd/configure.in
++++ cyrus-sasl2/saslauthd/configure.in
 @@ -1,7 +1,8 @@
  AC_INIT(mechanisms.h)
  AC_PREREQ([2.54])
@@ -78,8 +78,8 @@
                         AC_DEFINE(HAVE_FUNCTION,[],[Does compiler understand __FUNCTION__])
                 fi
         fi
---- a/saslauthd/Makefile.am
-+++ b/saslauthd/Makefile.am
+--- cyrus-sasl2.orig/saslauthd/Makefile.am
++++ cyrus-sasl2/saslauthd/Makefile.am
 @@ -1,4 +1,6 @@
  AUTOMAKE_OPTIONS = 1.7
 +ACLOCAL_AMFLAGS = -I ../cmulocal -I ../config
@@ -87,8 +87,8 @@
  sbin_PROGRAMS	= saslauthd testsaslauthd
  EXTRA_PROGRAMS  = saslcache
  
---- a/config/kerberos_v4.m4
-+++ b/config/kerberos_v4.m4
+--- cyrus-sasl2.orig/config/kerberos_v4.m4
++++ cyrus-sasl2/config/kerberos_v4.m4
 @@ -89,18 +89,18 @@ AC_DEFUN([SASL_KERBEROS_V4_CHK], [
      dnl if we were ambitious, we would look more aggressively for the
      dnl krb4 install

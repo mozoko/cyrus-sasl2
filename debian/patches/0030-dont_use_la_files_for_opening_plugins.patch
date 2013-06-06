@@ -1,5 +1,5 @@
---- a/lib/dlopen.c
-+++ b/lib/dlopen.c
+--- cyrus-sasl2.orig/lib/dlopen.c
++++ cyrus-sasl2/lib/dlopen.c
 @@ -247,105 +247,6 @@ static int _sasl_plugin_load(char *plugi
      return result;
  }

@@ -1,7 +1,7 @@
 Author: Fabian Fagerholm <fabbe@debian.org>
 Description: Exact description unknown; make sure mutex-related code works.
---- a/lib/common.c
-+++ b/lib/common.c
+--- cyrus-sasl2.orig/lib/common.c
++++ cyrus-sasl2/lib/common.c
 @@ -818,7 +818,7 @@ int _sasl_common_init(sasl_global_callba
      result = sasl_canonuser_add_plugin("INTERNAL", internal_canonuser_init);
      if(result != SASL_OK) return result;    

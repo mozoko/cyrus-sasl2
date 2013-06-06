@@ -1,5 +1,5 @@
---- a/configure.in
-+++ b/configure.in
+--- cyrus-sasl2.orig/configure.in
++++ cyrus-sasl2/configure.in
 @@ -277,7 +277,7 @@ AC_ARG_WITH(pam, [  --with-pam=DIR
  if test "$with_pam" != no; then
    if test -d $with_pam; then
@@ -9,8 +9,8 @@
    fi
    AC_CHECK_HEADERS(security/pam_appl.h pam/pam_appl.h)
    cmu_save_LIBS="$LIBS"
---- a/saslauthd/configure.in
-+++ b/saslauthd/configure.in
+--- cyrus-sasl2.orig/saslauthd/configure.in
++++ cyrus-sasl2/saslauthd/configure.in
 @@ -95,7 +95,7 @@ AC_ARG_WITH(pam, [  --with-pam=DIR
  if test "$with_pam" != no; then
    if test -d $with_pam; then

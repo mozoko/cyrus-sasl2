@@ -1,5 +1,5 @@
---- a/saslauthd/auth_rimap.c
-+++ b/saslauthd/auth_rimap.c
+--- cyrus-sasl2.orig/saslauthd/auth_rimap.c
++++ cyrus-sasl2/saslauthd/auth_rimap.c
 @@ -90,6 +90,7 @@ static struct addrinfo *ai = NULL;	/* re
  					   service we connect to.	 */
  #define TAG "saslauthd"			/* IMAP command tag */
@@ -21,7 +21,7 @@
      char rbuf[RESP_LEN];		/* response read buffer         */
      char hbuf[NI_MAXHOST], pbuf[NI_MAXSERV];
      int saved_errno;
-@@ -523,6 +526,24 @@ auth_rimap (
+@@ -505,6 +508,24 @@ auth_rimap (
             }
          }
      }

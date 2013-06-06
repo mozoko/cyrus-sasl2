@@ -1,7 +1,7 @@
 Author: Roberto C. Sanchez <roberto@connexer.com>
 Description: Drop gratuitous dependency on krb5support
---- a/cmulocal/sasl2.m4
-+++ b/cmulocal/sasl2.m4
+--- cyrus-sasl2.orig/cmulocal/sasl2.m4
++++ cyrus-sasl2/cmulocal/sasl2.m4
 @@ -112,9 +112,6 @@ if test "$gssapi" != no; then
    fi
  
