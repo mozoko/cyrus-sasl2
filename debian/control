@@ -35,7 +35,7 @@ Package: sasl2-bin
 Section: utils
 Priority: optional
 Architecture: any
-Depends: libsasl2-2 (>= ${binary:Version}),
+Depends: libsasl2-3 (>= ${binary:Version}),
 	 ${shlibs:Depends},
 	 ${misc:Depends},
 	 lsb-base (>= 3.0-6),
@@ -43,7 +43,7 @@ Depends: libsasl2-2 (>= ${binary:Version}),
 	 debconf (>= 1.4.69) | cdebconf (>= 0.39)
 Description: Cyrus SASL - administration programs for SASL users database
  This is the Cyrus SASL API implementation, version 2.1. See package
- libsasl2-2 and RFC 2222 for more information.
+ libsasl2-3 and RFC 2222 for more information.
  .
  This package contains administration programs for the SASL users
  database and common binary files for plugin modules.    
@@ -55,11 +55,11 @@ Architecture: all
 Depends: ${misc:Depends}
 Description: Cyrus SASL - documentation
  This is the Cyrus SASL API implementation, version 2.1. See package
- libsasl2-2 and RFC 2222 for more information.
+ libsasl2-3 and RFC 2222 for more information.
  .
  This package contains documentation for system administrators.
 
-Package: libsasl2-2
+Package: libsasl2-3
 Architecture: any
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
@@ -87,7 +87,7 @@ Package: libsasl2-modules
 Priority: optional
 Architecture: any
 Multi-Arch: same
-Depends: libsasl2-2 (= ${binary:Version}),
+Depends: libsasl2-3 (= ${binary:Version}),
 	 ${shlibs:Depends},
 	 ${misc:Depends}
 Suggests: libsasl2-modules-otp,
@@ -96,7 +96,7 @@ Suggests: libsasl2-modules-otp,
 	  libsasl2-modules-gssapi-mit | libsasl2-modules-gssapi-heimdal
 Description: Cyrus SASL - pluggable authentication modules
  This is the Cyrus SASL API implementation, version 2.1. See package
- libsasl2-2 and RFC 2222 for more information.
+ libsasl2-3 and RFC 2222 for more information.
  .
  This package provides the following SASL modules: LOGIN, PLAIN, ANONYMOUS,
  NTLM, CRAM-MD5, and DIGEST-MD5 (with DES support).
@@ -108,7 +108,7 @@ Multi-Arch: same
 Depends: libsasl2-modules (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: Cyrus SASL - pluggable authentication modules (LDAP)
  This is the Cyrus SASL API implementation, version 2.1. See package
- libsasl2-2 and RFC 2222 for more information.
+ libsasl2-3 and RFC 2222 for more information.
  .
  This package provides the LDAP plugin, which supports OpenLDAP.
 
@@ -119,7 +119,7 @@ Multi-Arch: same
 Depends: libsasl2-modules (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: Cyrus SASL - pluggable authentication modules (OTP)
  This is the Cyrus SASL API implementation, version 2.1. See package
- libsasl2-2 and RFC 2222 for more information.
+ libsasl2-3 and RFC 2222 for more information.
  .
  This package provides the OTP plugin, which supports one time passwords.
 
@@ -130,7 +130,7 @@ Multi-Arch: same
 Depends: libsasl2-modules (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: Cyrus SASL - pluggable authentication modules (SQL)
  This is the Cyrus SASL API implementation, version 2.1. See package
- libsasl2-2 and RFC 2222 for more information.
+ libsasl2-3 and RFC 2222 for more information.
  .
  This package provides the SQL plugin, which supports MySQL, PostgreSQL
  and SQLite.
@@ -145,7 +145,7 @@ Depends: libsasl2-modules (= ${binary:Version}),
 Conflicts: libsasl2-modules-gssapi-heimdal
 Description: Cyrus SASL - pluggable authentication modules (GSSAPI)
  This is the Cyrus SASL API implementation, version 2.1. See package
- libsasl2-2 and RFC 2222 for more information.
+ libsasl2-3 and RFC 2222 for more information.
  .
  This package provides the GSSAPI plugin, compiled with the MIT
  Kerberos 5 library.
@@ -159,7 +159,7 @@ Depends: libsasl2-modules (= ${binary:Version}),
 	 ${misc:Depends}
 Description: Cyrus SASL - development files for authentication abstraction library
  This is the Cyrus SASL API implementation, version 2. See package
- libsasl2-2 and RFC 2222 for more information.
+ libsasl2-3 and RFC 2222 for more information.
  .
  This package includes development files for compiling programs with SASL
  support. It is needed for development purposes only.
@@ -174,7 +174,7 @@ Depends: libsasl2-modules (= ${binary:Version}),
 Conflicts: libsasl2-modules-gssapi-mit
 Description: Pluggable Authentication Modules for SASL (GSSAPI)
  This is the Cyrus SASL API implementation, version 2.1. See package
- libsasl2-2 and RFC 2222 for more information.
+ libsasl2-3 and RFC 2222 for more information.
  .
  This package provides the GSSAPI plugin, compiled with the Heimdal
  Kerberos 5 library.
@@ -183,12 +183,12 @@ Package: cyrus-sasl2-dbg
 Section: debug
 Architecture: any
 Priority: extra
-Depends: libsasl2-2 (= ${binary:Version}),
+Depends: libsasl2-3 (= ${binary:Version}),
 	 ${misc:Depends}
 Recommends: cyrus-sasl2-mit-dbg | cyrus-sasl2-heimdal-dbg
 Description: Cyrus SASL - debugging symbols
  This is the Cyrus SASL API implementation, version 2. See package
- libsasl2-2 and RFC 2222 for more information.
+ libsasl2-3 and RFC 2222 for more information.
  .
  This package contains the debugging symbols for all Cyrus SASL packages.
  The debugging symbols can be useful when investigating crashes in the SASL
@@ -205,7 +205,7 @@ Depends: cyrus-sasl2-dbg (= ${binary:Version}),
 Conflicts: cyrus-sasl2-heimdal-dbg
 Description: Cyrus SASL - debugging symbols for MIT modules
  This is the Cyrus SASL API implementation, version 2. See package
- libsasl2-2 and RFC 2222 for more information.
+ libsasl2-3 and RFC 2222 for more information.
  .
  This package contains the debugging symbols for the Cyrus SASL MIT
  GSSAPI modules package (libsasl2-modules-gssapi-mit). The debugging
@@ -223,7 +223,7 @@ Depends: cyrus-sasl2-dbg (= ${binary:Version}),
 Conflicts: cyrus-sasl2-mit-dbg
 Description: Cyrus SASL - debugging symbols for Heimdal modules
  This is the Cyrus SASL API implementation, version 2. See package
- libsasl2-2 and RFC 2222 for more information.
+ libsasl2-3 and RFC 2222 for more information.
  .
  This package contains the debugging symbols for the Cyrus SASL Heimdal
  GSSAPI modules package (libsasl2-modules-gssapi-heimdal). The debugging
