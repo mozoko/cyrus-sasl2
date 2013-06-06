@@ -5,14 +5,15 @@ cyrus-sasl2 (2.1.26.dfsg1-1) unstable; urgency=low
 
  -- Ondřej Surý <ondrej@debian.org>  Thu, 06 Jun 2013 13:06:51 +0200
 
-cyrus-sasl2 (2.1.25.dfsg1-6+deb7u1) unstable; urgency=low
+cyrus-sasl2 (2.1.25.dfsg1-7) unstable; urgency=low
 
+  * Use AC_CONFIG_MACRO_DIRS instead of AC_CONFIG_MACRO_DIR (Closes: #711219)
   * Fix heavy CPU usage in saslauthd (Closes: #708552)
   * Send LOGOUT before closing connection in auth_rimap (Closes: #708547)
   * Fix garbage in output buffer when using canonuser_plugin: ldapdb
     (Closes: #689346)
 
- -- Ondřej Surý <ondrej@debian.org>  Fri, 17 May 2013 18:11:26 +0200
+ -- Ondřej Surý <ondrej@debian.org>  Thu, 06 Jun 2013 13:41:17 +0200
 
 cyrus-sasl2 (2.1.25.dfsg1-6) unstable; urgency=low
 
