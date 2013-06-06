@@ -96,25 +96,11 @@ export TMPPKG_HEIMDAL := $(CURDIR)/debian/tmp-heimdal
 AUTOFILES=acinclude.m4 aclocal.m4 config/config.sub config/config.guess \
 		  config/ltmain.sh config/libtool.m4
 BUILD_TMP_SUFFIX=.debian-build.tmp
-AUTOTOOLS=for i in $(AUTOFILES); do \
-		  	if [ -e $$i ]; then \
-				mv --verbose $$i `basename $$i`$(BUILD_TMP_SUFFIX) ; \
-			fi ; \
-		  done && \
-		  autoreconf -fi
-
-AUTOTOOLS_REVERSE=for i in $(AUTOFILES); do \
-				  	if [ -e `basename $$i`$(BUILD_TMP_SUFFIX) ]; then \
-						if [ -e $$i ]; then rm -fv $$i; fi ; \
-						mv --verbose `basename $$i`$(BUILD_TMP_SUFFIX) $$i ; \
-					fi ; \
-				  done
-
 
 ### The Makefile targets begin. ###
 
 %:
-	dh $@ --with=quilt
+	dh $@ --with=quilt --with=autoreconf
 
 override_dh_auto_clean:
 	dh_auto_clean -B$(TMPBUILD_MIT)
@@ -123,8 +109,6 @@ override_dh_auto_clean:
 	rm -f $(CURDIR)/sample/sample-client \
 		$(CURDIR)/sample/sample-server
 	[ ! -f Makefile ] || $(MAKE) distclean
-	$(AUTOTOOLS_REVERSE)
-	(cd saslauthd && $(AUTOTOOLS_REVERSE) && cd ..)
 	-rm -f config.h config.log autom4ate.cache
 
 	# Remove symlinks that the CMU build sets up but never removes.
@@ -141,9 +125,6 @@ override_dh_auto_clean:
 	rm -rf $(TMPBUILD_MIT) $(TMPBUILD_HEIMDAL) $(TMPPKG_MIT) $(TMPPKG_HEIMDAL)
 
 override_dh_auto_configure:
-	$(AUTOTOOLS)
-	(cd saslauthd && $(AUTOTOOLS) && cd ..)
-
 	LDFLAGS="$(LDFLAGS) -L/usr/lib/mit-krb5 -Wl,-z,defs" \
 	CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS) -I/usr/include/mit-krb5" \
 	dh_auto_configure -B$(TMPBUILD_MIT) -- $(CONFIGURE_COMMON_OPTIONS) --with-gss_impl=mit
