@@ -15,6 +15,8 @@ Section: utils
 Priority: optional
 Architecture: any
 Depends: libsasl2-2 (>= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}, lsb-base (>= 3.0-6), db-util, debconf (>= 1.4.69) | cdebconf (>= 0.39)
+Breaks: libsasl2-2 (<< 2.1.25.dfsg1-8)
+Replaces: libsasl2-2 (<< 2.1.25.dfsg1-8)
 Description: Cyrus SASL - administration programs for SASL users database
  This is the Cyrus SASL API implementation, version 2.1. See package
  libsasl2-2 and RFC 2222 for more information.
