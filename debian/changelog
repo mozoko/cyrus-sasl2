@@ -1,3 +1,10 @@
+cyrus-sasl2 (2.1.26.dfsg1-2) experimental; urgency=low
+
+  * Install berkeley_db.txt to sasl2-bin (Closes: #713932)
+  * Add Breaks/Replaces to correctly move the file between packages
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 24 Jun 2013 08:22:07 +0200
+
 cyrus-sasl2 (2.1.26.dfsg1-1) experimental; urgency=low
 
   * New upstream version 2.1.26.dfsg1
