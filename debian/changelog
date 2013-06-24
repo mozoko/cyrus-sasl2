@@ -1,3 +1,9 @@
+cyrus-sasl2 (2.1.25.dfsg1-8) unstable; urgency=low
+
+  * Install berkeley_db.txt to sasl2-bin (Closes: #713932)
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 24 Jun 2013 07:52:29 +0200
+
 cyrus-sasl2 (2.1.25.dfsg1-7) unstable; urgency=low
 
   * Use AC_CONFIG_MACRO_DIRS instead of AC_CONFIG_MACRO_DIR (Closes: #711219)
