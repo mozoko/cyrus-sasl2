@@ -45,6 +45,8 @@ case "$1" in
 
 			if [ "$RET" = "true" ]; then
 				rm -f /etc/sasldb2
+				rm -f /usr/lib/sasl2/berkeley_db.active
+				rmdir -f /usr/lib/sasl2
 			fi
 		fi
 		;;
