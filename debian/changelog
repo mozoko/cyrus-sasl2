@@ -1,3 +1,10 @@
+cyrus-sasl2 (2.1.25.dfsg1-9) unstable; urgency=low
+
+  * Move sasldb plugin from libsasl2-3 to libsasl2-modules
+    (Closes: #714091)
+
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 26 Jun 2013 09:19:15 +0200
+
 cyrus-sasl2 (2.1.25.dfsg1-8) unstable; urgency=low
 
   * Install berkeley_db.txt to sasl2-bin (Closes: #713932)
