@@ -1,11 +1,16 @@
+cyrus-sasl2 (2.1.26.dfsg1-3) experimental; urgency=low
+
+  * Purge /usr/lib/sasl2/berkeley_db.active if the /etc/sasldb2 was purged
+    or doesn't exist
+
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 26 Jun 2013 10:08:09 +0200
+
 cyrus-sasl2 (2.1.26.dfsg1-2) experimental; urgency=low
 
   * Ensure libsasl2-3 coinstallability with libsasl2-2
    + Install berkeley_db.txt to sasl2-bin (Closes: #713932)
    + Move sasldb plugin from libsasl2-3 to libsasl2-modules
      (Closes: #714091)
-  * Purge /usr/lib/sasl2/berkeley_db.active if the /etc/sasldb2 was purged
-    or doesn't exist
 
  -- Ondřej Surý <ondrej@debian.org>  Wed, 26 Jun 2013 10:08:09 +0200
 
