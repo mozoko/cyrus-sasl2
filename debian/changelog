@@ -1,6 +1,7 @@
-cyrus-sasl2 (2.1.25.dfsg1-9) unstable; urgency=low
+cyrus-sasl2 (2.1.25.dfsg1-10) unstable; urgency=low
 
   * Purge /usr/lib/sasl2/berkeley_db.active if the /etc/sasldb2 was purged
+    or doesn't exist.
 
  -- Ondřej Surý <ondrej@debian.org>  Wed, 26 Jun 2013 09:19:15 +0200
 
