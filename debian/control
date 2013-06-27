@@ -39,7 +39,7 @@ Package: libsasl2-2
 Architecture: any
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
-Depends: ${shlibs:Depends}, ${misc:Depends}, libsasl2-modules (= ${binary:Version})
+Depends: ${shlibs:Depends}, ${misc:Depends}, libsasl2-modules (>= ${binary:Version})
 Breaks: postfix (<= 2.8.3-1), slapd (<= 2.4.25-3)
 Replaces: libsasl2
 Description: Cyrus SASL - authentication abstraction library
