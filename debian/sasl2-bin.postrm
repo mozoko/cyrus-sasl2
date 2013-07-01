@@ -50,7 +50,7 @@ case "$1" in
 		fi
 		if [ ! -e $SASLDB_FILE ]; then
 		    rm -f /usr/lib/sasl2/berkeley_db.active
-		    rmdir -f /usr/lib/sasl2
+		    rmdir --ignore-fail-on-non-empty /usr/lib/sasl2 || true
 		fi
 		;;
 	upgrade|failed-upgrade|disappear)
