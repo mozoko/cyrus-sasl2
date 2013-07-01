@@ -1,3 +1,10 @@
+cyrus-sasl2 (2.1.25.dfsg1-13) unstable; urgency=low
+
+  * Use --ignore-fail-on-non-empty option to rmdir instead of non-existent -f
+    (Closes: #714601)
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 01 Jul 2013 12:19:54 +0200
+
 cyrus-sasl2 (2.1.25.dfsg1-12) unstable; urgency=low
 
   * Change depend on libsasl2-modules to libsasl2-2 in libsasl2-dev
