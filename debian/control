@@ -154,7 +154,7 @@ Package: libsasl2-dev
 Section: libdevel
 Architecture: any
 Priority: optional
-Depends: libsasl2-modules (= ${binary:Version}),
+Depends: libsasl2-3 (= ${binary:Version}),
 	 libc6-dev,
 	 ${misc:Depends}
 Description: Cyrus SASL - development files for authentication abstraction library
