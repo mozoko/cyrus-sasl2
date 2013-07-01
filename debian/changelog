@@ -1,3 +1,10 @@
+cyrus-sasl2 (2.1.26.dfsg1-4) experimental; urgency=low
+
+  * Change depend on libsasl2-modules to libsasl2-2 in libsasl2-dev
+    (Closes: #714514)
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 01 Jul 2013 09:30:51 +0200
+
 cyrus-sasl2 (2.1.26.dfsg1-3) experimental; urgency=low
 
   * Purge /usr/lib/sasl2/berkeley_db.active if the /etc/sasldb2 was purged
