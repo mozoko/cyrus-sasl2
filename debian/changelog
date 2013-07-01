@@ -1,3 +1,10 @@
+cyrus-sasl2 (2.1.25.dfsg1-12) unstable; urgency=low
+
+  * Change depend on libsasl2-modules to libsasl2-2 in libsasl2-dev
+    (Closes: #714514)
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 01 Jul 2013 09:25:05 +0200
+
 cyrus-sasl2 (2.1.25.dfsg1-11) unstable; urgency=low
 
   * Loosen dependency on libsasl2-modules from = to >= to allow transition
