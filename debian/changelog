@@ -1,3 +1,10 @@
+cyrus-sasl2 (2.1.25.dfsg1-14) unstable; urgency=low
+
+  * CVE-2013-4122: Handle NULL returns from glibc 2.17+ crypt()
+    (Closes: #716835)
+
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 17 Jul 2013 16:19:39 +0200
+
 cyrus-sasl2 (2.1.25.dfsg1-13) unstable; urgency=low
 
   * Use --ignore-fail-on-non-empty option to rmdir instead of non-existent -f
