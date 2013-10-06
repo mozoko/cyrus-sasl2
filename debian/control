@@ -2,7 +2,7 @@ Source: cyrus-sasl2
 Section: libs
 Priority: standard
 Maintainer: Debian Cyrus SASL Team <pkg-cyrus-sasl2-debian-devel@lists.alioth.debian.org>
-Uploaders: Fabian Fagerholm <fabbe@debian.org>, Roberto C. Sanchez <roberto@connexer.com>, Ondřej Surý <ondrej@debian.org>
+Uploaders: Fabian Fagerholm <fabbe@debian.org>, Roberto C. Sanchez <roberto@connexer.com>, Ondřej Surý <ondrej@debian.org>, Adam Conrad <adconrad@0c3.net>
 Standards-Version: 3.9.4
 Build-Depends: debhelper (>= 9),
 	       quilt (>= 0.46-7~),
