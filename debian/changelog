@@ -1,3 +1,10 @@
+cyrus-sasl2 (2.1.25.dfsg1-15) unstable; urgency=low
+
+  * Split libsasl2-modules-db out of libsasl2-modules, so we can depend on
+    it for smooth upgrades from wheezy without pulling in all the modules.
+
+ -- Adam Conrad <adconrad@0c3.net>  Sun, 06 Oct 2013 15:33:56 -0600
+
 cyrus-sasl2 (2.1.25.dfsg1-14) unstable; urgency=low
 
   * CVE-2013-4122: Handle NULL returns from glibc 2.17+ crypt()
