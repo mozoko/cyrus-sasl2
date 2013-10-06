@@ -39,7 +39,8 @@ Package: libsasl2-2
 Architecture: any
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
-Depends: ${shlibs:Depends}, ${misc:Depends}, libsasl2-modules (>= ${binary:Version})
+Depends: ${shlibs:Depends}, ${misc:Depends}, libsasl2-modules-db (>= ${binary:Version})
+Recommends: libsasl2-modules (>= ${binary:Version})
 Breaks: postfix (<= 2.8.3-1), slapd (<= 2.4.25-3)
 Replaces: libsasl2
 Description: Cyrus SASL - authentication abstraction library
@@ -66,14 +67,24 @@ Suggests: libsasl2-modules-otp,
 	  libsasl2-modules-ldap,
 	  libsasl2-modules-sql,
 	  libsasl2-modules-gssapi-mit | libsasl2-modules-gssapi-heimdal
-Breaks: libsasl2-2 (<< 2.1.25.dfsg1-9~), libsasl2-3 (<< 2.1.26.dfsg1-2~)
-Replaces: libsasl2-2 (<< 2.1.25.dfsg1-9~), libsasl2-3 (<< 2.1.26.dfsg1-2~)
 Description: Cyrus SASL - pluggable authentication modules
  This is the Cyrus SASL API implementation, version 2.1. See package
  libsasl2-2 and RFC 2222 for more information.
  .
  This package provides the following SASL modules: LOGIN, PLAIN, ANONYMOUS,
  NTLM, CRAM-MD5, and DIGEST-MD5 (with DES support).
+
+Package: libsasl2-modules-db
+Architecture: any
+Multi-Arch: same
+Breaks: libsasl2-2 (<< 2.1.25.dfsg1-9~), libsasl2-3 (<< 2.1.26.dfsg1-2~)
+Replaces: libsasl2-2 (<< 2.1.25.dfsg1-9~), libsasl2-3 (<< 2.1.26.dfsg1-2~), libsasl2-modules (<< 2.1.26.dfsg1-6~)
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Cyrus SASL - pluggable authentication modules (DB)
+ This is the Cyrus SASL API implementation, version 2.1. See package
+ libsasl2-2 and RFC 2222 for more information.
+ .
+ This package provides the DB plugin, which supports Berkeley DB lookups.
 
 Package: libsasl2-modules-ldap
 Priority: extra
