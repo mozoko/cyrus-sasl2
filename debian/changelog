@@ -1,3 +1,11 @@
+cyrus-sasl2 (2.1.26.dfsg1-6) experimental; urgency=low
+
+  * Split libsasl2-modules-db out of libsasl2-modules, so we can depend on
+    it for smooth upgrades from wheezy without pulling in all the modules.
+  * Explicitly build-depend on libkrb5-dev to fix FTBFS. (Closes: #724147)
+
+ -- Adam Conrad <adconrad@0c3.net>  Sun, 06 Oct 2013 18:52:15 -0600
+
 cyrus-sasl2 (2.1.26.dfsg1-5) experimental; urgency=low
 
   * Use --ignore-fail-on-non-empty option to rmdir instead of non-existent -f
