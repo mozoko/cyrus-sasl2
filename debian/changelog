@@ -1,3 +1,9 @@
+cyrus-sasl2 (2.1.25.dfsg1-17) unstable; urgency=low
+
+  * Add libsasl2-modules-db to the include/exclude lists in debian/rules.
+
+ -- Adam Conrad <adconrad@0c3.net>  Sun, 06 Oct 2013 19:55:16 -0600
+
 cyrus-sasl2 (2.1.25.dfsg1-16) unstable; urgency=low
 
   * Explicitly build-depend on libkrb5-dev to fix FTBFS (Closes: #724147)
