@@ -25,3 +25,4 @@
 0038_send_imap_logout.patch
 0039_fix_canonuser_ldapdb_garbage_in_out_buffer.patch
 0040_CVE-2013-4122.patch
+0041_fix_keytab_option_for_MIT_kerberos.patch
