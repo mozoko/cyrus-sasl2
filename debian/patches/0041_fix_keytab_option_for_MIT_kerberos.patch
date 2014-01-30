@@ -36,7 +36,17 @@ Description: Fix buginess that results in the keytab configuration option not wo
  { $as_echo "$as_me:$LINENO: checking for $ac_func" >&5
 --- cyrus-sasl2.git.orig/plugins/gssapi.c
 +++ cyrus-sasl2.git/plugins/gssapi.c
-@@ -1271,7 +1271,7 @@
+@@ -50,6 +50,9 @@
+ #else
+ #include <gssapi/gssapi.h>
+ #endif
++#ifdef HAVE_KRB5_GSS_REGISTER_ACCEPTOR_IDENTITY
++#include <gssapi/gssapi_krb5.h>
++#endif
+ 
+ #ifdef WIN32
+ #  include <winsock2.h>
+@@ -1271,7 +1274,7 @@
  };
  
  int gssapiv2_server_plug_init(
@@ -45,7 +55,7 @@ Description: Fix buginess that results in the keytab configuration option not wo
      const sasl_utils_t *utils __attribute__((unused)),
  #else
      const sasl_utils_t *utils,
-@@ -1281,7 +1281,7 @@
+@@ -1281,7 +1284,7 @@
      sasl_server_plug_t **pluglist,
      int *plugcount)
  {
@@ -54,7 +64,7 @@ Description: Fix buginess that results in the keytab configuration option not wo
      const char *keytab = NULL;
      char keytab_path[1024];
      unsigned int rl;
-@@ -1291,7 +1291,7 @@
+@@ -1291,7 +1294,7 @@
  	return SASL_BADVERS;
      }
      
@@ -63,7 +73,7 @@ Description: Fix buginess that results in the keytab configuration option not wo
      /* unfortunately, we don't check for readability of keytab if it's
         the standard one, since we don't know where it is */
      
-@@ -1314,7 +1314,12 @@
+@@ -1314,7 +1317,12 @@
  	
  	strncpy(keytab_path, keytab, 1024);
  	
