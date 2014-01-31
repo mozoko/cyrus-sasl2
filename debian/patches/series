@@ -20,7 +20,6 @@
 0034_fix_dovecot_authentication.patch
 0035_temporary_multiarch_fixes.patch
 0036_add_reference_to_LDAP_SASLAUTHD_file.patch
-0037_abort_if_no_fqdn_fix.patch
 0038_send_imap_logout.patch
 0039_fix_canonuser_ldapdb_garbage_in_out_buffer.patch
 0041_fix_keytab_option_for_MIT_kerberos.patch
