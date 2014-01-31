@@ -67,6 +67,7 @@ Suggests: libsasl2-modules-otp,
 	  libsasl2-modules-ldap,
 	  libsasl2-modules-sql,
 	  libsasl2-modules-gssapi-mit | libsasl2-modules-gssapi-heimdal
+Breaks: logcheck-database (<= 1.3.16~)
 Description: Cyrus SASL - pluggable authentication modules
  This is the Cyrus SASL API implementation, version 2.1. See package
  libsasl2-2 and RFC 2222 for more information.
