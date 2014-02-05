@@ -209,17 +209,17 @@ endif
 		$(TMPPKG_MIT)/usr/bin/gen-auth
 
 override_dh_install:
-	dh_install -s --autodest --list-missing --sourcedir=$(TMPPKG_MIT) -psasl2-bin -plibsasl2-3 -plibsasl2-modules -plibsasl2-modules-db -plibsasl2-modules-ldap -plibsasl2-modules-otp -plibsasl2-modules-sql -plibsasl2-modules-gssapi-mit -plibsasl2-dev -Nlibsasl2-modules-gssapi-heimdal $(DH_PACKAGE_EXCLUDES)
-	dh_install -s --autodest --list-missing --sourcedir=$(TMPPKG_HEIMDAL) -plibsasl2-modules-gssapi-heimdal -Nsasl2-bin -Nlibsasl2-3 -Nlibsasl2-modules -Nlibsasl2-modules-db -Nlibsasl2-modules-ldap -Nlibsasl2-modules-otp -Nlibsasl2-modules-sql -Nlibsasl2-modules-gssapi-mit -Nlibsasl2-dev $(DH_PACKAGE_EXCLUDES)
+	dh_install -s --autodest --list-missing --sourcedir=$(TMPPKG_MIT) -psasl2-bin -plibsasl2-2 -plibsasl2-modules -plibsasl2-modules-db -plibsasl2-modules-ldap -plibsasl2-modules-otp -plibsasl2-modules-sql -plibsasl2-modules-gssapi-mit -plibsasl2-dev -Nlibsasl2-modules-gssapi-heimdal $(DH_PACKAGE_EXCLUDES)
+	dh_install -s --autodest --list-missing --sourcedir=$(TMPPKG_HEIMDAL) -plibsasl2-modules-gssapi-heimdal -Nsasl2-bin -Nlibsasl2-2 -Nlibsasl2-modules -Nlibsasl2-modules-db -Nlibsasl2-modules-ldap -Nlibsasl2-modules-otp -Nlibsasl2-modules-sql -Nlibsasl2-modules-gssapi-mit -Nlibsasl2-dev $(DH_PACKAGE_EXCLUDES)
 
 override_dh_installinit:
 	dh_installinit $(DH_PACKAGE_EXCLUDES) --name=saslauthd start 20 2 3 4 5 . stop 20 0 1 6 .
 
 override_dh_strip:
-	dh_strip -Xlibgssapiv2.so. -psasl2-bin -plibsasl2-3 -plibsasl2-modules -plibsasl2-modules-db -plibsasl2-modules-ldap -plibsasl2-modules-otp -plibsasl2-modules-sql -plibsasl2-modules-gssapi-mit -plibsasl2-dev -Nlibsasl2-modules-gssapi-heimdal $(DH_PACKAGE_EXCLUDES) --dbg-package=cyrus-sasl2-dbg
+	dh_strip -Xlibgssapiv2.so. -psasl2-bin -plibsasl2-2 -plibsasl2-modules -plibsasl2-modules-db -plibsasl2-modules-ldap -plibsasl2-modules-otp -plibsasl2-modules-sql -plibsasl2-modules-gssapi-mit -plibsasl2-dev -Nlibsasl2-modules-gssapi-heimdal $(DH_PACKAGE_EXCLUDES) --dbg-package=cyrus-sasl2-dbg
 ifeq (,$(findstring no-gssapi,$(DEB_BUILD_OPTIONS)))
 	dh_strip -Xlibgs2.so.3 -Xlibscram.so. -plibsasl2-modules-gssapi-mit --dbg-package=cyrus-sasl2-mit-dbg
-	dh_strip -plibsasl2-modules-gssapi-heimdal -Nsasl2-bin -Nlibsasl2-3 -Nlibsasl2-modules -Nlibsasl2-modules-db -Nlibsasl2-modules-ldap -Nlibsasl2-modules-otp -Nlibsasl2-modules-sql -Nlibsasl2-modules-gssapi-mit -Nlibsasl2-dev --dbg-package=cyrus-sasl2-heimdal-dbg
+	dh_strip -plibsasl2-modules-gssapi-heimdal -Nsasl2-bin -Nlibsasl2-2 -Nlibsasl2-modules -Nlibsasl2-modules-db -Nlibsasl2-modules-ldap -Nlibsasl2-modules-otp -Nlibsasl2-modules-sql -Nlibsasl2-modules-gssapi-mit -Nlibsasl2-dev --dbg-package=cyrus-sasl2-heimdal-dbg
 endif
 
 override_dh_makeshlibs:
