@@ -7,7 +7,7 @@ cyrus-sasl2 (2.1.26.dfsg1-8) UNRELEASED; urgency=low
     file descriptors (Closes: #722569).
   * Incorporate new watch file.
   * Update to Standards-Version 3.9.5 (no changes).
-  * Make saslauthd init script also stop in run levels 0 and 6.
+  * Make saslauthd init script stop in run levels 0 and 6 (Closes: #608351).
   * Add logcheck snippet to suppress "DIGEST-MD5 common mech free" messages
     (Closes: #732771, #631932)
   * Make DEB_BUILD_OPTIONS no-ldap, no-gssapi, no-sql actually work,
