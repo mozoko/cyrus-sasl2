@@ -16,6 +16,7 @@ cyrus-sasl2 (2.1.26.dfsg1-8) UNRELEASED; urgency=low
     handle previously and SONAME bump is not necessary.
   * Include sys/types.h in sasl.h (Closes: #719165).
   * Fix transposition of realm and service in debug log (Closes: #732373)
+  * Add Polish debconf translation, thanks to Michał Kułach (Closes: #661249)
 
  -- Roberto C. Sanchez <roberto@connexer.com>  Wed, 29 Jan 2014 09:42:48 -0500
 
