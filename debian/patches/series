@@ -26,3 +26,4 @@
 0042_release_server_creds.patch
 0043_types_h.patch
 0044_debug_log_typo_fix.patch
+0045_revert_upstream_soname_bump.patch
