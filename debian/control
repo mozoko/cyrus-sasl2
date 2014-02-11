@@ -195,6 +195,7 @@ Description: Pluggable Authentication Modules for SASL (GSSAPI)
 Package: cyrus-sasl2-dbg
 Section: debug
 Architecture: any
+Multi-Arch: same
 Priority: extra
 Depends: libsasl2-2 (= ${binary:Version}),
 	 ${misc:Depends}
@@ -211,6 +212,7 @@ Description: Cyrus SASL - debugging symbols
 Package: cyrus-sasl2-mit-dbg
 Section: debug
 Architecture: any
+Multi-Arch: same
 Priority: extra
 Depends: cyrus-sasl2-dbg (= ${binary:Version}),
 	 libsasl2-modules-gssapi-mit (= ${binary:Version}),
@@ -229,6 +231,7 @@ Description: Cyrus SASL - debugging symbols for MIT modules
 Package: cyrus-sasl2-heimdal-dbg
 Section: debug
 Architecture: any
+Multi-Arch: same
 Priority: extra
 Depends: cyrus-sasl2-dbg (= ${binary:Version}),
 	 libsasl2-modules-gssapi-heimdal (= ${binary:Version}),
