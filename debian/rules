@@ -18,7 +18,11 @@
 # Debhelper control.
 export DH_ALWAYS_EXCLUDE=CVS
 #export DH_VERBOSE=1 # uncomment this to turn on verbose mode
-export DEB_BUILD_HARDENING=1
+
+# Enable package hardening through dpkg-buildflags
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/buildflags.mk
 
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
@@ -106,7 +110,7 @@ BUILD_TMP_SUFFIX=.debian-build.tmp
 ### The Makefile targets begin. ###
 
 %:
-	dh $@ --with=quilt --with=autoreconf $(DH_PACKAGE_EXCLUDES)
+	dh $@ --with=quilt --with=autotools_dev --with=autoreconf $(DH_PACKAGE_EXCLUDES)
 
 override_dh_auto_clean:
 	dh_auto_clean -B$(TMPBUILD_MIT)
