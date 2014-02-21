@@ -2,7 +2,7 @@ cyrus-sasl2 (2.1.26.dfsg1-9) UNRELEASED; urgency=low
 
   * saslauthd: refuse to start if debug option (-d) is set in options
     passed to init script (Closes: #558014)
-  * Fix FTBFS with clang (Closes: #739561
+  * Fix FTBFS with clang (Closes: #739561)
 
  -- Roberto C. Sanchez <roberto@connexer.com>  Tue, 18 Feb 2014 19:19:21 -0500
 
