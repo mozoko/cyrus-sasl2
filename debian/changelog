@@ -1,4 +1,4 @@
-cyrus-sasl2 (2.1.26.dfsg1-9) UNRELEASED; urgency=low
+cyrus-sasl2 (2.1.26.dfsg1-9) UNRELEASED; urgency=high
 
   * saslauthd: refuse to start if debug option (-d) is set in options
     passed to init script (Closes: #558014)
