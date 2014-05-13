@@ -212,6 +212,10 @@ endif
 	install -m 755 -D $(CURDIR)/debian/gen-auth/gen-auth \
 		$(TMPPKG_MIT)/usr/bin/gen-auth
 
+	# Install logcheck snippet
+	install -m 755 -D $(CURDIR)/debian/libsasl2-modules.logcheck.server \
+		$(TMPPKG_MIT)/etc/logcheck/ignore.d.server/libsasl2-modules
+
 override_dh_install:
 	dh_install -s --autodest --list-missing --sourcedir=$(TMPPKG_MIT) -psasl2-bin -plibsasl2-2 -plibsasl2-modules -plibsasl2-modules-db -plibsasl2-modules-ldap -plibsasl2-modules-otp -plibsasl2-modules-sql -plibsasl2-modules-gssapi-mit -plibsasl2-dev -Nlibsasl2-modules-gssapi-heimdal $(DH_PACKAGE_EXCLUDES)
 	dh_install -s --autodest --list-missing --sourcedir=$(TMPPKG_HEIMDAL) -plibsasl2-modules-gssapi-heimdal -Nsasl2-bin -Nlibsasl2-2 -Nlibsasl2-modules -Nlibsasl2-modules-db -Nlibsasl2-modules-ldap -Nlibsasl2-modules-otp -Nlibsasl2-modules-sql -Nlibsasl2-modules-gssapi-mit -Nlibsasl2-dev $(DH_PACKAGE_EXCLUDES)

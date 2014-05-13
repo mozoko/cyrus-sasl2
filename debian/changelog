@@ -1,3 +1,9 @@
+cyrus-sasl2 (2.1.26.dfsg1-10) UNRELEASED; urgency=low
+
+  * Actually install the logcheck snippet in the package (Closes: #732771)
+
+ -- Roberto C. Sanchez <roberto@connexer.com>  Tue, 13 May 2014 06:32:23 -0400
+
 cyrus-sasl2 (2.1.26.dfsg1-9) unstable; urgency=high
 
   * saslauthd: refuse to start if debug option (-d) is set in options
