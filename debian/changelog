@@ -1,6 +1,8 @@
 cyrus-sasl2 (2.1.26.dfsg1-10) UNRELEASED; urgency=low
 
   * Actually install the logcheck snippet in the package (Closes: #732771)
+  * Build-Depend on 'automake (>=1:1.14)', as automake in wheezy no longer
+    builds this package
 
  -- Roberto C. Sanchez <roberto@connexer.com>  Tue, 13 May 2014 06:32:23 -0400
 
