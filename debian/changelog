@@ -1,17 +1,21 @@
-cyrus-sasl2 (2.1.26.dfsg1-10) UNRELEASED; urgency=low
+cyrus-sasl2 (2.1.26.dfsg1-10) unstable; urgency=low
 
+  [ Roberto C. Sanchez ]
   * Actually install the logcheck snippet in the package (Closes: #732771)
   * Build-Depend on 'automake (>=1:1.14)', as automake in wheezy no longer
     builds this package
 
- -- Roberto C. Sanchez <roberto@connexer.com>  Tue, 13 May 2014 06:32:23 -0400
+  [ Ondřej Surý ]
+  * Install libsasl2.pc into libsasl2-dev package (Closes: #752907)
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 30 Jun 2014 09:18:27 +0200
 
 cyrus-sasl2 (2.1.26.dfsg1-9) unstable; urgency=high
 
   * saslauthd: refuse to start if debug option (-d) is set in options
     passed to init script (Closes: #558014)
   * Fix FTBFS with clang (Closes: #739561)
-  * libsasl2-2: Restore emtpy /usr/lib/sasl2 directory (Closes: #739601)
+  * libsasl2-2: Restore empty /usr/lib/sasl2 directory (Closes: #739601)
 
  -- Roberto C. Sanchez <roberto@connexer.com>  Sun, 02 Mar 2014 09:22:47 -0500
 
