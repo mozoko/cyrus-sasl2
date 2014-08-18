@@ -4,6 +4,7 @@ Priority: standard
 Maintainer: Debian Cyrus SASL Team <pkg-cyrus-sasl2-debian-devel@lists.alioth.debian.org>
 Uploaders: Fabian Fagerholm <fabbe@debian.org>, Roberto C. Sanchez <roberto@connexer.com>, Ondřej Surý <ondrej@debian.org>, Adam Conrad <adconrad@0c3.net>
 Standards-Version: 3.9.5
+# For stage1 builds, remove libpq-dev, heimdal-multidev, and libldap2-dev.
 Build-Depends: debhelper (>= 9),
 	       quilt,
 	       automake (>= 1:1.14),

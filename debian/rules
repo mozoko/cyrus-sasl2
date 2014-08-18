@@ -29,33 +29,16 @@ DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 # Save Berkeley DB used for building the package
 BDB_VERSION ?= $(shell LC_ALL=C dpkg-query -l 'libdb[45].[0-9]-dev' | grep ^ii | sed -e 's|.*\s\libdb\([45]\.[0-9]\)-dev\s.*|\1|')
 
-# SQL support may be turned off during the build, but is on by default.
-ifeq (,$(findstring no-sql,$(DEB_BUILD_OPTIONS)))
-	CONFIGURE_SQL=--enable-sql
+ifeq (,$(filter stage1,$(DEB_BUILD_PROFILES)))
+CONFIGURE_PROFILE=--enable-sql --with-ldap --enable-ldapdb
+DH_PACKAGE_EXCLUDES=
 else
-	CONFIGURE_SQL=--disable-sql
-	DH_PACKAGE_EXCLUDES += -Nlibsasl2-modules-sql
-endif
+CONFIGURE_PROFILE=--disable-sql --without-ldap --disable-ldapdb
+DH_PACKAGE_EXCLUDES=-Nlibsasl2-modules-sql -Nlibsasl2-modules-ldap \
+		    -Nlibsasl2-modules-gssapi-heimdal -Ncyrus-sasl2-heimdal-dbg
 
-# LDAP support may be turned off during the build, but is on by default.
-ifeq (,$(findstring no-ldap,$(DEB_BUILD_OPTIONS)))
-	CONFIGURE_LDAP=--with-ldap
-	CONFIGURE_LDAPDB=--enable-ldapdb
-else
-	CONFIGURE_LDAP=--without-ldap
-	CONFIGURE_LDAPDB=--disable-ldapdb
-	DH_PACKAGE_EXCLUDES += -Nlibsasl2-modules-ldap
-endif
-
-# GSSAPI support may be turned off during the build, but is on by default
-ifeq (,$(findstring no-gssapi,$(DEB_BUILD_OPTIONS)))
-	CONFIGURE_GSSAPI=--enable-gssapi
-else
-	CONFIGURE_GSSAPI=--disable-gssapi
-	DH_PACKAGE_EXCLUDES += -Nlibsasl2-modules-gssapi-mit \
-		-Nlibsasl2-modules-gssapi-heimdal \
-		-Ncyrus-sasl2-mit-dbg \
-		-Ncyrus-sasl2-heimdal-dbg
+SASL_SKIP_SQL=	1
+SASL_SKIP_HEIMDAL=	1
 endif
 
 CONFIGURE_COMMON_OPTIONS= \
@@ -73,7 +56,7 @@ CONFIGURE_COMMON_OPTIONS= \
 	--disable-srp \
 	--disable-srp-setpass \
 	--disable-krb4 \
-	$(CONFIGURE_GSSAPI) \
+	--enable-gssapi \
 	--enable-gss_mutexes \
 	--enable-auth-sasldb \
 	--enable-plain \
@@ -81,15 +64,13 @@ CONFIGURE_COMMON_OPTIONS= \
 	--enable-login \
 	--enable-ntlm \
 	--disable-passdss \
-	$(CONFIGURE_SQL) \
 	--with-sqlite3=/usr \
 	--with-mysql=/usr \
 	--with-pgsql=/usr/include/postgresql \
-	$(CONFIGURE_LDAPDB) \
 	--disable-macos-framework \
 	--with-pam=/usr \
 	--with-saslauthd=/var/run/saslauthd \
-	$(CONFIGURE_LDAP) \
+	$(CONFIGURE_PROFILE) \
 	--with-configdir=/etc/sasl2:/etc/sasl:/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2:/usr/lib/sasl2 \
 	--with-plugindir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2:/usr/lib/sasl2 \
 	--sysconfdir=/etc \
@@ -98,8 +79,10 @@ CONFIGURE_COMMON_OPTIONS= \
 # Some convenience variables
 export TMPBUILD_MIT := $(CURDIR)/build-mit
 export TMPBUILD_HEIMDAL := $(CURDIR)/build-heimdal
+ifeq (,$(SASL_SKIP_HEIMDAL))
 export HEIMDAL_LDFLAGS := $(shell krb5-config.heimdal --libs gssapi | sed -e 's/ -l.*//')
 export HEIMDAL_CPPFLAGS := $(shell krb5-config.heimdal --cflags gssapi)
+endif
 export TMPPKG_MIT := $(CURDIR)/debian/tmp-mit
 export TMPPKG_HEIMDAL := $(CURDIR)/debian/tmp-heimdal
 
@@ -114,7 +97,7 @@ BUILD_TMP_SUFFIX=.debian-build.tmp
 
 override_dh_auto_clean:
 	dh_auto_clean -B$(TMPBUILD_MIT)
-	dh_auto_clean -B$(TMPBUILD_HEIMDAL)
+	[ ! -d "$(TMPBUILD_HEIMDAL)" ] || dh_auto_clean -B$(TMPBUILD_HEIMDAL)
 
 	rm -f $(CURDIR)/sample/sample-client \
 		$(CURDIR)/sample/sample-server
@@ -139,9 +122,11 @@ override_dh_auto_configure:
 	CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS) -I/usr/include/mit-krb5" \
 	dh_auto_configure -B$(TMPBUILD_MIT) -- $(CONFIGURE_COMMON_OPTIONS) --with-gss_impl=mit
 
+ifeq (,$(SASL_SKIP_HEIMDAL))
 	LDFLAGS="$(LDFLAGS) $(HEIMDAL_LDFLAGS) -Wl,-z,defs" \
 	CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS) $(HEIMDAL_CPPFLAGS)" \
 	dh_auto_configure -B$(TMPBUILD_HEIMDAL) -- $(CONFIGURE_COMMON_OPTIONS) --with-gss_impl=heimdal
+endif
 
 	# Record the build-time settings for later reference
 	echo 'To build this package, configure was called as follows:' \
@@ -153,7 +138,9 @@ override_dh_auto_configure:
 
 override_dh_auto_build:
 	dh_auto_build -B$(TMPBUILD_MIT) -- sasldir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
+ifeq (,$(SASL_SKIP_HEIMDAL))
 	dh_auto_build -B$(TMPBUILD_HEIMDAL) -- sasldir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
+endif
 
 	# Build sample-{client,server}
 	$(MAKE) -f $(CURDIR)/debian/sample/Makefile -C $(CURDIR)/sample T=$(TMPBUILD_MIT)
@@ -168,7 +155,9 @@ override_dh_auto_build:
 
 override_dh_auto_install:
 	dh_auto_install -B$(TMPBUILD_MIT) -- DESTDIR=$(TMPPKG_MIT) sasldir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
+ifeq (,$(SASL_SKIP_HEIMDAL))
 	dh_auto_install -B$(TMPBUILD_HEIMDAL) -- DESTDIR=$(TMPPKG_HEIMDAL) sasldir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
+endif
 
 
 	# Note the version of Berkeley DB used to build this package
@@ -195,7 +184,7 @@ override_dh_auto_install:
 	# Alter the rpath of certain binaries and shared libraries.
 	chrpath -d $(TMPPKG_MIT)/usr/sbin/sasldblistusers2 \
 		$(TMPPKG_MIT)/usr/sbin/saslpasswd2
-ifeq (,$(findstring no-sql,$(DEB_BUILD_OPTIONS)))
+ifeq (,$(SASL_SKIP_SQL))
 	chrpath -d $(TMPPKG_MIT)/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2/libsql.so.*.*.*
 endif
 
@@ -218,15 +207,17 @@ endif
 
 override_dh_install:
 	dh_install -s --autodest --list-missing --sourcedir=$(TMPPKG_MIT) -psasl2-bin -plibsasl2-2 -plibsasl2-modules -plibsasl2-modules-db -plibsasl2-modules-ldap -plibsasl2-modules-otp -plibsasl2-modules-sql -plibsasl2-modules-gssapi-mit -plibsasl2-dev -Nlibsasl2-modules-gssapi-heimdal $(DH_PACKAGE_EXCLUDES)
+ifeq (,$(SASL_SKIP_HEIMDAL))
 	dh_install -s --autodest --list-missing --sourcedir=$(TMPPKG_HEIMDAL) -plibsasl2-modules-gssapi-heimdal -Nsasl2-bin -Nlibsasl2-2 -Nlibsasl2-modules -Nlibsasl2-modules-db -Nlibsasl2-modules-ldap -Nlibsasl2-modules-otp -Nlibsasl2-modules-sql -Nlibsasl2-modules-gssapi-mit -Nlibsasl2-dev $(DH_PACKAGE_EXCLUDES)
+endif
 
 override_dh_installinit:
 	dh_installinit $(DH_PACKAGE_EXCLUDES) --name=saslauthd start 20 2 3 4 5 . stop 20 0 1 6 .
 
 override_dh_strip:
 	dh_strip -Xlibgssapiv2.so. -psasl2-bin -plibsasl2-2 -plibsasl2-modules -plibsasl2-modules-db -plibsasl2-modules-ldap -plibsasl2-modules-otp -plibsasl2-modules-sql -plibsasl2-modules-gssapi-mit -plibsasl2-dev -Nlibsasl2-modules-gssapi-heimdal $(DH_PACKAGE_EXCLUDES) --dbg-package=cyrus-sasl2-dbg
-ifeq (,$(findstring no-gssapi,$(DEB_BUILD_OPTIONS)))
 	dh_strip -Xlibgs2.so.3 -Xlibscram.so. -plibsasl2-modules-gssapi-mit --dbg-package=cyrus-sasl2-mit-dbg
+ifeq (,$(SASL_SKIP_HEIMDAL))
 	dh_strip -plibsasl2-modules-gssapi-heimdal -Nsasl2-bin -Nlibsasl2-2 -Nlibsasl2-modules -Nlibsasl2-modules-db -Nlibsasl2-modules-ldap -Nlibsasl2-modules-otp -Nlibsasl2-modules-sql -Nlibsasl2-modules-gssapi-mit -Nlibsasl2-dev --dbg-package=cyrus-sasl2-heimdal-dbg
 endif
 
