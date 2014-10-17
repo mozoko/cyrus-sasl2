@@ -1,3 +1,9 @@
+cyrus-sasl2 (2.1.26.dfsg1-12) unstable; urgency=medium
+
+  * Add patch to fix login to dovecot imapd 2.x (Closes: #715040)
+
+ -- Ondřej Surý <ondrej@debian.org>  Fri, 17 Oct 2014 14:41:06 +0200
+
 cyrus-sasl2 (2.1.26.dfsg1-11) unstable; urgency=medium
 
   * Create libsasl2.pc from Makefile for proper substitions
