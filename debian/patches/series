@@ -30,3 +30,4 @@
 0046_fix_void_return.patch
 properly-create-libsasl2.pc.patch
 bug715040.patch
+early-hangup.patch
