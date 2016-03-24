@@ -1,0 +1,63 @@
+From: =?utf-8?q?Ond=C5=99ej_Sur=C3=BD?= <ondrej@debian.org>
+Date: Thu, 24 Mar 2016 11:35:05 +0100
+Subject: Revert upstream soname bump
+
+---
+ lib/Makefile.am     | 2 +-
+ lib/Makefile.in     | 2 +-
+ plugins/Makefile.am | 2 +-
+ plugins/Makefile.in | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/lib/Makefile.am b/lib/Makefile.am
+index 16b14f4..9777457 100644
+--- a/lib/Makefile.am
++++ b/lib/Makefile.am
+@@ -43,7 +43,7 @@
+ # Library version info - here at the top, for sanity
+ # See <http://www.gnu.org/software/libtool/manual/libtool.html#Versioning>
+ # CURRENT:REVISION:AGE
+-sasl_version = 3:0:0
++sasl_version = 2:25:0
+ 
+ INCLUDES=-DLIBSASL_EXPORTS=1 -I$(top_srcdir)/include -I$(top_srcdir)/plugins -I$(top_builddir)/include -I$(top_srcdir)/sasldb
+ 
+diff --git a/lib/Makefile.in b/lib/Makefile.in
+index c1fefd8..629947b 100644
+--- a/lib/Makefile.in
++++ b/lib/Makefile.in
+@@ -319,7 +319,7 @@ top_srcdir = @top_srcdir@
+ # Library version info - here at the top, for sanity
+ # See <http://www.gnu.org/software/libtool/manual/libtool.html#Versioning>
+ # CURRENT:REVISION:AGE
+-sasl_version = 3:0:0
++sasl_version = 2:25:0
+ INCLUDES = -DLIBSASL_EXPORTS=1 -I$(top_srcdir)/include -I$(top_srcdir)/plugins -I$(top_builddir)/include -I$(top_srcdir)/sasldb
+ EXTRA_DIST = windlopen.c staticopen.h NTMakefile
+ EXTRA_LIBRARIES = libsasl2.a
+diff --git a/plugins/Makefile.am b/plugins/Makefile.am
+index d570de1..ce1af46 100644
+--- a/plugins/Makefile.am
++++ b/plugins/Makefile.am
+@@ -47,7 +47,7 @@
+ # Library version info - here at the top, for sanity
+ # See <http://www.gnu.org/software/libtool/manual/libtool.html#Versioning>
+ # CURRENT:REVISION:AGE
+-plugin_version = 3:0:0
++plugin_version = 2:25:0
+ 
+ INCLUDES=-I$(top_srcdir)/include -I$(top_srcdir)/lib -I$(top_srcdir)/sasldb -I$(top_builddir)/include
+ AM_LDFLAGS = -module -export-dynamic -rpath $(plugindir) -version-info $(plugin_version)
+diff --git a/plugins/Makefile.in b/plugins/Makefile.in
+index da7956f..4c96dea 100644
+--- a/plugins/Makefile.in
++++ b/plugins/Makefile.in
+@@ -362,7 +362,7 @@ top_srcdir = @top_srcdir@
+ # Library version info - here at the top, for sanity
+ # See <http://www.gnu.org/software/libtool/manual/libtool.html#Versioning>
+ # CURRENT:REVISION:AGE
+-plugin_version = 3:0:0
++plugin_version = 2:25:0
+ INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/lib -I$(top_srcdir)/sasldb -I$(top_builddir)/include
+ AM_LDFLAGS = -module -export-dynamic -rpath $(plugindir) -version-info $(plugin_version)
+ COMPAT_OBJS = @LTGETADDRINFOOBJS@ @LTGETNAMEINFOOBJS@ @LTSNPRINTFOBJS@

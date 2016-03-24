@@ -1,0 +1,26 @@
+From: Debian Cyrus SASL Team
+ <pkg-cyrus-sasl2-debian-devel@lists.alioth.debian.org>
+Date: Thu, 24 Mar 2016 11:35:05 +0100
+Subject: Release server creds when they are no longer needed
+
+---
+ plugins/gssapi.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/plugins/gssapi.c b/plugins/gssapi.c
+index 5102bfc..a959e06 100644
+--- a/plugins/gssapi.c
++++ b/plugins/gssapi.c
+@@ -945,6 +945,12 @@ gssapi_server_mech_authneg(context_t *text,
+ 	ret = SASL_CONTINUE;
+     }
+ 
++    /* Release server creds which are no longer needed */
++     if ( text->server_creds != GSS_C_NO_CREDENTIAL) {
++        maj_stat = gss_release_cred(&min_stat, &text->server_creds);
++        text->server_creds = GSS_C_NO_CREDENTIAL;
++     }
++
+   cleanup:
+     if (client_name_MN) {
+ 	GSS_LOCK_MUTEX(params->utils);

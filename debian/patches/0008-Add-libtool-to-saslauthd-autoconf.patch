@@ -1,0 +1,21 @@
+From: Debian Cyrus SASL Team
+ <pkg-cyrus-sasl2-debian-devel@lists.alioth.debian.org>
+Date: Thu, 24 Mar 2016 11:35:03 +0100
+Subject: Add libtool to saslauthd autoconf
+
+---
+ saslauthd/configure.in | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/saslauthd/configure.in b/saslauthd/configure.in
+index 8fb693c..701dbe4 100644
+--- a/saslauthd/configure.in
++++ b/saslauthd/configure.in
+@@ -25,6 +25,7 @@ AC_PROG_AWK
+ AC_PROG_MAKE_SET
+ AC_PROG_LN_S
+ AC_PROG_INSTALL
++AC_PROG_LIBTOOL
+ 
+ dnl Checks for build foo
+ CMU_C___ATTRIBUTE__

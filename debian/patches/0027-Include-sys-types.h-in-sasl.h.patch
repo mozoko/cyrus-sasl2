@@ -1,0 +1,22 @@
+From: Debian Cyrus SASL Team
+ <pkg-cyrus-sasl2-debian-devel@lists.alioth.debian.org>
+Date: Thu, 24 Mar 2016 11:35:05 +0100
+Subject: Include sys/types.h in sasl.h
+
+---
+ include/sasl.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/sasl.h b/include/sasl.h
+index fef4d51..d52269f 100755
+--- a/include/sasl.h
++++ b/include/sasl.h
+@@ -223,6 +223,8 @@ extern "C" {
+  * they must be called before all other SASL functions:
+  */
+ 
++#include <sys/types.h>
++
+ /* memory allocation functions which may optionally be replaced:
+  */
+ typedef void *sasl_malloc_t(size_t);
