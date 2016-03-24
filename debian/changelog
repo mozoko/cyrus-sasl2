@@ -1,3 +1,10 @@
+cyrus-sasl2 (2.1.26.dfsg1-16) unstable; urgency=medium
+
+  * Add trailing slash to find command in init script, so people can have
+    /etc/default as symlink (Closes: #791814)
+
+ -- Ondřej Surý <ondrej@debian.org>  Thu, 24 Mar 2016 14:06:38 +0100
+
 cyrus-sasl2 (2.1.26.dfsg1-15) unstable; urgency=medium
 
   * Add fix for auth_rimap infinite loop (hang) when IMAP server closes
