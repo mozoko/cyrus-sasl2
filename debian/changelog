@@ -1,3 +1,10 @@
+cyrus-sasl2 (2.1.26.dfsg1-15) unstable; urgency=medium
+
+  * Add fix for auth_rimap infinite loop (hang) when IMAP server closes
+    connection (Closes: #815208)
+
+ -- Ondřej Surý <ondrej@debian.org>  Thu, 24 Mar 2016 11:54:40 +0100
+
 cyrus-sasl2 (2.1.26.dfsg1-14) unstable; urgency=medium
 
   * [CVE-2013-4122]: Handle NULL returns from glibc 2.17+ crypt()
