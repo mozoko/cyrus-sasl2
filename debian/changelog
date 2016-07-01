@@ -1,3 +1,10 @@
+cyrus-sasl2 (2.1.26.dfsg1-1) experimental; urgency=medium
+
+  * Imported Upstream version 2.1.26-69-g4c8e3f2
+  * Rebase patches on top of 2.1.26-69-g4c8e3f2
+
+ -- Ondřej Surý <ondrej@debian.org>  Fri, 01 Jul 2016 09:54:45 +0200
+
 cyrus-sasl2 (2.1.26.dfsg1-16) unstable; urgency=medium
 
   * Add trailing slash to find command in init script, so people can have
