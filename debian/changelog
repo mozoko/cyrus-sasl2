@@ -1,9 +1,10 @@
-cyrus-sasl2 (2.1.26.dfsg1-1) experimental; urgency=medium
+cyrus-sasl2 (2.1.26-69-g4c8e3f2+dfsg-1) experimental; urgency=medium
 
-  * Imported Upstream version 2.1.26-69-g4c8e3f2
-  * Rebase patches on top of 2.1.26-69-g4c8e3f2
+  * Switch repack.sh to repack.stub
+  * Imported Upstream version 2.1.26-69-g4c8e3f2+dfsg
+  * Rebase patches on top of 2.1.26-69-g4c8e3f2+dfsg
 
- -- Ondřej Surý <ondrej@debian.org>  Fri, 01 Jul 2016 09:54:45 +0200
+ -- Ondřej Surý <ondrej@debian.org>  Fri, 01 Jul 2016 09:57:59 +0200
 
 cyrus-sasl2 (2.1.26.dfsg1-16) unstable; urgency=medium
 
