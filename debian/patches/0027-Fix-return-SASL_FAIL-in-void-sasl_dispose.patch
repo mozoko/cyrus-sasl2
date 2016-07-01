@@ -8,7 +8,7 @@ Subject: Fix 'return SASL_FAIL;' in void sasl_dispose()
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/lib/common.c b/lib/common.c
-index 1df5702..74ebac8 100644
+index b83557d..8e9ae09 100644
 --- a/lib/common.c
 +++ b/lib/common.c
 @@ -841,7 +841,7 @@ void sasl_dispose(sasl_conn_t **pconn)

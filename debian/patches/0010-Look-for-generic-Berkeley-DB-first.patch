@@ -4,13 +4,13 @@ Date: Thu, 24 Mar 2016 11:35:03 +0100
 Subject: Look for generic Berkeley DB first
 
 ---
- cmulocal/berkdb.m4 | 2 +-
+ m4/berkdb.m4 | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/cmulocal/berkdb.m4 b/cmulocal/berkdb.m4
+diff --git a/m4/berkdb.m4 b/m4/berkdb.m4
 index 98e8cb6..8b7d408 100644
---- a/cmulocal/berkdb.m4
-+++ b/cmulocal/berkdb.m4
+--- a/m4/berkdb.m4
++++ b/m4/berkdb.m4
 @@ -213,7 +213,7 @@ AC_DEFUN([CYRUS_BERKELEY_DB_CHK_LIB],
  	fi
  

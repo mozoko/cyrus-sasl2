@@ -8,7 +8,7 @@ Subject: Fix dovecot authentication
  1 file changed, 4 insertions(+), 6 deletions(-)
 
 diff --git a/lib/checkpw.c b/lib/checkpw.c
-index d371f3f..4e61a19 100644
+index c38dffc..7250aba 100644
 --- a/lib/checkpw.c
 +++ b/lib/checkpw.c
 @@ -587,16 +587,14 @@ static int read_wait(int fd, unsigned delta)

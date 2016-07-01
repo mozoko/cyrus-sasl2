@@ -8,10 +8,10 @@ Subject: Fix canonuser ldapdb garbage in out buffer
  1 file changed, 1 insertion(+)
 
 diff --git a/plugins/ldapdb.c b/plugins/ldapdb.c
-index b74dc9e..730f129 100644
+index 789a38c..d09985d 100644
 --- a/plugins/ldapdb.c
 +++ b/plugins/ldapdb.c
-@@ -406,6 +406,7 @@ ldapdb_canon_server(void *glob_context,
+@@ -407,6 +407,7 @@ ldapdb_canon_server(void *glob_context,
  	if ( len > out_max )
  	    len = out_max;
  	memcpy(out, bvals[0]->bv_val, len);

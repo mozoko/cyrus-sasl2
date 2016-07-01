@@ -8,10 +8,10 @@ Subject: Send IMAP logout
  1 file changed, 21 insertions(+)
 
 diff --git a/saslauthd/auth_rimap.c b/saslauthd/auth_rimap.c
-index 2c3870f..bb8eccb 100644
+index bdf89b3..e9d8da5 100644
 --- a/saslauthd/auth_rimap.c
 +++ b/saslauthd/auth_rimap.c
-@@ -90,6 +90,7 @@ static struct addrinfo *ai = NULL;	/* remote authentication host    */
+@@ -100,6 +100,7 @@ static struct addrinfo *ai = NULL;	/* remote authentication host    */
  					   service we connect to.	 */
  #define TAG "saslauthd"			/* IMAP command tag */
  #define LOGIN_CMD (TAG " LOGIN ")	/* IMAP login command (with tag) */
@@ -19,7 +19,7 @@ index 2c3870f..bb8eccb 100644
  #define NETWORK_IO_TIMEOUT 30		/* network I/O timeout (seconds) */
  #define RESP_LEN 1000			/* size of read response buffer  */
  
-@@ -307,10 +308,12 @@ auth_rimap (
+@@ -317,10 +318,12 @@ auth_rimap (
      int	s=-1;				/* socket to remote auth host   */
      struct addrinfo *r;			/* remote socket address info   */
      struct iovec iov[5];		/* for sending LOGIN command    */
@@ -32,7 +32,7 @@ index 2c3870f..bb8eccb 100644
      char rbuf[RESP_LEN];		/* response read buffer         */
      char hbuf[NI_MAXHOST], pbuf[NI_MAXSERV];
      int saved_errno;
-@@ -505,6 +508,24 @@ auth_rimap (
+@@ -515,6 +518,24 @@ auth_rimap (
             }
          }
      }

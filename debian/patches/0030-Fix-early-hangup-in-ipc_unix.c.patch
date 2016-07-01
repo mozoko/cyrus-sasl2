@@ -8,7 +8,7 @@ Subject: Fix early hangup in ipc_unix.c
  1 file changed, 5 insertions(+)
 
 diff --git a/saslauthd/ipc_unix.c b/saslauthd/ipc_unix.c
-index f82a245..7ef7912 100644
+index 58a1fa6..63eca3e 100644
 --- a/saslauthd/ipc_unix.c
 +++ b/saslauthd/ipc_unix.c
 @@ -217,6 +217,7 @@ void ipc_loop() {

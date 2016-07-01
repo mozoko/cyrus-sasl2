@@ -8,10 +8,10 @@ Subject: Fix segfault in GSSAPI
  1 file changed, 3 insertions(+), 5 deletions(-)
 
 diff --git a/plugins/gssapi.c b/plugins/gssapi.c
-index ec9f7aa..348801b 100644
+index a33f8a3..da94663 100644
 --- a/plugins/gssapi.c
 +++ b/plugins/gssapi.c
-@@ -376,6 +376,7 @@ sasl_gss_encode(void *context, const struct iovec *invec, unsigned numiov,
+@@ -389,6 +389,7 @@ sasl_gss_encode(void *context, const struct iovec *invec, unsigned numiov,
      }
      
      if (output_token->value && output) {
@@ -19,7 +19,7 @@ index ec9f7aa..348801b 100644
  	unsigned char * p;
  	
  	ret = _plug_buf_alloc(text->utils,
-@@ -392,11 +393,8 @@ sasl_gss_encode(void *context, const struct iovec *invec, unsigned numiov,
+@@ -405,11 +406,8 @@ sasl_gss_encode(void *context, const struct iovec *invec, unsigned numiov,
  
  	p = (unsigned char *) text->encode_buf;
  	

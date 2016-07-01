@@ -8,7 +8,7 @@ Subject: Fix typo in debugging logs
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/saslauthd/cache.c b/saslauthd/cache.c
-index 2b78464..b13171d 100644
+index 543e176..62a4daa 100644
 --- a/saslauthd/cache.c
 +++ b/saslauthd/cache.c
 @@ -264,7 +264,7 @@ int cache_lookup(const char *user, const char *realm, const char *service, const

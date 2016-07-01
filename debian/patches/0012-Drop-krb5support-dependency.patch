@@ -4,14 +4,14 @@ Date: Thu, 24 Mar 2016 11:35:04 +0100
 Subject: Drop krb5support dependency
 
 ---
- cmulocal/sasl2.m4 | 3 ---
+ m4/sasl2.m4 | 3 ---
  1 file changed, 3 deletions(-)
 
-diff --git a/cmulocal/sasl2.m4 b/cmulocal/sasl2.m4
-index 3c2841a..62af6ab 100644
---- a/cmulocal/sasl2.m4
-+++ b/cmulocal/sasl2.m4
-@@ -112,9 +112,6 @@ if test "$gssapi" != no; then
+diff --git a/m4/sasl2.m4 b/m4/sasl2.m4
+index dd0ec69..3fdba93 100644
+--- a/m4/sasl2.m4
++++ b/m4/sasl2.m4
+@@ -110,9 +110,6 @@ if test "$gssapi" != no; then
    fi
  
    if test "$gss_impl" = "auto" -o "$gss_impl" = "mit"; then

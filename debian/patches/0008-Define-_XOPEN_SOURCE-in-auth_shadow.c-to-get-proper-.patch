@@ -17,10 +17,10 @@ auth_shadow.c:183: warning: cast to pointer from integer of different size
  1 file changed, 1 insertion(+)
 
 diff --git a/saslauthd/auth_shadow.c b/saslauthd/auth_shadow.c
-index 677131b..d0efa9a 100644
+index d69e380..68d1cdd 100644
 --- a/saslauthd/auth_shadow.c
 +++ b/saslauthd/auth_shadow.c
-@@ -36,6 +36,7 @@
+@@ -39,6 +39,7 @@
  
  #ifdef AUTH_SHADOW
  

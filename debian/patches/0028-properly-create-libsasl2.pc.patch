@@ -5,14 +5,14 @@ Subject: properly create libsasl2.pc
 
 ---
  Makefile.am  | 10 ++++++++++
- configure.in |  1 -
+ configure.ac |  1 -
  2 files changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/Makefile.am b/Makefile.am
-index 220565f..4055bf8 100644
+index f72bb26..a47540f 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -43,6 +43,12 @@ AUTOMAKE_OPTIONS = 1.7
+@@ -44,6 +44,12 @@ ACLOCAL_AMFLAGS = -I m4
  #
  ################################################################
  
@@ -22,10 +22,10 @@ index 220565f..4055bf8 100644
 +	       -e 's,[@]VERSION[@],$(VERSION),g' \
 +	       -e 's,[@]libdir[@],$(libdir),g'
 +
- ACLOCAL_AMFLAGS = -I cmulocal -I config
- 
  if SASLAUTHD
-@@ -78,6 +84,10 @@ EXTRA_DIST=config cmulocal win32 mac dlcompat-20010505 NTMakefile INSTALL.TXT \
+ SAD = saslauthd
+ else
+@@ -77,6 +83,10 @@ EXTRA_DIST=config win32 mac dlcompat-20010505 NTMakefile INSTALL.TXT \
  pkgconfigdir = $(libdir)/pkgconfig
  pkgconfig_DATA = libsasl2.pc
  
@@ -36,15 +36,15 @@ index 220565f..4055bf8 100644
  dist-hook:
  	@find $(distdir) -exec chmod o+w {} ';'
  	@find $(distdir) -name CVS -print | xargs -t rm -rf
-diff --git a/configure.in b/configure.in
-index 694a734..ea24213 100644
---- a/configure.in
-+++ b/configure.in
-@@ -1419,7 +1419,6 @@ inline static unsigned int sleep(unsigned int seconds) {
- AM_CONFIG_HEADER(config.h)
+diff --git a/configure.ac b/configure.ac
+index d18016e..d28005a 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1544,7 +1544,6 @@ extern int asprintf(char **str, const char *fmt, ...);
+ AC_CONFIG_HEADERS(config.h)
  
  AC_OUTPUT(Makefile
 -libsasl2.pc
  include/Makefile
+ saslauthd/Makefile
  sasldb/Makefile
- plugins/Makefile

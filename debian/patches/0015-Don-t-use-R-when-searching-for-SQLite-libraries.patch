@@ -4,14 +4,14 @@ Date: Thu, 24 Mar 2016 11:35:04 +0100
 Subject: Don't use -R when searching for SQLite libraries
 
 ---
- configure.in | 8 ++++----
+ configure.ac | 8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/configure.in b/configure.in
-index d9fead6..9fcc80c 100644
---- a/configure.in
-+++ b/configure.in
-@@ -865,9 +865,9 @@ case "$with_sqlite" in
+diff --git a/configure.ac b/configure.ac
+index 8f3cc1e..dd599ca 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -978,9 +978,9 @@ case "$with_sqlite" in
      notfound) AC_WARN([SQLite Library not found]); true;;
      *)
       if test -d ${with_sqlite}/lib; then
@@ -23,7 +23,7 @@ index d9fead6..9fcc80c 100644
       fi
  
       LIB_SQLITE_DIR=$LIB_SQLITE
-@@ -917,9 +917,9 @@ case "$with_sqlite3" in
+@@ -1030,9 +1030,9 @@ case "$with_sqlite3" in
      notfound) AC_WARN([SQLite3 Library not found]); true;;
      *)
       if test -d ${with_sqlite3}/lib; then
