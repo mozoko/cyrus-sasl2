@@ -3,7 +3,6 @@
 0003-Update-saslauthd.conf-location-in-documentation.patch
 0004-Include-dbconverter-2-in-sbin_PROGRAMS-and-set-defau.patch
 0005-Fixes-in-library-mutexes.patch
-0006-Link-with-libsasldb.a-instead-of-libsasldb.al.patch
 0007-Enable-autoconf-maintainer-mode.patch
 0008-Define-_XOPEN_SOURCE-in-auth_shadow.c-to-get-proper-.patch
 0009-Don-t-overwrite-PIC-objects-with-non-PIC-variant.patch
