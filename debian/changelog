@@ -1,10 +1,16 @@
-cyrus-sasl2 (2.1.26-69-g4c8e3f2+dfsg-1) experimental; urgency=medium
+cyrus-sasl2 (2.1.26-72-g88d82a3+dfsg-1) experimental; urgency=medium
 
   * Switch repack.sh to repack.stub
-  * Imported Upstream version 2.1.26-69-g4c8e3f2+dfsg
-  * Rebase patches on top of 2.1.26-69-g4c8e3f2+dfsg
+  * Remove d/autoreconf, not needed anymore
+  * Disable 0006-Link-with-libsasldb.a-instead-of-libsasldb.al.patch to fix FTBFS
+  * Update d/control with heimdal removal
+  * Run wrap-and-sort -a over d/ directory
+  * Imported Upstream version 2.1.26-72-g88d82a3
+  * Update Conflicts/Replaces for new 2.1.27 git snapshot
+  * Imported Upstream version 2.1.26-72-g88d82a3+dfsg
+  * Rebase patches on top of 2.1.26-72-g88d82a3+dfsg
 
- -- Ondřej Surý <ondrej@debian.org>  Fri, 01 Jul 2016 09:57:59 +0200
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 24 Oct 2016 17:38:44 +0200
 
 cyrus-sasl2 (2.1.26.dfsg1-16) unstable; urgency=medium
 
