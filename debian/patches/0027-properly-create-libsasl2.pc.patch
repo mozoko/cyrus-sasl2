@@ -37,7 +37,7 @@ index f72bb26..a47540f 100644
  	@find $(distdir) -exec chmod o+w {} ';'
  	@find $(distdir) -name CVS -print | xargs -t rm -rf
 diff --git a/configure.ac b/configure.ac
-index d18016e..d28005a 100644
+index a386cfc..77f75e4 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -1544,7 +1544,6 @@ extern int asprintf(char **str, const char *fmt, ...);

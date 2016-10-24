@@ -8,7 +8,7 @@ Subject: Enable autoconf maintainer mode
  1 file changed, 2 insertions(+)
 
 diff --git a/configure.ac b/configure.ac
-index d7398bb..8f3cc1e 100644
+index 199d93e..07fd933 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -69,6 +69,8 @@ AC_CANONICAL_TARGET
