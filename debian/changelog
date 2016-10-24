@@ -9,8 +9,13 @@ cyrus-sasl2 (2.1.26-72-g88d82a3+dfsg-1) experimental; urgency=medium
   * Update Conflicts/Replaces for new 2.1.27 git snapshot
   * Imported Upstream version 2.1.26-72-g88d82a3+dfsg
   * Rebase patches on top of 2.1.26-72-g88d82a3+dfsg
+  * Update d/rules to remove heimdall and more cleanups
+  * Remove heimdal packages (Closes: #837724)
+  * Change linking from sasldb/.libs/libsasldb.al to sasldb/libsasldb.la
+  * Cleanup LTLIBOBJS for modern autotools
+  * Add ${with_pgsql}include/postgresql/ to include path
 
- -- Ondřej Surý <ondrej@debian.org>  Mon, 24 Oct 2016 17:38:44 +0200
+ -- Ondřej Surý <ondrej@debian.org>  Tue, 25 Oct 2016 12:33:39 +0200
 
 cyrus-sasl2 (2.1.26.dfsg1-16) unstable; urgency=medium
 
