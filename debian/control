@@ -156,8 +156,8 @@ Multi-Arch: same
 Depends: libsasl2-modules (= ${binary:Version}),
          ${misc:Depends},
          ${shlibs:Depends}
-Conflicts: libsasl2-modules-gssapi-heimdal (<< 2.1.26-69-g4c8e3f2+dfsg-1~)
-Replaces: libsasl2-modules-gssapi-heimdal (<< 2.1.26-69-g4c8e3f2+dfsg-1~)
+Conflicts: libsasl2-modules-gssapi-heimdal (<< 2.1.26-72-g88d82a3+dfsg-1~)
+Replaces: libsasl2-modules-gssapi-heimdal (<< 2.1.26-72-g88d82a3+dfsg-1~)
 Description: Cyrus SASL - pluggable authentication modules (GSSAPI)
  This is the Cyrus SASL API implementation, version 2.1. See package
  libsasl2-2 and RFC 2222 for more information.
