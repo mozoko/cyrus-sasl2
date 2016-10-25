@@ -11,6 +11,7 @@ Build-Depends: automake (>= 1:1.14),
                autotools-dev,
                chrpath,
                debhelper (>= 9),
+               default-libmysqlclient-dev | libmysqlclient-dev,
                dh-autoreconf,
                docbook-to-man,
                groff-base,
@@ -18,7 +19,6 @@ Build-Depends: automake (>= 1:1.14),
                libdb-dev,
                libkrb5-dev,
                libldap2-dev,
-               libmysqlclient-dev | libmysqlclient15-dev,
                libpam0g-dev,
                libpq-dev,
                libsqlite3-dev,
@@ -35,6 +35,7 @@ Priority: optional
 Architecture: any
 Depends: db-util,
          libsasl2-2 (>= ${binary:Version}),
+	 lsb-base (>= 3.0-6),
          ${misc:Depends},
          ${shlibs:Depends}
 Description: Cyrus SASL - administration programs for SASL users database
@@ -181,11 +182,11 @@ Description: Cyrus SASL - development files for authentication abstraction libra
 
 Package: libsasl2-modules-gssapi-heimdal
 Architecture: all
+Section: oldlibs
 Priority: extra
-Depends: libsasl2-modules (= ${binary:Version}),
+Depends: libsasl2-modules (>= ${source:Version}),
          libsasl2-modules-gssapi-mit (>= 2.1.26-69-g4c8e3f2+dfsg-1~),
-         ${misc:Depends},
-         ${shlibs:Depends}
+         ${misc:Depends}
 Description: Pluggable Authentication Modules for SASL (transitional)
  The Heimdal Kerberos 5 library has been removed from Debian, so this
  is only the transitional package.
