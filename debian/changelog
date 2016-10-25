@@ -1,4 +1,4 @@
-cyrus-sasl2 (2.1.27~72-g88d82a3+dfsg-1) experimental; urgency=medium
+cyrus-sasl2 (2.1.27~72-g88d82a3+dfsg-1) unstable; urgency=low
 
   * Imported Upstream version 2.1.27~72-g88d82a3+dfsg
   * Switch repack.sh to repack.stub
