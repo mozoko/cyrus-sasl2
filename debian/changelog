@@ -14,6 +14,10 @@ cyrus-sasl2 (2.1.27~72-g88d82a3+dfsg-1) unstable; urgency=low
   * Change linking from sasldb/.libs/libsasldb.al to sasldb/libsasldb.la
   * Cleanup LTLIBOBJS for modern autotools
   * Add ${with_pgsql}include/postgresql/ to include path
+  * Add default Debian hardening to sample server and client
+  * Fix some lintian errors
+  * Update and fix d/copyright after major d/ rewrite
+  * Fix more libsasl2.pc variables
 
  -- Ondřej Surý <ondrej@debian.org>  Tue, 25 Oct 2016 17:39:20 +0200
 
