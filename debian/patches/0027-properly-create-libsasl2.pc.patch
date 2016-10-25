@@ -4,15 +4,15 @@ Date: Thu, 24 Mar 2016 11:35:05 +0100
 Subject: properly create libsasl2.pc
 
 ---
- Makefile.am  | 10 ++++++++++
+ Makefile.am  | 13 +++++++++++++
  configure.ac |  1 -
- 2 files changed, 10 insertions(+), 1 deletion(-)
+ 2 files changed, 13 insertions(+), 1 deletion(-)
 
 diff --git a/Makefile.am b/Makefile.am
-index f72bb26..a47540f 100644
+index f72bb26..b84342e 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -44,6 +44,12 @@ ACLOCAL_AMFLAGS = -I m4
+@@ -44,6 +44,15 @@ ACLOCAL_AMFLAGS = -I m4
  #
  ################################################################
  
@@ -20,12 +20,15 @@ index f72bb26..a47540f 100644
 +	       -e 's,[@]SASL_DL_LIB[@],$(SASL_DL_LIB),g' \
 +	       -e 's,[@]LIBS[@],$(LIBS),g' \
 +	       -e 's,[@]VERSION[@],$(VERSION),g' \
-+	       -e 's,[@]libdir[@],$(libdir),g'
++	       -e 's,[@]libdir[@],$(libdir),g' \
++	       -e 's,[@]prefix[@],$(prefix),g' \
++	       -e 's,[@]exec_prefix[@],$(exec_prefix),g' \
++	       -e 's,[@]includedir[@],$(includedir),g'
 +
  if SASLAUTHD
  SAD = saslauthd
  else
-@@ -77,6 +83,10 @@ EXTRA_DIST=config win32 mac dlcompat-20010505 NTMakefile INSTALL.TXT \
+@@ -77,6 +86,10 @@ EXTRA_DIST=config win32 mac dlcompat-20010505 NTMakefile INSTALL.TXT \
  pkgconfigdir = $(libdir)/pkgconfig
  pkgconfig_DATA = libsasl2.pc
  
