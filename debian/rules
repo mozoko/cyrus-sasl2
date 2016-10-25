@@ -79,7 +79,7 @@ CONFIGURE_COMMON_OPTIONS= \
 	$(CONFIGURE_SQL) \
 	--with-sqlite3=/usr \
 	--with-mysql=/usr \
-	--with-pgsql=/usr/include/postgresql \
+	--with-pgsql=/usr \
 	$(CONFIGURE_LDAPDB) \
 	--disable-macos-framework \
 	--with-pam=/usr \
