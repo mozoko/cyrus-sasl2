@@ -150,6 +150,12 @@ override_dh_auto_build:
 override_dh_auto_install:
 	dh_auto_install -B$(TMPBUILD) -- sasldir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
 
+	# Remove static plugins - they are useless
+	rm debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2/*.a
+	# Remove libtool la files, they are eeevil
+	rm debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/*.la \
+	   debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2/*.la
+
 	# Note the version of Berkeley DB used to build this package
 	mkdir -p debian/tmp/usr/lib/sasl2
 	echo $(BDB_VERSION) > debian/tmp/usr/lib/sasl2/berkeley_db.txt
