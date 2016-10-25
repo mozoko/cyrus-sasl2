@@ -198,7 +198,7 @@ endif
 		debian/tmp/usr/bin/gen-auth
 
 	# Install logcheck snippet
-	install -m 755 -D $(CURDIR)/debian/libsasl2-modules.logcheck.server \
+	install -m 644 -D $(CURDIR)/debian/libsasl2-modules.logcheck.server \
 		debian/tmp/etc/logcheck/ignore.d.server/libsasl2-modules
 
 override_dh_install:
