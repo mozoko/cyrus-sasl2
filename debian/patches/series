@@ -28,3 +28,4 @@
 0028-2.1.26-Allow-CAPABILITY-lines-in-IMAP-login-reply-v4.patch
 0029-Fix-early-hangup-in-ipc_unix.c.patch
 0030-Change-linking-from-sasldb-.libs-libsasldb.al-to-sas.patch
+0031-Cleanup-for-modern-autotools.patch
