@@ -9,7 +9,7 @@ Subject: Cleanup for modern autotools
  3 files changed, 7 insertions(+), 25 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index f3569bd..7afb96d 100644
+index c6deaf0..708cfca 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -55,6 +55,7 @@ AC_INIT([cyrus-sasl],
@@ -97,7 +97,7 @@ index 7eac924..f73231e 100644
  if MACOSX
  framedir = /Library/Frameworks/SASL2.framework
 diff --git a/saslauthd/Makefile.am b/saslauthd/Makefile.am
-index bcc5226..e6809c2 100644
+index 3314433..9d299d9 100644
 --- a/saslauthd/Makefile.am
 +++ b/saslauthd/Makefile.am
 @@ -2,8 +2,7 @@ AUTOMAKE_OPTIONS = 1.7
@@ -112,7 +112,7 @@ index bcc5226..e6809c2 100644
  		    mechanisms.h auth_dce.c auth_dce.h auth_getpwent.c \
 @@ -16,10 +15,10 @@ saslauthd_SOURCES = mechanisms.c globals.h \
                      ipc_unix.c ipc_doors.c saslauthd-main.c saslauthd-main.h \
- 		    md5.c saslauthd_md5.h md5global.h 
+ 		    md5.c saslauthd_md5.h
  EXTRA_saslauthd_sources = getaddrinfo.c getnameinfo.c
 -saslauthd_DEPENDENCIES = saslauthd-main.o $(LTLIBOBJS_FULL)
 +saslauthd_DEPENDENCIES = saslauthd-main.o

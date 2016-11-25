@@ -7,7 +7,7 @@ Subject: Add ${with_pgsql}include/postgresql/ to include path
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/configure.ac b/configure.ac
-index 7afb96d..3b38803 100644
+index 708cfca..e9f451d 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -919,7 +919,9 @@ case "$with_pgsql" in

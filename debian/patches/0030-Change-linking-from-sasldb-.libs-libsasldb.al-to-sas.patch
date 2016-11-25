@@ -8,7 +8,7 @@ Subject: Change linking from sasldb/.libs/libsasldb.al to sasldb/libsasldb.la
  2 files changed, 2 insertions(+), 7 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index 77f75e4..f3569bd 100644
+index fce5075..c6deaf0 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -612,14 +612,9 @@ AC_ARG_ENABLE(auth-sasldb, [  --enable-auth-sasldb    enable experimental SASLdb

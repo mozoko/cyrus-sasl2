@@ -10,7 +10,7 @@ it.
  2 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/saslauthd/Makefile.am b/saslauthd/Makefile.am
-index f38097c..bcc5226 100644
+index 75dc105..3314433 100644
 --- a/saslauthd/Makefile.am
 +++ b/saslauthd/Makefile.am
 @@ -19,7 +19,7 @@ EXTRA_saslauthd_sources = getaddrinfo.c getnameinfo.c

@@ -8,7 +8,7 @@ Subject: Temporary multiarch fixes
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/configure.ac b/configure.ac
-index 0336812..a386cfc 100644
+index 8936d93..39c0240 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -281,7 +281,7 @@ AC_ARG_WITH(pam, [  --with-pam=DIR          use PAM (rooted in DIR) [[yes]] ],
