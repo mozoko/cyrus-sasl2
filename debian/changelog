@@ -1,3 +1,10 @@
+cyrus-sasl2 (2.1.27~101-g0780600+dfsg-1) unstable; urgency=medium
+
+  * Imported Upstream version 2.1.27~101-g0780600+dfsg
+  * Rebase patches on top of 2.1.27~101-g0780600+dfsg
+
+ -- Ondřej Surý <ondrej@debian.org>  Fri, 25 Nov 2016 13:35:52 +0100
+
 cyrus-sasl2 (2.1.27~72-g88d82a3+dfsg-1) unstable; urgency=low
 
   * Imported Upstream version 2.1.27~72-g88d82a3+dfsg
