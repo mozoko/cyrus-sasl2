@@ -67,7 +67,7 @@ AC_CONFIG_AUX_DIR(config)
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
-AM_INIT_AUTOMAKE([1.11 tar-ustar dist-xz no-dist-gzip -Wno-portability subdir-objects])
+AM_INIT_AUTOMAKE([1.11 tar-ustar dist-bzip2 -Wno-portability subdir-objects])
 
 DIRS=""
 
@@ -1331,6 +1331,25 @@ AC_EGREP_HEADER(sockaddr_storage, sys/socket.h, [
 		AC_DEFINE(HAVE_STRUCT_SOCKADDR_STORAGE,[],[Do we have struct sockaddr_stroage?])])
 
 AC_SUBST(DIRS)
+
+dnl documentation generation (sphinx, perl2rst)
+AC_ARG_VAR(SPHINX_BUILD, [Location of sphinx-build])
+AC_ARG_WITH([sphinx-build],
+            AS_HELP_STRING([with-sphinx-build=(yes|no|PATH)], [Look for sphinx-build in PATH]),
+            [with_sphinx_build=$withval],
+            [with_sphinx_build=yes])
+AS_CASE([$with_sphinx_build],
+        [yes],  [AC_PATH_PROG(SPHINX_BUILD, sphinx-build)],
+        [no],   [SPHINX_BUILD=''],
+        [*],    [AC_PATH_PROG(SPHINX_BUILD, sphinx-build, [], [$with_sphinx_build])])
+AS_IF([test -z "$SPHINX_BUILD"],
+      [AC_MSG_WARN([No sphinx-build, won't be able to regenerate docs])])
+AC_SUBST([SPHINX_BUILD])
+AC_PROG_PERL_MODULES([Pod::POM::View::Restructured],
+                     [have_ppvr=yes],
+                     [AC_MSG_WARN([No Pod::POM::View::Restructured, won't be able to regenerate docs])])
+AM_CONDITIONAL([HAVE_SPHINX_BUILD], [ test -n "$SPHINX_BUILD" -a x"$have_ppvr" = xyes])
+
 
 AH_TOP([
 /* acconfig.h - autoheader configuration input */
