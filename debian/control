@@ -27,9 +27,9 @@ Build-Depends: automake (>= 1:1.14),
                po-debconf,
                quilt
 Build-Conflicts: heimdal-dev
-Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-cyrus-sasl2/cyrus-sasl2.git
+Vcs-Browser: https://anonscm.debian.org/git/pkg-cyrus-sasl2/cyrus-sasl2.git
 Vcs-Git: git://anonscm.debian.org/pkg-cyrus-sasl2/cyrus-sasl2.git
-Homepage: http://www.cyrusimap.org/
+Homepage: https://www.cyrusimap.org/
 
 Package: sasl2-bin
 Section: utils
