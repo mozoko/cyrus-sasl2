@@ -1,3 +1,10 @@
+cyrus-sasl2 (2.1.27~101-g0780600+dfsg-2) unstable; urgency=medium
+
+  * Reinstate Heimdal Kerberos support (Closes: #849706)
+  * Add TLS to http protocol links in d/control
+
+ -- Ondřej Surý <ondrej@debian.org>  Sat, 31 Dec 2016 15:59:34 +0100
+
 cyrus-sasl2 (2.1.27~101-g0780600+dfsg-1) unstable; urgency=medium
 
   * Imported Upstream version 2.1.27~101-g0780600+dfsg
