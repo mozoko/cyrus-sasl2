@@ -24,6 +24,15 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 DPKG_EXPORT_BUILDFLAGS = 1
 include /usr/share/dpkg/default.mk
 
+# see FEATURE AREAS in dpkg-buildflags(1)
+#export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+# see ENVIRONMENT in dpkg-buildflags(1)
+# package maintainers to append CFLAGS
+export DEB_CFLAGS_MAINT_APPEND  = -Wall -pedantic
+# package maintainers to append LDFLAGS
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed -Wl,-z,defs
+
 # Save Berkeley DB used for building the package
 BDB_VERSION ?= $(shell LC_ALL=C dpkg-query -l 'libdb[45].[0-9]-dev' | grep ^ii | sed -e 's|.*\s\libdb\([45]\.[0-9]\)-dev\s.*|\1|')
 
@@ -50,7 +59,8 @@ ifeq (,$(findstring no-gssapi,$(DEB_BUILD_OPTIONS)))
 	CONFIGURE_GSSAPI=--enable-gssapi
 else
 	CONFIGURE_GSSAPI=--disable-gssapi
-	DH_PACKAGE_EXCLUDES += -Nlibsasl2-modules-gssapi-mit
+	DH_PACKAGE_EXCLUDES += -Nlibsasl2-modules-gssapi-mit \
+		-Nlibsasl2-modules-gssapi-heimdal
 endif
 
 CONFIGURE_COMMON_OPTIONS= \
@@ -90,6 +100,14 @@ CONFIGURE_COMMON_OPTIONS= \
 	--sysconfdir=/etc \
 	--with-devrandom=/dev/urandom
 
+# Some convenience variables
+export TMPBUILD_MIT := $(CURDIR)/build-mit
+export TMPBUILD_HEIMDAL := $(CURDIR)/build-heimdal
+export MIT_LDFLAGS := $(shell krb5-config.mit --libs gssapi | sed -e 's/ -l.*//')
+export MIT_CPPFLAGS := $(shell krb5-config.mit --cflags gssapi)
+export HEIMDAL_LDFLAGS := $(shell krb5-config.heimdal --libs gssapi | sed -e 's/ -l.*//')
+export HEIMDAL_CPPFLAGS := $(shell krb5-config.heimdal --cflags gssapi)
+
 AUTOFILES=acinclude.m4 aclocal.m4 config/config.sub config/config.guess \
 		  config/ltmain.sh config/libtool.m4
 
@@ -101,7 +119,8 @@ TMPBUILD=$(CURDIR)/build
 	dh $@ --with=quilt --with=autotools_dev --with=autoreconf $(DH_PACKAGE_EXCLUDES)
 
 override_dh_auto_clean:
-	dh_auto_clean -B$(TMPBUILD)
+	dh_auto_clean -B$(TMPBUILD_MIT)
+	dh_auto_clean -B$(TMPBUILD_HEIMDAL)
 
 	rm -f $(CURDIR)/sample/sample-client \
 		$(CURDIR)/sample/sample-server
@@ -118,26 +137,32 @@ override_dh_auto_clean:
 	# Remove generated man pages
 	-rm -f sasl-sample-client.8 sasl-sample-server.8 gen-auth.1
 
-	-rm -r $(TMPBUILD)
+	# Remove build directories
+	rm -rf $(TMPBUILD_MIT) $(TMPBUILD_HEIMDAL)
 
 override_dh_auto_configure:
-	LDFLAGS="$(LDFLAGS) -L/usr/lib/mit-krb5 -Wl,-z,defs" \
-	CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS) -I/usr/include/mit-krb5" \
-	dh_auto_configure -B$(TMPBUILD) -- $(CONFIGURE_COMMON_OPTIONS) --with-gss_impl=mit
+	LDFLAGS="$(LDFLAGS) $(HEIMDAL_LDFLAGS)" \
+	CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS) $(HEIMDAL_CPPFLAGS)" \
+	dh_auto_configure -B$(TMPBUILD_HEIMDAL) -- $(CONFIGURE_COMMON_OPTIONS) --with-gss_impl=heimdal
+
+	LDFLAGS="$(LDFLAGS) $(MIT_LDFLAGS)" \
+	CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS) $(MIT_CPPFLAGS)" \
+	dh_auto_configure -B$(TMPBUILD_MIT) -- $(CONFIGURE_COMMON_OPTIONS) --with-gss_impl=mit
 
 	# Record the build-time settings for later reference
 	echo 'To build this package, configure was called as follows:' \
 		> debian/README.configure-options
 
-	grep with\ options config.status | sed -e \
+	grep with\ options $(TMPBUILD_MIT)/config.status | sed -e \
 		's/^.*options \\"/configure /;s/\\"$///' \
 		>> debian/README.configure-options
 
 override_dh_auto_build:
-	dh_auto_build -B$(TMPBUILD) -- sasldir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
+	dh_auto_build -B$(TMPBUILD_HEIMDAL) -- sasldir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
+	dh_auto_build -B$(TMPBUILD_MIT) -- sasldir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
 
 	# Build sample-{client,server}
-	$(MAKE) -f $(CURDIR)/debian/sample/Makefile -C $(CURDIR)/sample T=$(TMPBUILD)
+	$(MAKE) -f $(CURDIR)/debian/sample/Makefile -C $(CURDIR)/sample T=$(TMPBUILD_MIT)
 
 	# Build the sasl-sample-client and sasl-sample-server man pages.
 	/usr/bin/docbook-to-man debian/sasl-sample-client.sgml \
@@ -148,7 +173,8 @@ override_dh_auto_build:
 	/usr/bin/pod2man --stderr debian/gen-auth/gen-auth >gen-auth.1
 
 override_dh_auto_install:
-	dh_auto_install -B$(TMPBUILD) -- sasldir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
+	dh_auto_install -B$(TMPBUILD_HEIMDAL) -- sasldir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
+	dh_auto_install -B$(TMPBUILD_MIT) -- sasldir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
 
 	# Remove static plugins - they are useless
 	rm debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2/*.a
@@ -214,5 +240,5 @@ override_dh_makeshlibs:
 	dh_makeshlibs -X/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2 $(DH_PACKAGE_EXCLUDES)
 
 override_dh_auto_test:
-	cd $(TMPBUILD)/saslauthd && $(MAKE) testsaslauthd
-	cd $(TMPBUILD)/utils && $(MAKE) testsuite
+	cd $(TMPBUILD_MIT)/saslauthd && $(MAKE) testsaslauthd
+	cd $(TMPBUILD_MIT)/utils && $(MAKE) testsuite
