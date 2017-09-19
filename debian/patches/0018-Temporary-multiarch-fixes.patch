@@ -8,10 +8,10 @@ Subject: Temporary multiarch fixes
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/configure.ac b/configure.ac
-index 8936d93..39c0240 100644
+index 29b74e9..95e3065 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -281,7 +281,7 @@ AC_ARG_WITH(pam, [  --with-pam=DIR          use PAM (rooted in DIR) [[yes]] ],
+@@ -286,7 +286,7 @@ AC_ARG_WITH(pam, [  --with-pam=DIR          use PAM (rooted in DIR) [[yes]] ],
  if test "$with_pam" != no; then
    if test -d $with_pam; then
      CPPFLAGS="$CPPFLAGS -I${with_pam}/include"

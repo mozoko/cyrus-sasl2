@@ -8,7 +8,7 @@ Subject: Don't use la files for opening plugins
  1 file changed, 7 insertions(+), 106 deletions(-)
 
 diff --git a/lib/dlopen.c b/lib/dlopen.c
-index b9c1c80..8561bef 100644
+index 1cea55f..9cb1ce7 100644
 --- a/lib/dlopen.c
 +++ b/lib/dlopen.c
 @@ -247,105 +247,6 @@ static int _sasl_plugin_load(char *plugin, void *library,
