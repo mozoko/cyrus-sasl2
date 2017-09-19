@@ -1,3 +1,10 @@
+cyrus-sasl2 (2.1.27~rc4-1) unstable; urgency=medium
+
+  * New upstream version 2.1.27~rc4
+  * Refresh patches for 2.4.27~rc4 release
+
+ -- Ondřej Surý <ondrej@debian.org>  Tue, 19 Sep 2017 09:53:57 +0200
+
 cyrus-sasl2 (2.1.27~101-g0780600+dfsg-2) unstable; urgency=medium
 
   * Reinstate Heimdal Kerberos support (Closes: #849706)
