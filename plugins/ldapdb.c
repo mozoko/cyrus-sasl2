@@ -252,6 +252,8 @@ static int ldapdb_auxprop_lookup(void *glob_context,
 
 #if defined(LDAP_PROXY_AUTHZ_FAILURE)
 	case LDAP_PROXY_AUTHZ_FAILURE:
+#elif defined(LDAP_X_PROXY_AUTHZ_FAILURE)
+	case LDAP_X_PROXY_AUTHZ_FAILURE:
 #endif
 	case LDAP_INAPPROPRIATE_AUTH:
 	case LDAP_INVALID_CREDENTIALS:
@@ -328,7 +330,7 @@ ldapdb_canon_server(void *glob_context,
 		    sasl_server_params_t *sparams,
 		    const char *user,
 		    unsigned ulen,
-		    unsigned flags,
+		    unsigned flags __attribute__((unused)),
 		    char *out,
 		    unsigned out_max,
 		    unsigned *out_ulen)
@@ -405,6 +407,7 @@ ldapdb_canon_server(void *glob_context,
 	if ( len > out_max )
 	    len = out_max;
 	memcpy(out, bvals[0]->bv_val, len);
+	out[len] = '\0';
 	*out_ulen = len;
 	ber_bvecfree(bvals);
     }
@@ -422,11 +425,11 @@ ldapdb_canon_server(void *glob_context,
 }
 
 static int
-ldapdb_canon_client(void *glob_context,
+ldapdb_canon_client(void *glob_context __attribute__((unused)),
 		    sasl_client_params_t *cparams,
 		    const char *user,
 		    unsigned ulen,
-		    unsigned flags,
+		    unsigned flags __attribute__((unused)),
 		    char *out,
 		    unsigned out_max,
 		    unsigned *out_ulen)

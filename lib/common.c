@@ -1,10 +1,9 @@
 /* common.c - Functions that are common to server and clinet
  * Rob Siemborski
  * Tim Martin
- * $Id: common.c,v 1.134 2011/09/22 14:40:30 mel Exp $
  */
 /* 
- * Copyright (c) 1998-2003 Carnegie Mellon University.  All rights reserved.
+ * Copyright (c) 1998-2016 Carnegie Mellon University.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -22,12 +21,13 @@
  *    endorse or promote products derived from this software without
  *    prior written permission. For permission or any other legal
  *    details, please contact  
- *      Office of Technology Transfer
  *      Carnegie Mellon University
- *      5000 Forbes Avenue
- *      Pittsburgh, PA  15213-3890
- *      (412) 268-4387, fax: (412) 268-7395
- *      tech-transfer@andrew.cmu.edu
+ *      Center for Technology Transfer and Enterprise Creation
+ *      4615 Forbes Avenue
+ *      Suite 302
+ *      Pittsburgh, PA  15213
+ *      (412) 268-7393, fax: (412) 268-7395
+ *      innovation@andrew.cmu.edu
  *
  * 4. Redistributions of any form whatsoever must retain the following
  *    acknowledgment:
@@ -85,8 +85,6 @@ static char * _sasl_get_default_win_path(void *context __attribute__((unused)),
                             char * reg_attr_name, char * default_value);
 #endif
 
-
-static const char build_ident[] = "$Build: libsasl " PACKAGE "-" VERSION " $";
 
 /* It turns out to be convenient to have a shared sasl_utils_t */
 const sasl_utils_t *sasl_global_utils = NULL;
@@ -838,19 +836,20 @@ void sasl_dispose(sasl_conn_t **pconn)
 
   /* serialize disposes. this is necessary because we can't
      dispose of conn->mutex if someone else is locked on it */
+  if (!free_mutex) {
+      free_mutex = sasl_MUTEX_ALLOC();
+      if (!free_mutex) return;
+  }
+
   result = sasl_MUTEX_LOCK(free_mutex);
   if (result!=SASL_OK) return;
   
   /* *pconn might have become NULL by now */
-  if (! (*pconn))
-  {
-	sasl_MUTEX_UNLOCK(free_mutex);
-	return;
+  if (*pconn) {
+      (*pconn)->destroy_conn(*pconn);
+      sasl_FREE(*pconn);
+      *pconn=NULL;
   }
-
-  (*pconn)->destroy_conn(*pconn);
-  sasl_FREE(*pconn);
-  *pconn=NULL;
 
   sasl_MUTEX_UNLOCK(free_mutex);
 }

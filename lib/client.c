@@ -1,10 +1,9 @@
 /* SASL client API implementation
  * Rob Siemborski
  * Tim Martin
- * $Id: client.c,v 1.86 2011/09/01 14:12:53 mel Exp $
  */
 /* 
- * Copyright (c) 1998-2003 Carnegie Mellon University.  All rights reserved.
+ * Copyright (c) 1998-2016 Carnegie Mellon University.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -22,12 +21,13 @@
  *    endorse or promote products derived from this software without
  *    prior written permission. For permission or any other legal
  *    details, please contact  
- *      Office of Technology Transfer
  *      Carnegie Mellon University
- *      5000 Forbes Avenue
- *      Pittsburgh, PA  15213-3890
- *      (412) 268-4387, fax: (412) 268-7395
- *      tech-transfer@andrew.cmu.edu
+ *      Center for Technology Transfer and Enterprise Creation
+ *      4615 Forbes Avenue
+ *      Suite 302
+ *      Pittsburgh, PA  15213
+ *      (412) 268-7393, fax: (412) 268-7395
+ *      innovation@andrew.cmu.edu
  *
  * 4. Redistributions of any form whatsoever must retain the following
  *    acknowledgment:
@@ -606,7 +606,7 @@ _sasl_client_order_mechs(const sasl_utils_t *utils,
 		    if (*server_can_cb == 0 && has_cb_data)
 			*server_can_cb = 1;
 		}
-		start = ++i;
+		start = i+1;
 	    }
 	}
 	if (has_cb_data)
@@ -760,14 +760,14 @@ int sasl_client_start(sasl_conn_t *conn,
     if (result != 0)
 	goto done;
 
-    for (i = 0, name = ordered_mechs; i < list_len; i++) {
+    /* for each mechanism in client's list */
+    for (m = c_conn->mech_list; m != NULL; m = m->next) {
 
-	name_len = strlen(name);
+        for (i = 0, name = ordered_mechs; i < list_len; i++, name += name_len + 1) {
+            unsigned myflags;
+            int plus;
 
-	/* for each mechanism in client's list */
-	for (m = c_conn->mech_list; m != NULL; m = m->next) {
-	    unsigned myflags;
-	    int plus;
+            name_len = strlen(name);
 
 	    if (!_sasl_is_equal_mech(name, m->m.plug->mech_name, name_len, &plus)) {
 		continue;
@@ -876,7 +876,6 @@ int sasl_client_start(sasl_conn_t *conn,
 	    bestm = m;
 	    break;
 	}
-	name += strlen(name) + 1;
     }
 
     if (bestm == NULL) {
