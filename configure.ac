@@ -42,7 +42,7 @@ dnl AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING
 dnl OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 dnl
 
-AC_PREREQ(2.63.2)
+AC_PREREQ(2.63)
 
 dnl
 dnl REMINDER: When changing the version number here, please also update
@@ -67,7 +67,7 @@ AC_CONFIG_AUX_DIR(config)
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
-AM_INIT_AUTOMAKE([1.11 tar-ustar dist-bzip2 -Wno-portability subdir-objects])
+AM_INIT_AUTOMAKE([1.11 tar-ustar dist-bzip2 -Wno-portability subdir-objects foreign])
 
 DIRS=""
 
@@ -88,6 +88,12 @@ AC_ARG_ENABLE(obsolete_cram_attr,
               enable_obsolete_cram_attr=$enableval,
               enable_obsolete_cram_attr=yes)
 
+AC_ARG_ENABLE(obsolete_digest_attr,
+              [AC_HELP_STRING([--enable-obsolete_digest_attr],
+                              [enable support for cmusaslsecretDIGEST-MD5 auxprop property [[yes]]])],
+              enable_obsolete_digest_attr=$enableval,
+              enable_obsolete_digest_attr=yes)
+
 AC_PROG_CC
 AX_PROG_CC_FOR_BUILD
 AC_PROG_CPP
@@ -96,7 +102,6 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
 AC_USE_SYSTEM_EXTENSIONS
-CMU_C___ATTRIBUTE__
 
 dnl check for -R, etc. switch
 CMU_GUESS_RUNPATH_SWITCH
@@ -151,7 +156,7 @@ AC_ARG_ENABLE(java, [  --enable-java           compile Java support [[no]]],
 if test "$enable_java" = yes; then
   AC_PATH_PROG(JAVAC, javac, no)
   AC_PATH_PROGS(JAVAH, javah kaffeh, no)
-  AC_CHECK_PROGS(JAVADOC, javadoc, :)	
+  AC_CHECK_PROGS(JAVADOC, javadoc, :)
   if test "$JAVAC" = "no" -o "$JAVAH" = "no"; then
     AC_WARN([Disabling Java support])
     enable_java=no
@@ -174,7 +179,7 @@ if test "$enable_java" = yes; then
 
     AC_ARG_WITH(javabase, [  --with-javabase=PATH    set path to find jni.h in [/usr/java/include] ],
         java_base=$withval,)
-	
+
 
     sasl_cv_java_includes=''
     for dir in `find ${java_base}/include -follow -type d -print | grep -v green_threads`; do
@@ -182,7 +187,7 @@ if test "$enable_java" = yes; then
     done
   fi
 
-  sasl_cv_java_includes="${sasl_cv_java_includes} -I$javapath/include"])
+  sasl_cv_java_includes="${sasl_cv_java_includes} -I$java_base/include"])
 
   JAVA_INCLUDES=$sasl_cv_java_includes
   AC_SUBST(JAVA_INCLUDES)
@@ -226,10 +231,10 @@ AC_SUBST(SASL_DL_LIB)
 
 dnl /dev/random ?
 
-AC_ARG_WITH(devrandom, [  --with-devrandom=PATH   set the path to /dev/random [[/dev/random]] ],
+AC_ARG_WITH(devrandom, [  --with-devrandom=PATH   set the path to pseudo random number generator [[/dev/urandom]] ],
   devrandom=$withval,
-  devrandom=/dev/random)
-AC_MSG_CHECKING(/dev/random to use)
+  devrandom=/dev/urandom)
+AC_MSG_CHECKING(PRNG to use)
 AC_MSG_RESULT($devrandom)
 AC_DEFINE_UNQUOTED(SASL_DEV_RANDOM, "$devrandom", [File to use for source of randomness])
 
@@ -432,6 +437,9 @@ AC_MSG_CHECKING(DIGEST-MD5)
 if test "$digest" != no; then
   AC_MSG_RESULT(enabled)
   SASL_MECHS="$SASL_MECHS libdigestmd5.la"
+  if test "$enable_obsolete_digest_attr" = yes; then
+    CPPFLAGS="$CPPFLAGS -DOBSOLETE_DIGEST_ATTR=1"
+  fi
   if test "$enable_static" = yes; then
     SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/digestmd5.c"
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS digestmd5.o"
@@ -601,7 +609,7 @@ if test "$sia" != no; then
     AC_DEFINE(HAVE_SIA,[],[Include SIA Support])
     LIB_SIA="-lsecurity -ldb -lm -laud"
   else
-    AC_ERROR([No support for SIA found])
+    AC_MSG_ERROR([No support for SIA found])
   fi
 fi
 AC_SUBST(LIB_SIA)
@@ -610,14 +618,9 @@ AC_ARG_ENABLE(auth-sasldb, [  --enable-auth-sasldb    enable experimental SASLdb
   authsasldb=$enableval,
   authsasldb=no)
 if test "$authsasldb" != no; then
-  if test ! -d "../sasldb"; then
-     echo "ERROR: Cannot build sasldb module outside of the full SASL source tree."
-     exit 0;
-  fi
   AC_DEFINE(AUTH_SASLDB,[],[Include SASLdb Support])
   SASL_DB_PATH_CHECK()
   SASL_DB_CHECK()
-  SASL_DB_LIB="$SASL_DB_LIB ../sasldb/.libs/libsasldb.al"
 fi
 
 AC_ARG_ENABLE(httpform, [  --enable-httpform       enable HTTP form authentication [[no]] ],
@@ -1050,7 +1053,7 @@ esac
 AC_SUBST(LIB_SQLITE3)
 
 if test "$sql" = yes -a "$with_pgsql" = no -a "$with_mysql" = no -a "$with_sqlite" = no -a "$with_sqlite3" = no; then
-    AC_ERROR([--enable-sql chosen but neither Postgres nor MySQL nor SQLite nor SQLite3 found])
+    AC_MSG_ERROR([--enable-sql chosen but neither Postgres nor MySQL nor SQLite nor SQLite3 found])
 fi
 
 if test "$enable_shared" = yes; then
@@ -1256,14 +1259,14 @@ fi
 AC_SUBST(GETSUBOPT)
 
 dnl Check for snprintf
-sasl_cv_snprintf=no
+sasl_cv_snprintf=yes
 SNPRINTFOBJS=""
 AC_CHECK_FUNC(snprintf, [AC_DEFINE(HAVE_SNPRINTF,[],[Does the system have snprintf()?])], [sasl_cv_snprintf=yes])
 AC_CHECK_FUNC(vsnprintf, [AC_DEFINE(HAVE_VSNPRINTF,[],[Does the system have vsnprintf()?])], [sasl_cv_snprintf=yes])
-if test $sasl_cv_snprintf = yes; then
-	AC_LIBOBJ(snprintf)
-        SNPRINTFOBJS="snprintf.o"
-        LTSNPRINTFOBJS="snprintf.lo"
+if test $sasl_cv_snprintf = no; then
+       AC_LIBOBJ(snprintf)
+       SNPRINTFOBJS="snprintf.o"
+       LTSNPRINTFOBJS="snprintf.lo"
 fi
 AC_SUBST(SNPRINTFOBJS)
 AC_SUBST(LTSNPRINTFOBJS)
@@ -1320,6 +1323,28 @@ IPv6_CHECK_SOCKLEN_T()
 #AC_FUNC_MEMCMP
 #AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(gethostname getdomainname getpwnam getspnam gettimeofday inet_aton memcpy mkdir select socket strchr strdup strerror strspn strstr strtol jrand48 getpassphrase asprintf strlcat strlcpy)
+
+if test $ac_cv_func_getspnam = yes; then
+	AC_MSG_CHECKING(if getpwnam_r/getspnam_r take 5 arguments)
+	AC_TRY_COMPILE(
+		[
+#include <sys/types.h>
+#include <pwd.h>
+#include <shadow.h>
+		],
+		[
+struct passwd *pw;
+struct passwd pwbuf;
+char pwdata[512];
+(void) getpwnam_r("bin", &pwbuf, pwdata, sizeof(pwdata), &pw);
+		],
+		[AC_MSG_RESULT(yes)
+		 AC_DEFINE(GETXXNAM_R_5ARG, 1,
+			[Define if your getpwnam_r()/getspnam_r()
+			functions take 5 arguments])],
+		[AC_MSG_RESULT(no)]
+	)
+fi
 
 if test $enable_cmulocal = yes; then
     AC_WARN([enabling CMU local kludges])
@@ -1440,11 +1465,6 @@ struct iovec {
 #define _GNU_SOURCE
 #endif
 
-#ifndef HAVE___ATTRIBUTE__
-/* Can't use attributes... */
-#define __attribute__(foo)
-#endif
-
 #define SASL_PATH_ENV_VAR "SASL_PATH"
 #define SASL_CONF_PATH_ENV_VAR "SASL_CONF_PATH"
 
@@ -1558,6 +1578,13 @@ extern int asprintf(char **str, const char *fmt, ...);
 #endif /* CONFIG_H */
 ])
 
+AH_BOTTOM([#if defined __GNUC__ &&  __GNUC__ > 6
+    #define GCC_FALLTHROUGH __attribute__((fallthrough));
+#else
+    #define GCC_FALLTHROUGH /* fall through */
+#endif
+])
+
 AC_CONFIG_HEADERS(config.h)
 
 AC_OUTPUT(Makefile
@@ -1565,10 +1592,10 @@ libsasl2.pc
 include/Makefile
 saslauthd/Makefile
 sasldb/Makefile
+common/Makefile
 plugins/Makefile
 lib/Makefile
 utils/Makefile
-doc/Makefile
 sample/Makefile
 java/Makefile
 java/CyrusSasl/Makefile
@@ -1577,15 +1604,37 @@ java/javax/Makefile
 java/javax/security/Makefile
 java/javax/security/auth/Makefile
 java/javax/security/auth/callback/Makefile
-pwcheck/Makefile
-man/Makefile)
+pwcheck/Makefile)
 
-AC_MSG_NOTICE([
-
-cyrus-sasl - $VERSION
-
-• Prefix: $prefix
-• Plugins: $SASL_MECHS
-
-Now type 'make' to build $PACKAGE
-])
+echo
+echo "$PACKAGE - $VERSION"
+echo
+echo "Prefix....................: $prefix"
+echo "Plugins...................: $SASL_MECHS"
+echo "saslauthd support.........: $with_saslauthd"
+echo "Java Support:.............: $enable_java"
+if test "$enable_java" = yes; then
+   echo "Java Base.................: $JAVA_INCLUDES"
+fi
+echo "OpenSSL...................: $with_openssl"
+echo "CRAM-MD5 Authentication...: $cram"
+echo "SCRAM Authentication......: $scram"
+echo "OTP Authentication........: $otp"
+echo "OPIE......................: $with_opie"
+echo "SRP Authentication........: $srp"
+echo "GSSAPI....................: $gssapi"
+echo "SIA Authentication........: $sia"
+echo "HTTP Form Authentication..: $httpform"
+echo "PAM.......................: $with_pam"
+echo "Anonymous.................: $anon"
+echo "LOGIN (Unsupported).......: $login"
+echo "NTLM (Unsupported)........: $ntlm"
+echo "passdss (Experimental)....: $passdss"
+echo "LDAP......................: $with_ldap"
+echo "MySQL.....................: $with_mysql"
+echo "PgSQL.....................: $with_pgsql"
+echo "SQLite....................: $with_sqlite"
+echo "SQLite 3..................: $with_sqlite3"
+echo
+echo "Now type 'make' to build $PACKAGE"
+echo
