@@ -18,7 +18,20 @@ SASLAUTHD(8)              BSD System Manager's Manual             SASLAUTHD(8)
 
      [1msaslauthd [22mshould be started from the system boot scripts when going to
      multi-user mode. When running against a protected authentication database
-     (e.g. the shadow mechanism), it must be run as the superuser.
+     (e.g. the shadow mechanism), it must be run as the superuser. Otherwise
+     it is recommended to run daemon unprivileged as saslauth:saslauth,
+     requiring the runtime directory to have root:saslauthd owner. You can do
+     so by following these steps in machines using systemd(1) :
+
+     1.   create directory [4m/etc/systemd/system/saslauthd.service.d/[0m
+     2.   create file [4m/etc/systemd/system/saslauthd.service.d/user.conf[24m with
+          content
+
+          [Service]
+          User=saslauth
+          Group=saslauth
+
+     3.   Reload systemd service file: run “systemctl daemon-reload”
 
    [1mOptions[0m
      Options named by lower-case letters configure the server itself.

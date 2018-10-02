@@ -1082,7 +1082,7 @@ static int smb_negotiate_protocol(const sasl_utils_t *utils,
 	|| hdr.status				 /* no errors */
 	|| !(hdr.flags & SMB_FLAGS_SERVER_TO_REDIR)) { /* response */
 	utils->log(NULL, SASL_LOG_ERR,
-		   "NTLM: error in NEGPROT response header: %ld",
+		   "NTLM: error in NEGPROT response header: %u",
 		   hdr.status);
 	return SASL_FAIL;
     }
@@ -1311,7 +1311,7 @@ static int smb_session_setup(const sasl_utils_t *utils, server_context_t *text,
     /* check auth success */
     if (hdr.status) {
 	utils->log(NULL, SASL_LOG_ERR,
-		   "NTLM: auth failure: %ld", hdr.status);
+		   "NTLM: auth failure: %u", hdr.status);
 	return SASL_BADAUTH;
     }
 
@@ -1398,6 +1398,13 @@ static int ntlm_server_mech_new(void *glob_context __attribute__((unused)),
     unsigned int len;
     SOCKET sock = (SOCKET) -1;
 
+    /* holds state are in: allocate early */
+    text = sparams->utils->malloc(sizeof(server_context_t));
+    if (text == NULL) {
+	MEMERROR( sparams->utils );
+	return SASL_NOMEM;
+    }
+
     sparams->utils->getopt(sparams->utils->getopt_context,
 			   "NTLM", "ntlm_server", &serv, &len);
     if (serv) {
@@ -1426,13 +1433,6 @@ static int ntlm_server_mech_new(void *glob_context __attribute__((unused)),
 
 	sparams->utils->free(tmp);
 	if (sock == (SOCKET) -1) return SASL_UNAVAIL;
-    }
-    
-    /* holds state are in */
-    text = sparams->utils->malloc(sizeof(server_context_t));
-    if (text == NULL) {
-	MEMERROR( sparams->utils );
-	return SASL_NOMEM;
     }
     
     memset(text, 0, sizeof(server_context_t));
