@@ -14,3 +14,4 @@
 0025-Revert-upstream-soname-bump.patch
 0027-properly-create-libsasl2.pc.patch
 0032-Add-with_pgsql-include-postgresql-to-include-path.patch
+0017-Just-completely-remove-libobj-from-autotools-files.patch
