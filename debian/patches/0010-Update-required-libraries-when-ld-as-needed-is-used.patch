@@ -10,10 +10,10 @@ it.
  2 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/saslauthd/Makefile.am b/saslauthd/Makefile.am
-index b7df9e1..855dd17 100644
+index d7244be..a5a4dfd 100644
 --- a/saslauthd/Makefile.am
 +++ b/saslauthd/Makefile.am
-@@ -21,7 +21,7 @@ EXTRA_saslauthd_sources = getaddrinfo.c getnameinfo.c
+@@ -25,7 +25,7 @@ EXTRA_saslauthd_sources = getaddrinfo.c getnameinfo.c
  saslauthd_DEPENDENCIES = saslauthd-main.o $(LTLIBOBJS_FULL)
  saslauthd_LDADD	= @SASL_KRB_LIB@ \
  		  @GSSAPIBASE_LIBS@ @LIB_CRYPT@ @LIB_SIA@ \

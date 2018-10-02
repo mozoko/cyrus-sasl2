@@ -8,12 +8,9 @@
 0009-Look-for-generic-Berkeley-DB-first.patch
 0010-Update-required-libraries-when-ld-as-needed-is-used.patch
 0013-Don-t-use-la-files-for-opening-plugins.patch
-0014-Don-t-use-R-when-searching-for-SQLite-libraries.patch
-0015-Revert-1.103-revision-to-unbreak-GSSAPI.patch
 0018-Temporary-multiarch-fixes.patch
 0019-Add-reference-to-LDAP_SASLAUTHD-file-to-the-saslauth.patch
 0022-Fix-keytab-option-for-MIT-Kerberos.patch
 0025-Revert-upstream-soname-bump.patch
 0027-properly-create-libsasl2.pc.patch
-0031-Cleanup-for-modern-autotools.patch
 0032-Add-with_pgsql-include-postgresql-to-include-path.patch

@@ -8,7 +8,7 @@ Subject: Fixes in library mutexes
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/lib/common.c b/lib/common.c
-index 14030cd..aea786a 100644
+index 305311d..1fad916 100644
 --- a/lib/common.c
 +++ b/lib/common.c
 @@ -816,7 +816,7 @@ int _sasl_common_init(sasl_global_callbacks_t *global_callbacks)
