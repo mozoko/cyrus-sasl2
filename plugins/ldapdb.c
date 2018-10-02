@@ -81,7 +81,7 @@ typedef struct connparm {
 static int ldapdb_connect(ldapctx *ctx, sasl_server_params_t *sparams,
 	const char *user, unsigned ulen, connparm *cp)
 {
-    int i;
+    int i, rc;
     char *authzid;
 
     if((i=ldap_initialize(&cp->ld, ctx->uri))) {
@@ -100,7 +100,11 @@ static int ldapdb_connect(ldapctx *ctx, sasl_server_params_t *sparams,
     cp->c.ldctl_iscritical = 1;
 
     i = LDAP_VERSION3;
-    ldap_set_option(cp->ld, LDAP_OPT_PROTOCOL_VERSION, &i);
+    rc = ldap_set_option(cp->ld, LDAP_OPT_PROTOCOL_VERSION, &i);
+    if (rc != 0) {
+        sparams->utils->free(authzid);
+        return rc;
+    }
 
     /* If TLS is set and it fails, continue or bail out as requested */
     if (ctx->use_tls && (i=ldap_start_tls_s(cp->ld, NULL, NULL)) != LDAP_SUCCESS
@@ -316,7 +320,7 @@ static int ldapdb_auxprop_store(void *glob_context,
     sparams->utils->free(mods);
 
     if (i) {
-    	sparams->utils->seterror(sparams->utils->conn, 0,
+    	sparams->utils->seterror(sparams->utils->conn, 0, "%s",
 	    ldap_err2string(i));
 	if (i == LDAP_NO_MEMORY) i = SASL_NOMEM;
 	else i = SASL_FAIL;
@@ -416,7 +420,7 @@ ldapdb_canon_server(void *glob_context,
  done:
     if(cp.ld) ldap_unbind_ext(cp.ld, NULL, NULL);
     if (ret) {
-    	sparams->utils->seterror(sparams->utils->conn, 0,
+    	sparams->utils->seterror(sparams->utils->conn, 0, "%s",
 	    ldap_err2string(ret));
 	if (ret == LDAP_NO_MEMORY) ret = SASL_NOMEM;
 	else ret = SASL_FAIL;

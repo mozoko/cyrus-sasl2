@@ -639,6 +639,8 @@ PERL
 SPHINX_BUILD
 DIRS
 LTLIBOBJS
+BUILD_LIBOBJ_FALSE
+BUILD_LIBOBJ_TRUE
 LTGETNAMEINFOOBJS
 GETNAMEINFOOBJS
 LTGETADDRINFOOBJS
@@ -673,6 +675,8 @@ PASSDSS_LIBS
 NTLM_LIBS
 PLAIN_LIBS
 LIB_PAM
+AUTH_SASLDB_FALSE
+AUTH_SASLDB_TRUE
 LIB_SIA
 GSSAPIBASE_LIBS
 LIB_CRYPT
@@ -879,7 +883,7 @@ with_des
 enable_digest
 enable_scram
 enable_otp
-with_with_opie
+with_opie
 enable_srp
 enable_srp_setpass
 enable_krb4
@@ -1614,7 +1618,8 @@ Optional Packages:
   --with-lib-subdir=DIR   Find libraries in DIR instead of lib
   --with-openssl=DIR      use OpenSSL from DIR
   --with-des=DIR          with DES (look in DIR) yes
-  --with-opie=PATH        use OPIE (One Time Passwords in Everything) from PATH
+  --with-opie=PATH        use OPIE (One Time Passwords in Everything) from
+                          PATH
   --with-gss_impl={heimdal|mit|cybersafe|seam|auto}
                           choose specific GSSAPI implementation [[auto]]
   --with-pam=DIR          use PAM (rooted in DIR) yes
@@ -14184,7 +14189,7 @@ fi
     done
   fi
 
-  sasl_cv_java_includes="${sasl_cv_java_includes} -I$java_base/include"
+  sasl_cv_java_includes="${sasl_cv_java_includes} -I$javapath/include"
 fi
 
 
@@ -15313,7 +15318,7 @@ if ${sasl_cv_uscore+:} false; then :
   $as_echo_n "(cached) " >&6
 else
 
-    echo "void main(){int i=1;}
+    echo "int main(){int i=1; return 0;}
     void foo(){int i=6;}" > conftest.c
     ${CC} -o a.out conftest.c > /dev/null
     if (${NM} a.out | grep _foo) > /dev/null; then
@@ -15346,7 +15351,7 @@ else
 #include <dlfcn.h>
 #include <stdio.h>
 void foo() { int i=0;}
-void main() { void *self, *ptr1, *ptr2; self=dlopen(NULL,RTLD_LAZY);
+int main() { void *self, *ptr1, *ptr2; self=dlopen(NULL,RTLD_LAZY);
     if(self) { ptr1=dlsym(self,"foo"); ptr2=dlsym(self,"_foo");
     if(ptr1 && !ptr2) exit(0); } exit(1); }
 
@@ -15733,6 +15738,7 @@ case "$with_openssl" in
 	no)
 	  with_openssl="no";;
 	*)
+	  with_openssl="yes"
 	  	                  LIB_RSAREF=""
 	        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for RSAPublicEncrypt in -lrsaref" >&5
 $as_echo_n "checking for RSAPublicEncrypt in -lrsaref... " >&6; }
@@ -15859,8 +15865,7 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_crypto_EVP_DigestInit" >&5
 $as_echo "$ac_cv_lib_crypto_EVP_DigestInit" >&6; }
 if test "x$ac_cv_lib_crypto_EVP_DigestInit" = xyes; then :
-  with_openssl="yes",
-                                         { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SHA256 in -lcrypto" >&5
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SHA256 in -lcrypto" >&5
 $as_echo_n "checking for SHA256 in -lcrypto... " >&6; }
 if ${ac_cv_lib_crypto_SHA256+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -15907,7 +15912,7 @@ else
 fi
 
 else
-  with_openssl=no
+  with_openssl="no"
 fi
 
 
@@ -16057,6 +16062,8 @@ else
 fi
 
     fi
+  else
+    with_des=no
   fi
 
   if test "$with_des" = no; then
@@ -16416,9 +16423,9 @@ $as_echo "#define STATIC_OTP /**/" >>confdefs.h
   fi
 
 
-# Check whether --with-with-opie was given.
-if test "${with_with_opie+set}" = set; then :
-  withval=$with_with_opie; with_opie="${withval}"
+# Check whether --with-opie was given.
+if test "${with_opie+set}" = set; then :
+  withval=$with_opie;
 fi
 
 
@@ -16941,6 +16948,7 @@ else
 fi
 
 
+gs2="no"
 if test "$gssapi" != no; then
   platform=
   case "${host}" in
@@ -16960,6 +16968,9 @@ if test "$gssapi" != no; then
     *-*-aix*)
 ###_AIX
       platform=__aix
+      ;;
+    *-*-darwin*)
+      platform=__darwin
       ;;
     *)
       { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: The system type is not recognized. If you believe that CyberSafe GSSAPI works on this platform, please update the configure script" >&5
@@ -17597,6 +17608,7 @@ fi
   SASL_STATIC_OBJS="$SASL_STATIC_OBJS gssapi.o"
   SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/gssapi.c"
   if test "$rfc5587" = "yes" -a "$rfc5801" = "yes"; then
+    gs2="yes"
     SASL_MECHS="$SASL_MECHS libgs2.la"
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS gs2.o"
     SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/gs2.c"
@@ -18632,6 +18644,14 @@ fi
 
 
 fi
+ if test "$authsasldb" != no; then
+  AUTH_SASLDB_TRUE=
+  AUTH_SASLDB_FALSE='#'
+else
+  AUTH_SASLDB_TRUE='#'
+  AUTH_SASLDB_FALSE=
+fi
+
 
 # Check whether --enable-httpform was given.
 if test "${enable_httpform+set}" = set; then :
@@ -19413,9 +19433,23 @@ case "$with_sqlite" in
 $as_echo "$as_me: WARNING: SQLite Library not found" >&2;}; true;;
     *)
      if test -d ${with_sqlite}/lib; then
-         LIB_SQLITE="-L${with_sqlite}/lib -R${with_sqlite}/lib"
+
+  # this is CMU ADD LIBPATH TO
+  if test "$andrew_cv_runpath_switch" = "none" ; then
+	LIB_SQLITE="-L${with_sqlite}/lib ${LIB_SQLITE}"
+  else
+	LIB_SQLITE="-L${with_sqlite}/lib ${LIB_SQLITE} $andrew_cv_runpath_switch${with_sqlite}/lib"
+  fi
+
      else
-         LIB_SQLITE="-L${with_sqlite} -R${with_sqlite}"
+
+  # this is CMU ADD LIBPATH TO
+  if test "$andrew_cv_runpath_switch" = "none" ; then
+	LIB_SQLITE="-L${with_sqlite} ${LIB_SQLITE}"
+  else
+	LIB_SQLITE="-L${with_sqlite} ${LIB_SQLITE} $andrew_cv_runpath_switch${with_sqlite}"
+  fi
+
      fi
 
      LIB_SQLITE_DIR=$LIB_SQLITE
@@ -19512,9 +19546,23 @@ case "$with_sqlite3" in
 $as_echo "$as_me: WARNING: SQLite3 Library not found" >&2;}; true;;
     *)
      if test -d ${with_sqlite3}/lib; then
-         LIB_SQLITE3="-L${with_sqlite3}/lib -R${with_sqlite3}/lib"
+
+  # this is CMU ADD LIBPATH TO
+  if test "$andrew_cv_runpath_switch" = "none" ; then
+	LIB_SQLITE3="-L${with_sqlite3}/lib ${LIB_SQLITE3}"
+  else
+	LIB_SQLITE3="-L${with_sqlite3}/lib ${LIB_SQLITE3} $andrew_cv_runpath_switch${with_sqlite3}/lib"
+  fi
+
      else
-         LIB_SQLITE3="-L${with_sqlite3} -R${with_sqlite3}"
+
+  # this is CMU ADD LIBPATH TO
+  if test "$andrew_cv_runpath_switch" = "none" ; then
+	LIB_SQLITE3="-L${with_sqlite3} ${LIB_SQLITE3}"
+  else
+	LIB_SQLITE3="-L${with_sqlite3} ${LIB_SQLITE3} $andrew_cv_runpath_switch${with_sqlite3}"
+  fi
+
      fi
 
      LIB_SQLITE3_DIR=$LIB_SQLITE3
@@ -19991,8 +20039,9 @@ esac
 fi
 
 
-sasl_cv_snprintf=yes
+sasl_cv_snprintf=no
 SNPRINTFOBJS=""
+LTSNPRINTFOBJS=""
 ac_fn_c_check_func "$LINENO" "snprintf" "ac_cv_func_snprintf"
 if test "x$ac_cv_func_snprintf" = xyes; then :
 
@@ -20579,6 +20628,14 @@ fi
 
 
 LTLIBOBJS=`echo "$LIBOBJS" | sed 's,\.[^.]* ,.lo ,g;s,\.[^.]*$,.lo,'`
+ if test "$LTLIBOBJS" != ""; then
+  BUILD_LIBOBJ_TRUE=
+  BUILD_LIBOBJ_FALSE='#'
+else
+  BUILD_LIBOBJ_TRUE='#'
+  BUILD_LIBOBJ_FALSE=
+fi
+
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for an ANSI C-conforming const" >&5
@@ -21664,12 +21721,20 @@ if test -z "${PWCHECK_TRUE}" && test -z "${PWCHECK_FALSE}"; then
   as_fn_error $? "conditional \"PWCHECK\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
+if test -z "${AUTH_SASLDB_TRUE}" && test -z "${AUTH_SASLDB_FALSE}"; then
+  as_fn_error $? "conditional \"AUTH_SASLDB\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 if test -z "${MACOSX_TRUE}" && test -z "${MACOSX_FALSE}"; then
   as_fn_error $? "conditional \"MACOSX\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${WINDOWS_TRUE}" && test -z "${WINDOWS_FALSE}"; then
   as_fn_error $? "conditional \"WINDOWS\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${BUILD_LIBOBJ_TRUE}" && test -z "${BUILD_LIBOBJ_FALSE}"; then
+  as_fn_error $? "conditional \"BUILD_LIBOBJ\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_SPHINX_BUILD_TRUE}" && test -z "${HAVE_SPHINX_BUILD_FALSE}"; then
@@ -23843,35 +23908,21 @@ $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
 
 
-echo
-echo "$PACKAGE - $VERSION"
-echo
-echo "Prefix....................: $prefix"
-echo "Plugins...................: $SASL_MECHS"
-echo "saslauthd support.........: $with_saslauthd"
-echo "Java Support:.............: $enable_java"
-if test "$enable_java" = yes; then
-   echo "Java Base.................: $JAVA_INCLUDES"
-fi
-echo "OpenSSL...................: $with_openssl"
-echo "CRAM-MD5 Authentication...: $cram"
-echo "SCRAM Authentication......: $scram"
-echo "OTP Authentication........: $otp"
-echo "OPIE......................: $with_opie"
-echo "SRP Authentication........: $srp"
-echo "GSSAPI....................: $gssapi"
-echo "SIA Authentication........: $sia"
-echo "HTTP Form Authentication..: $httpform"
-echo "PAM.......................: $with_pam"
-echo "Anonymous.................: $anon"
-echo "LOGIN (Unsupported).......: $login"
-echo "NTLM (Unsupported)........: $ntlm"
-echo "passdss (Experimental)....: $passdss"
-echo "LDAP......................: $with_ldap"
-echo "MySQL.....................: $with_mysql"
-echo "PgSQL.....................: $with_pgsql"
-echo "SQLite....................: $with_sqlite"
-echo "SQLite 3..................: $with_sqlite3"
-echo
-echo "Now type 'make' to build $PACKAGE"
-echo
+{ $as_echo "$as_me:${as_lineno-$LINENO}:
+
+cyrus-sasl - $VERSION
+
+• Prefix: $prefix
+• Plugins: $SASL_MECHS
+
+Now type 'make' to build $PACKAGE
+" >&5
+$as_echo "$as_me:
+
+cyrus-sasl - $VERSION
+
+• Prefix: $prefix
+• Plugins: $SASL_MECHS
+
+Now type 'make' to build $PACKAGE
+" >&6;}

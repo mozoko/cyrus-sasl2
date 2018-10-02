@@ -335,9 +335,9 @@ sasl_gss_seterror_(const sasl_utils_t *utils, OM_uint32 maj, OM_uint32 min,
     strcat(out, ")");
     
     if (logonly) {
-	utils->log(utils->conn, SASL_LOG_FAIL, out);
+	utils->log(utils->conn, SASL_LOG_FAIL, "%s", out);
     } else {
-	utils->seterror(utils->conn, 0, out);
+	utils->seterror(utils->conn, 0, "%s", out);
     }
     utils->free(out);
 
@@ -702,6 +702,7 @@ static int gssapi_get_ssf(context_t *text, sasl_ssf_t *mech_ssf)
     case GSS_S_UNAVAILABLE:
         /* Not supported by the library, fallback to default */
         goto fallback;
+
     case GSS_S_COMPLETE:
         if ((bufset->count != 1) || (bufset->elements[0].length != 4)) {
             /* Malformed bufset, fail */
@@ -712,7 +713,19 @@ static int gssapi_get_ssf(context_t *text, sasl_ssf_t *mech_ssf)
         (void)gss_release_buffer_set(&min_stat, &bufset);
         *mech_ssf = ntohl(ssf);
         return SASL_OK;
+
+    case GSS_S_FAILURE:
+        /* Not supported by Heimdal, fallback to default */
+        if (min_stat == 0) {
+            goto fallback;
+        }
+
+        GCC_FALLTHROUGH
+	
     default:
+        if (GSS_ERROR(maj_stat)) {
+            sasl_gss_seterror(text->utils,maj_stat,min_stat);
+        }
         return SASL_FAIL;
     }
 
@@ -1360,8 +1373,9 @@ gssapi_server_mech_ssfreq(context_t *text,
 	ret = params->canon_user(params->utils->conn,
 				 ((char *) output_token->value) + 4,
 				 (output_token->length - 4) * sizeof(char),
-				 SASL_CU_AUTHZID, oparams);
-	
+				 SASL_CU_AUTHZID | SASL_CU_EXTERNALLY_VERIFIED,
+				 oparams);
+
 	if (ret != SASL_OK) {
 	    sasl_gss_free_context_contents(text);
 	    return ret;
@@ -1561,8 +1575,7 @@ int gssapiv2_server_plug_init(
     if (keytab != NULL) {
 	if (access(keytab, R_OK) != 0) {
 	    utils->log(NULL, SASL_LOG_ERR,
-		       "Could not find keytab file: %s: %m",
-		       keytab, errno);
+		       "Could not find keytab file: %s: %m", keytab);
 	    return SASL_FAIL;
 	}
 	
@@ -1746,10 +1759,10 @@ static int gssapi_client_mech_step(void *conn_context,
 	}
 
 	/* Setup req_flags properly */
-	req_flags = GSS_C_INTEG_FLAG;
+	req_flags = GSS_C_MUTUAL_FLAG | GSS_C_SEQUENCE_FLAG;
 	if (params->props.max_ssf > params->external_ssf) {
 	    /* We are requesting a security layer */
-	    req_flags |= GSS_C_MUTUAL_FLAG | GSS_C_SEQUENCE_FLAG;
+	    req_flags |= GSS_C_INTEG_FLAG;
 	    /* Any SSF bigger than 1 is confidentiality. */
 	    /* Let's check if the client of the API requires confidentiality,
 	       and it wasn't already provided by an external layer */

@@ -857,7 +857,8 @@ scram_server_mech_step1(server_context_t *text,
 				       &error_text);
 	if (result != SASL_OK) {
 	    if (error_text != NULL) {
-		sparams->utils->seterror(sparams->utils->conn, 0, error_text);
+		sparams->utils->seterror(sparams->utils->conn, 0, "%s",
+					 error_text);
 	    }
 	    goto cleanup;
 	}
@@ -1274,7 +1275,7 @@ scram_server_mech_step2(server_context_t *text,
 	if (binary_channel_binding_len != sparams->cbinding->len) {
 	    sparams->utils->seterror (sparams->utils->conn,
 				      0,
-				      "Unsupported channel bindings length received in %s. Expected lenght: %d, received: %d",
+				      "Unsupported channel bindings length received in %s. Expected length: %lu, received: %d",
                                       scram_sasl_mech,
 				      sparams->cbinding->len,
 				      binary_channel_binding_len);
@@ -1701,7 +1702,8 @@ static int scram_setpass(void *glob_context,
 				  &error_text);
 	if (r != SASL_OK) {
 	    if (error_text != NULL) {
-		SETERROR(sparams->utils, error_text);
+		sparams->utils->seterror(sparams->utils->conn, 0, "%s",
+					 error_text);
 	    }
 	    goto cleanup;
 	}
@@ -1838,27 +1840,7 @@ static void scram_server_mech_dispose(void *conn_context,
 
 static sasl_server_plug_t scram_server_plugins[] = 
 {
-    {
-	"SCRAM-SHA-1",			/* mech_name */
-	0,				/* max_ssf */
-	SASL_SEC_NOPLAINTEXT
-	| SASL_SEC_NOACTIVE
-	| SASL_SEC_NOANONYMOUS
-	| SASL_SEC_MUTUAL_AUTH,		/* security_flags */
-	SASL_FEAT_ALLOWS_PROXY
-	| SASL_FEAT_CHANNEL_BINDING,	/* features */
-	"SHA1",				/* glob_context */
-	&scram_server_mech_new,		/* mech_new */
-	&scram_server_mech_step,	/* mech_step */
-	&scram_server_mech_dispose,	/* mech_dispose */
-	NULL,				/* mech_free */
-	&scram_setpass,			/* setpass */
-	NULL,				/* user_query */
-	NULL,				/* idle */
-	NULL,				/* mech avail */
-	NULL				/* spare */
 #ifdef HAVE_SHA256
-    },
     {
 	"SCRAM-SHA-256",		/* mech_name */
 	0,				/* max_ssf */
@@ -1867,6 +1849,7 @@ static sasl_server_plug_t scram_server_plugins[] =
 	| SASL_SEC_NOANONYMOUS
 	| SASL_SEC_MUTUAL_AUTH,		/* security_flags */
 	SASL_FEAT_ALLOWS_PROXY
+        | SASL_FEAT_SUPPORTS_HTTP
 	| SASL_FEAT_CHANNEL_BINDING,	/* features */
 	"SHA256",			/* glob_context */
 	&scram_server_mech_new,		/* mech_new */
@@ -1878,7 +1861,28 @@ static sasl_server_plug_t scram_server_plugins[] =
 	NULL,				/* idle */
 	NULL,				/* mech avail */
 	NULL				/* spare */
+    },
 #endif
+    {
+	"SCRAM-SHA-1",			/* mech_name */
+	0,				/* max_ssf */
+	SASL_SEC_NOPLAINTEXT
+	| SASL_SEC_NOACTIVE
+	| SASL_SEC_NOANONYMOUS
+	| SASL_SEC_MUTUAL_AUTH,		/* security_flags */
+	SASL_FEAT_ALLOWS_PROXY
+        | SASL_FEAT_SUPPORTS_HTTP
+	| SASL_FEAT_CHANNEL_BINDING,	/* features */
+	"SHA1",				/* glob_context */
+	&scram_server_mech_new,		/* mech_new */
+	&scram_server_mech_step,	/* mech_step */
+	&scram_server_mech_dispose,	/* mech_dispose */
+	NULL,				/* mech_free */
+	&scram_setpass,			/* setpass */
+	NULL,				/* user_query */
+	NULL,				/* idle */
+	NULL,				/* mech avail */
+	NULL				/* spare */
     }
 };
 
@@ -2570,7 +2574,7 @@ scram_client_mech_step2(client_context_t *text,
 	     (unsigned char *)ClientSignature,
 	     &hash_len) == NULL) {
 	params->utils->seterror(params->utils->conn,0,
-				"HMAC-% call failed", scram_sasl_mech+6);
+				"HMAC-%s call failed", scram_sasl_mech+6);
 	result = SASL_SCRAM_INTERNAL;
 	goto cleanup;
     }
@@ -2857,26 +2861,7 @@ static void scram_client_mech_dispose(void *conn_context,
 
 static sasl_client_plug_t scram_client_plugins[] = 
 {
-    {
-	"SCRAM-SHA-1",			/* mech_name */
-	0,				/* max_ssf */
-	SASL_SEC_NOPLAINTEXT
-	| SASL_SEC_NOANONYMOUS
-	| SASL_SEC_NOACTIVE
-	| SASL_SEC_MUTUAL_AUTH,		/* security_flags */
-	SASL_FEAT_ALLOWS_PROXY
-	| SASL_FEAT_CHANNEL_BINDING, 	/* features */
-	NULL,				/* required_prompts */
-	"SHA1",				/* glob_context */
-	&scram_client_mech_new,		/* mech_new */
-	&scram_client_mech_step,	/* mech_step */
-	&scram_client_mech_dispose,	/* mech_dispose */
-	NULL,				/* mech_free */
-	NULL,				/* idle */
-	NULL,				/* spare */
-	NULL				/* spare */
 #ifdef HAVE_SHA256
-    },
     {
 	"SCRAM-SHA-256",		/* mech_name */
 	0,				/* max_ssf */
@@ -2885,6 +2870,7 @@ static sasl_client_plug_t scram_client_plugins[] =
 	| SASL_SEC_NOACTIVE
 	| SASL_SEC_MUTUAL_AUTH,		/* security_flags */
 	SASL_FEAT_ALLOWS_PROXY
+        | SASL_FEAT_SUPPORTS_HTTP
 	| SASL_FEAT_CHANNEL_BINDING, 	/* features */
 	NULL,				/* required_prompts */
 	"SHA256",			/* glob_context */
@@ -2895,7 +2881,27 @@ static sasl_client_plug_t scram_client_plugins[] =
 	NULL,				/* idle */
 	NULL,				/* spare */
 	NULL				/* spare */
+    },
 #endif
+    {
+	"SCRAM-SHA-1",			/* mech_name */
+	0,				/* max_ssf */
+	SASL_SEC_NOPLAINTEXT
+	| SASL_SEC_NOANONYMOUS
+	| SASL_SEC_NOACTIVE
+	| SASL_SEC_MUTUAL_AUTH,		/* security_flags */
+	SASL_FEAT_ALLOWS_PROXY
+        | SASL_FEAT_SUPPORTS_HTTP
+	| SASL_FEAT_CHANNEL_BINDING, 	/* features */
+	NULL,				/* required_prompts */
+	"SHA1",				/* glob_context */
+	&scram_client_mech_new,		/* mech_new */
+	&scram_client_mech_step,	/* mech_step */
+	&scram_client_mech_dispose,	/* mech_dispose */
+	NULL,				/* mech_free */
+	NULL,				/* idle */
+	NULL,				/* spare */
+	NULL				/* spare */
     }
 };
 
