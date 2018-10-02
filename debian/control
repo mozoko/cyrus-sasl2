@@ -1,7 +1,7 @@
 Source: cyrus-sasl2
 Section: libs
 Priority: standard
-Maintainer: Debian Cyrus SASL Team <pkg-cyrus-sasl2-debian-devel@lists.alioth.debian.org>
+Maintainer: Debian Cyrus Team <team+cyrus@tracker.debian.org>
 Uploaders: Fabian Fagerholm <fabbe@debian.org>,
            Roberto C. Sanchez <roberto@connexer.com>,
            Ondřej Surý <ondrej@debian.org>,
@@ -27,9 +27,9 @@ Build-Depends: automake (>= 1:1.14),
                po-debconf,
                quilt
 Build-Conflicts: heimdal-dev
-Vcs-Browser: https://anonscm.debian.org/git/pkg-cyrus-sasl2/cyrus-sasl2.git
-Vcs-Git: git://anonscm.debian.org/pkg-cyrus-sasl2/cyrus-sasl2.git
-Homepage: https://www.cyrusimap.org/
+Vcs-Browser: https://salsa.debian.org/debian/cyrus-sasl2
+Vcs-Git: https://salsa.debian.org/debian/cyrus-sasl2.git
+Homepage: https://www.cyrusimap.org/sasl/
 
 Package: sasl2-bin
 Section: utils
