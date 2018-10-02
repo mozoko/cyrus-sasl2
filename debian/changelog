@@ -2,8 +2,9 @@ cyrus-sasl2 (2.1.27~rc8-1) unstable; urgency=medium
 
   * New upstream version 2.1.27~rc8
   * Rebase patches for Cyrus SASL 2.1.27~rc8
+  * Cleanup d/control
 
- -- Ondřej Surý <ondrej@debian.org>  Tue, 02 Oct 2018 07:57:57 +0000
+ -- Ondřej Surý <ondrej@debian.org>  Tue, 02 Oct 2018 08:05:10 +0000
 
 cyrus-sasl2 (2.1.27~rc4-1) unstable; urgency=medium
 
