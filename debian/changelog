@@ -1,6 +1,7 @@
 cyrus-sasl2 (2.1.27~rc8-2) UNRELEASED; urgency=medium
 
   * Change email in d/control
+  * Apply uversionmangle option in d/watch for correct upstream version sort
 
  -- Roberto C. Sanchez <roberto@debian.org>  Sat, 15 Dec 2018 17:46:03 -0500
 
