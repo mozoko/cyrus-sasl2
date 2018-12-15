@@ -3,7 +3,7 @@ Section: libs
 Priority: standard
 Maintainer: Debian Cyrus Team <team+cyrus@tracker.debian.org>
 Uploaders: Fabian Fagerholm <fabbe@debian.org>,
-           Roberto C. Sanchez <roberto@connexer.com>,
+           Roberto C. Sanchez <roberto@debian.org>,
            Ondřej Surý <ondrej@debian.org>,
            Adam Conrad <adconrad@0c3.net>
 Standards-Version: 3.9.8
