@@ -23,6 +23,8 @@ export DH_ALWAYS_EXCLUDE=CVS
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 DPKG_EXPORT_BUILDFLAGS = 1
 include /usr/share/dpkg/default.mk
+-include /usr/share/dpkg/buildtools.mk
+export CC
 
 # see FEATURE AREAS in dpkg-buildflags(1)
 #export DEB_BUILD_MAINT_OPTIONS = hardening=+all
@@ -174,6 +176,7 @@ override_dh_auto_build:
 
 override_dh_auto_install:
 	dh_auto_install -B$(TMPBUILD_HEIMDAL) -- sasldir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
+	dh_install -plibsasl2-modules-gssapi-heimdal
 	dh_auto_install -B$(TMPBUILD_MIT) -- sasldir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
 
 	# Remove static plugins - they are useless
@@ -228,7 +231,7 @@ endif
 		debian/tmp/etc/logcheck/ignore.d.server/libsasl2-modules
 
 override_dh_install:
-	dh_install --fail-missing
+	dh_install --fail-missing -Nlibsasl2-modules-gssapi-heimdal
 
 override_dh_installinit:
 	dh_installinit $(DH_PACKAGE_EXCLUDES) --name=saslauthd start 20 2 3 4 5 . stop 20 0 1 6 .
