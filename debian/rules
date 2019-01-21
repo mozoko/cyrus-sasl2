@@ -105,6 +105,8 @@ CONFIGURE_COMMON_OPTIONS= \
 # Some convenience variables
 export TMPBUILD_MIT := $(CURDIR)/build-mit
 export TMPBUILD_HEIMDAL := $(CURDIR)/build-heimdal
+export TMP_MIT := $(CURDIR)/debian/tmp
+export TMP_HEIMDAL := $(CURDIR)/debian/tmp-heimdal
 export MIT_LDFLAGS := $(shell krb5-config.mit --libs gssapi | sed -e 's/ -l.*//')
 export MIT_CPPFLAGS := $(shell krb5-config.mit --cflags gssapi)
 export HEIMDAL_LDFLAGS := $(shell krb5-config.heimdal --libs gssapi | sed -e 's/ -l.*//')
@@ -112,8 +114,6 @@ export HEIMDAL_CPPFLAGS := $(shell krb5-config.heimdal --cflags gssapi)
 
 AUTOFILES=acinclude.m4 aclocal.m4 config/config.sub config/config.guess \
 		  config/ltmain.sh config/libtool.m4
-
-TMPBUILD=$(CURDIR)/build
 
 ### The Makefile targets begin. ###
 
@@ -175,42 +175,42 @@ override_dh_auto_build:
 	/usr/bin/pod2man --stderr debian/gen-auth/gen-auth >gen-auth.1
 
 override_dh_auto_install:
-	dh_auto_install -B$(TMPBUILD_HEIMDAL) -- sasldir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
-	dh_install -plibsasl2-modules-gssapi-heimdal
-	dh_auto_install -B$(TMPBUILD_MIT) -- sasldir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
+	dh_auto_install -B$(TMPBUILD_HEIMDAL) --destdir=$(TMP_HEIMDAL) -- sasldir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
+	dh_auto_install -B$(TMPBUILD_MIT) --destdir=$(TMP_MIT) -- sasldir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
 
 	# Remove static plugins - they are useless
-	rm debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2/*.a
+	rm $(TMP_MIT)/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2/*.a
 	# Remove libtool la files, they are eeevil
-	rm debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/*.la \
-	   debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2/*.la
+	rm $(TMP_MIT)/usr/lib/$(DEB_HOST_MULTIARCH)/*.la \
+	   $(TMP_MIT)/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2/*.la
 
 	# Note the version of Berkeley DB used to build this package
-	mkdir -p debian/tmp/usr/lib/sasl2
-	echo $(BDB_VERSION) > debian/tmp/usr/lib/sasl2/berkeley_db.txt
+	mkdir -p $(TMP_MIT)/usr/lib/sasl2
+	echo $(BDB_VERSION) > $(TMP_MIT)/usr/lib/sasl2/berkeley_db.txt
 
 	# Alter the default location and names of files to fit Debian
 	# policy and better integrate with the Debian system.
-	mv debian/tmp/usr/sbin/pluginviewer debian/tmp/usr/sbin/saslpluginviewer
-	mv debian/tmp/usr/share/man/man8/pluginviewer.8 \
-		debian/tmp/usr/share/man/man8/saslpluginviewer.8
+	mv $(TMP_MIT)/usr/sbin/pluginviewer $(TMP_MIT)/usr/sbin/saslpluginviewer
+	mv $(TMP_MIT)/usr/share/man/man8/pluginviewer.8 \
+		$(TMP_MIT)/usr/share/man/man8/saslpluginviewer.8
 	install -m 644 saslauthd/saslauthd.mdoc \
-		debian/tmp/usr/share/man/man8/saslauthd.8
+		$(TMP_MIT)/usr/share/man/man8/saslauthd.8
 	install -m 644 $(CURDIR)/debian/testsaslauthd.8 \
-		debian/tmp/usr/share/man/man8/testsaslauthd.8
-	mv debian/tmp/usr/sbin/dbconverter-2 debian/tmp/usr/sbin/sasldbconverter2
+		$(TMP_MIT)/usr/share/man/man8/testsaslauthd.8
+	mv $(TMP_MIT)/usr/sbin/dbconverter-2 $(TMP_MIT)/usr/sbin/sasldbconverter2
 
 	# Install sample-{client,server} with Debianized names
 	install -m 755 -D $(CURDIR)/sample/sample-client \
-		debian/tmp/usr/bin/sasl-sample-client
+		$(TMP_MIT)/usr/bin/sasl-sample-client
 	install -m 755 -D $(CURDIR)/sample/sample-server \
-		debian/tmp/usr/sbin/sasl-sample-server
+		$(TMP_MIT)/usr/sbin/sasl-sample-server
 
 	# Alter the rpath of certain binaries and shared libraries.
-	chrpath -d debian/tmp/usr/sbin/sasldblistusers2 \
-		debian/tmp/usr/sbin/saslpasswd2
+	chrpath -d $(TMP_MIT)/usr/sbin/sasldblistusers2 \
+		$(TMP_MIT)/usr/sbin/saslpasswd2
+	chrpath -d $(TMP_HEIMDAL)/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2/libgssapiv2.so.*.*.*
 ifeq (,$(findstring no-sql,$(DEB_BUILD_OPTIONS)))
-	chrpath -d debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2/libsql.so.*.*.*
+	chrpath -d $(TMP_MIT)/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2/libsql.so.*.*.*
 endif
 
 	# Install the sasl-sample-client and -server man pages.
@@ -218,20 +218,21 @@ endif
 
 	# Install saslfinger
 	install -m 644 -D $(CURDIR)/debian/saslfinger/saslfinger.1 \
-		debian/tmp/usr/share/man/man1/saslfinger.1
+		$(TMP_MIT)/usr/share/man/man1/saslfinger.1
 	install -m 755 -D $(CURDIR)/debian/saslfinger/saslfinger \
-		debian/tmp/usr/bin/saslfinger
+		$(TMP_MIT)/usr/bin/saslfinger
 
 	# Install gen-auth
 	install -m 755 -D $(CURDIR)/debian/gen-auth/gen-auth \
-		debian/tmp/usr/bin/gen-auth
+		$(TMP_MIT)/usr/bin/gen-auth
 
 	# Install logcheck snippet
 	install -m 644 -D $(CURDIR)/debian/libsasl2-modules.logcheck.server \
-		debian/tmp/etc/logcheck/ignore.d.server/libsasl2-modules
+		$(TMP_MIT)/etc/logcheck/ignore.d.server/libsasl2-modules
 
 override_dh_install:
-	dh_install -Nlibsasl2-modules-gssapi-heimdal
+	dh_install -Nlibsasl2-modules-gssapi-heimdal --sourcedir=$(TMP_MIT)
+	dh_install -plibsasl2-modules-gssapi-heimdal --sourcedir=$(TMP_HEIMDAL)
 
 override_dh_missing:
 	dh_missing --fail-missing

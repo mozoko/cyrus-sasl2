@@ -7,8 +7,7 @@ Uploaders: Fabian Fagerholm <fabbe@debian.org>,
            Ondřej Surý <ondrej@debian.org>,
            Adam Conrad <adconrad@0c3.net>
 Standards-Version: 4.3.0.1
-Build-Depends: autotools-dev,
-               chrpath,
+Build-Depends: chrpath,
                debhelper-compat (= 12),
                default-libmysqlclient-dev | libmysqlclient-dev,
                docbook-to-man,
