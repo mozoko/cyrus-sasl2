@@ -80,6 +80,7 @@ AC_ARG_ENABLE(cmulocal,
 AC_ARG_ENABLE(sample,
               [AC_HELP_STRING([--enable-sample],
                               [compile sample code [[yes]]])],
+              [],
               enable_sample=yes)
 
 AC_ARG_ENABLE(obsolete_cram_attr,
@@ -277,38 +278,6 @@ fi
 
 dnl See if we can provide a default logging function...
 AC_CHECK_FUNCS(syslog)
-
-AC_ARG_WITH(pam, [  --with-pam=DIR          use PAM (rooted in DIR) [[yes]] ],
-	with_pam=$withval,
-	with_pam=yes)
-if test "$with_pam" != no; then
-  if test -d $with_pam; then
-    CPPFLAGS="$CPPFLAGS -I${with_pam}/include"
-    LDFLAGS="$LDFLAGS -L${with_pam}/lib"
-  fi
-  AC_CHECK_HEADERS(security/pam_appl.h pam/pam_appl.h)
-  cmu_save_LIBS="$LIBS"
-  AC_CHECK_FUNC(pam_start, :,
-	LIBS="-lpam $LIBS"
-	AC_TRY_LINK([[
-#include <sys/types.h>
-#ifdef HAVE_PAM_PAM_APPL_H
-#include <pam/pam_appl.h>
-#endif
-#ifdef HAVE_SECURITY_PAM_H
-#include <security/pam_appl.h>
-#endif]],[[
-const char *service="foo";
-const char *user="bar";
-pam_handle_t *pamh;
-struct pam_conv *conv;
-int baz;
-baz = pam_start(service, user, conv, &pamh);
-return 0;
-]], LIBPAM="-lpam")
-)
-  LIBS="$cmu_save_LIBS $LIBPAM"
-fi
 
 AC_ARG_WITH(saslauthd, [  --with-saslauthd=DIR    enable use of the saslauth daemon using state dir DIR ],
 		with_saslauthd=$withval,
@@ -630,8 +599,7 @@ if test "$httpform" != no; then
   AC_DEFINE(HAVE_HTTPFORM,[],[Include HTTP form Support])
 fi
 
-AC_ARG_WITH(pam, [  --with-pam=DIR          use PAM (rooted in DIR) [yes] ],
-	with_pam=$withval,
+AC_ARG_WITH(pam, AC_HELP_STRING([--with-pam=DIR], [use PAM (rooted in DIR) [yes]]),,
 	with_pam=yes)
 if test "$with_pam" != no; then
   if test -d $with_pam; then
@@ -1124,17 +1092,15 @@ AC_SUBST(SASL_STATIC_OBJS)
 AC_SUBST(SASL_STATIC_LIBS)
 
 AC_ARG_WITH(plugindir, [  --with-plugindir=DIR    set the directory where plugins will
-                          be found [[/usr/lib/sasl2]] ],
+                          be found [[LIBDIR/sasl2]] ],
   plugindir=$withval,
-  plugindir=/usr/lib/sasl2)
-AC_DEFINE_UNQUOTED(PLUGINDIR, "$plugindir", [Runtime plugin location])
+  plugindir='${libdir}/sasl2')
 AC_SUBST(plugindir)
 
 AC_ARG_WITH(configdir, [   --with-configdir=DIR    set the directory where config files will
-                          be found [/usr/lib/sasl2] ],
+                          be found [PLUGINDIR:SYSCONFDIR/sasl2] ],
   configdir=$withval,
-  configdir=$plugindir:/etc/sasl2)
-AC_DEFINE_UNQUOTED(CONFIGDIR, "$configdir", [Runtime config file location])
+  configdir='${plugindir}:${sysconfdir}/sasl2')
 AC_SUBST(configdir)
 
 dnl look for rc4 libraries. we accept the CMU one or one from openSSL
@@ -1264,7 +1230,7 @@ SNPRINTFOBJS=""
 LTSNPRINTFOBJS=""
 AC_CHECK_FUNC(snprintf, [AC_DEFINE(HAVE_SNPRINTF,[],[Does the system have snprintf()?])], [sasl_cv_snprintf=yes])
 AC_CHECK_FUNC(vsnprintf, [AC_DEFINE(HAVE_VSNPRINTF,[],[Does the system have vsnprintf()?])], [sasl_cv_snprintf=yes])
-if test $sasl_cv_snprintf = no; then
+if test $sasl_cv_snprintf = yes; then
        AC_LIBOBJ(snprintf)
        SNPRINTFOBJS="snprintf.o"
        LTSNPRINTFOBJS="snprintf.lo"

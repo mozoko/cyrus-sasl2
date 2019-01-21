@@ -869,7 +869,6 @@ with_bdb_incdir
 with_gdbm
 enable_keep_db_open
 with_devrandom
-with_pam
 with_saslauthd
 with_authdaemond
 with_pwcheck
@@ -893,6 +892,7 @@ enable_gss_mutexes
 enable_sia
 enable_auth_sasldb
 enable_httpform
+with_pam
 enable_plain
 enable_anon
 enable_login
@@ -1610,7 +1610,6 @@ Optional Packages:
   --with-bdb-incdir=DIR   Berkeley DB include files are in DIR
   --with-gdbm=PATH        use gdbm from PATH
   --with-devrandom=PATH   set the path to pseudo random number generator [/dev/urandom]
-  --with-pam=DIR          use PAM (rooted in DIR) [yes]
   --with-saslauthd=DIR    enable use of the saslauth daemon using state dir DIR
   --with-authdaemond=PATH enable use of authdaemon with default socket=PATH [yes]
   --with-pwcheck=DIR     enable deprecated pwcheck daemon using statedir DIR
@@ -1622,16 +1621,16 @@ Optional Packages:
                           PATH
   --with-gss_impl={heimdal|mit|cybersafe|seam|auto}
                           choose specific GSSAPI implementation [[auto]]
-  --with-pam=DIR          use PAM (rooted in DIR) yes
+  --with-pam=DIR          use PAM (rooted in DIR) [yes]
   --with-ldap=DIR         use LDAP (in DIR) for saslauthd no
   --with-mysql=PATH       use MySQL from PATH
   --with-pgsql=PATH       use PostgreSQL from PATH
   --with-sqlite=PATH       use SQLite from PATH
   --with-sqlite3=PATH       use SQLite3 from PATH
   --with-plugindir=DIR    set the directory where plugins will
-                          be found [/usr/lib/sasl2]
+                          be found [LIBDIR/sasl2]
    --with-configdir=DIR    set the directory where config files will
-                          be found /usr/lib/sasl2
+                          be found PLUGINDIR:SYSCONFDIR/sasl2
   --with-rc4              use internal rc4 routines [yes]
   --with-dmalloc=DIR      with DMALLOC support (for test applications) [no]
   --with-sfio=DIR         with SFIO support (for smtptest/libsfsasl) [no]
@@ -3591,7 +3590,9 @@ fi
 
 # Check whether --enable-sample was given.
 if test "${enable_sample+set}" = set; then :
-  enableval=$enable_sample; enable_sample=yes
+  enableval=$enable_sample;
+else
+  enable_sample=yes
 fi
 
 
@@ -15389,75 +15390,6 @@ done
 
 
 
-# Check whether --with-pam was given.
-if test "${with_pam+set}" = set; then :
-  withval=$with_pam; with_pam=$withval
-else
-  with_pam=yes
-fi
-
-if test "$with_pam" != no; then
-  if test -d $with_pam; then
-    CPPFLAGS="$CPPFLAGS -I${with_pam}/include"
-    LDFLAGS="$LDFLAGS -L${with_pam}/lib"
-  fi
-  for ac_header in security/pam_appl.h pam/pam_appl.h
-do :
-  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
-ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
-if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
-  cat >>confdefs.h <<_ACEOF
-#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
-_ACEOF
-
-fi
-
-done
-
-  cmu_save_LIBS="$LIBS"
-  ac_fn_c_check_func "$LINENO" "pam_start" "ac_cv_func_pam_start"
-if test "x$ac_cv_func_pam_start" = xyes; then :
-  :
-else
-  LIBS="-lpam $LIBS"
-	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-#include <sys/types.h>
-#ifdef HAVE_PAM_PAM_APPL_H
-#include <pam/pam_appl.h>
-#endif
-#ifdef HAVE_SECURITY_PAM_H
-#include <security/pam_appl.h>
-#endif
-int
-main ()
-{
-
-const char *service="foo";
-const char *user="bar";
-pam_handle_t *pamh;
-struct pam_conv *conv;
-int baz;
-baz = pam_start(service, user, conv, &pamh);
-return 0;
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  LIBPAM="-lpam"
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
-fi
-
-  LIBS="$cmu_save_LIBS $LIBPAM"
-fi
-
-
 # Check whether --with-saslauthd was given.
 if test "${with_saslauthd+set}" = set; then :
   withval=$with_saslauthd; with_saslauthd=$withval
@@ -18669,7 +18601,7 @@ fi
 
 # Check whether --with-pam was given.
 if test "${with_pam+set}" = set; then :
-  withval=$with_pam; with_pam=$withval
+  withval=$with_pam;
 else
   with_pam=yes
 fi
@@ -19828,13 +19760,8 @@ fi
 if test "${with_plugindir+set}" = set; then :
   withval=$with_plugindir; plugindir=$withval
 else
-  plugindir=/usr/lib/sasl2
+  plugindir='${libdir}/sasl2'
 fi
-
-
-cat >>confdefs.h <<_ACEOF
-#define PLUGINDIR "$plugindir"
-_ACEOF
 
 
 
@@ -19843,13 +19770,8 @@ _ACEOF
 if test "${with_configdir+set}" = set; then :
   withval=$with_configdir; configdir=$withval
 else
-  configdir=$plugindir:/etc/sasl2
+  configdir='${plugindir}:${sysconfdir}/sasl2'
 fi
-
-
-cat >>confdefs.h <<_ACEOF
-#define CONFIGDIR "$configdir"
-_ACEOF
 
 
 
@@ -20060,7 +19982,7 @@ else
   sasl_cv_snprintf=yes
 fi
 
-if test $sasl_cv_snprintf = no; then
+if test $sasl_cv_snprintf = yes; then
        case " $LIBOBJS " in
   *" snprintf.$ac_objext "* ) ;;
   *) LIBOBJS="$LIBOBJS snprintf.$ac_objext"
