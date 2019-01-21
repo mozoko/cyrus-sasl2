@@ -16,3 +16,4 @@
 0032-Add-with_pgsql-include-postgresql-to-include-path.patch
 0017-Just-completely-remove-libobj-from-autotools-files.patch
 0033-cross.patch
+0019-Stop-importing-docutils_version-in-sphinx-build-manp.patch
