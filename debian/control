@@ -33,6 +33,7 @@ Package: sasl2-bin
 Section: utils
 Priority: optional
 Architecture: any
+Pre-Depends: ${misc:Pre-Depends}
 Depends: db-util,
          libsasl2-2 (>= ${binary:Version}),
          lsb-base (>= 3.0-6),
