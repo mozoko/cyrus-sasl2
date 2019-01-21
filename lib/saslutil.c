@@ -43,13 +43,12 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <config.h>
-#include <stdio.h>
-
 #if defined(WIN32)
 #define _CRT_RAND_S
 #endif
 
+#include <config.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -281,9 +280,9 @@ int sasl_mkchal(sasl_conn_t *conn,
   time(&now);
 
   if (hostflag && conn->serverFQDN)
-    snprintf(buf,maxlen, "<%lu.%lu@%s>", randnum, now, conn->serverFQDN);
+    snprintf(buf,maxlen, "<%lu.%lu@%s>", randnum, (unsigned long)now, conn->serverFQDN); /* don't care much about time 32bit overlap */
   else
-    snprintf(buf,maxlen, "<%lu.%lu>", randnum, now);
+    snprintf(buf,maxlen, "<%lu.%lu>", randnum, (unsigned long)now);
 
   return (int) strlen(buf);
 }
@@ -302,7 +301,7 @@ int sasl_utf8verify(const char *str, unsigned len)
     if (seqlen == 1) return SASL_BADPROT; /* this shouldn't happen here */
     if (seqlen > 6) return SASL_BADPROT; /* illegal */
     while (--seqlen)
-      if ((str[++i] & 0xC0) != 0xF0) return SASL_BADPROT; /* needed a 10 octet */
+      if ((str[++i] & 0xC0) != 0x80) return SASL_BADPROT; /* needed a 10 octet */
   }
   return SASL_OK;
 }      

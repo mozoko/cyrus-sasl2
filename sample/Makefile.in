@@ -434,7 +434,7 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AM_CPPFLAGS = -I$(top_srcdir)/include
+AM_CPPFLAGS = -I$(top_srcdir)/include -DPLUGINDIR='"${plugindir}"'
 EXTRA_DIST = NTMakefile
 CLEANFILES = sample-client sample-server ./.libs/*sample-client ./.libs/*sample-server
 sample_client_SOURCES = sample-client.c

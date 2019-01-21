@@ -64,9 +64,8 @@ noinst_SCRIPTS = makeinit.sh
 LIB_MYSQL = @LIB_MYSQL@
 
 plugindir = @plugindir@
+plugin_LTLIBRARIES = @SASL_MECHS@
 
-sasldir = $(prefix)/lib/sasl2
-sasl_LTLIBRARIES = @SASL_MECHS@
 EXTRA_LTLIBRARIES = libplain.la libanonymous.la libkerberos4.la libcrammd5.la \
 	libgs2.la libgssapiv2.la libdigestmd5.la liblogin.la libsrp.la libotp.la \
 	libscram.la libntlm.la libpassdss.la libsasldb.la libsql.la libldapdb.la
@@ -149,4 +148,4 @@ passdss_init.c sasldb_init.c sql_init.c ldapdb_init.c
 CLEANFILES=$(init_src)
 
 ${init_src}: $(srcdir)/makeinit.sh
-	$(SHELL) $(srcdir)/makeinit.sh
+	$(SHELL) $(srcdir)/makeinit.sh $@

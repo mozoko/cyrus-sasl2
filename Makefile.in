@@ -1037,7 +1037,7 @@ install-dvi: install-dvi-recursive
 
 install-dvi-am:
 
-install-exec-am: install-exec-local
+install-exec-am:
 
 install-html: install-html-recursive
 
@@ -1092,11 +1092,11 @@ uninstall-man: uninstall-man3
 	distclean-tags distcleancheck distdir distuninstallcheck dvi \
 	dvi-am html html-am info info-am install install-am \
 	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-exec-local install-html \
-	install-html-am install-info install-info-am install-man \
-	install-man3 install-pdf install-pdf-am install-pkgconfigDATA \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs installdirs-am maintainer-clean \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-man3 \
+	install-pdf install-pdf-am install-pkgconfigDATA install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs installdirs-am maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-generic \
 	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-am uninstall \
 	uninstall-am uninstall-man uninstall-man3 \
@@ -1127,24 +1127,6 @@ dist-hook:
 	(cd $(distdir)/plugins && sh makeinit.sh)
 	find $(top_distdir) -type f -name .sphinx-build.stamp -delete
 	rm -rf $(top_distdir)/$(SPHINX_CACHE)
-install-exec-local: $(INSTALLOSX)
-	@if test "$(plugindir)" != "$(prefix)/lib/sasl2"; then \
-	  echo "********************************************************"; \
-	  echo "* WARNING:"; \
-	  echo "* Plugins are being installed into $(prefix)/lib/sasl2,"; \
-	  echo "* but the library will look for them in $(plugindir)."; \
-	  echo "* You need to make sure that the plugins will eventually"; \
-	  echo "* be in $(plugindir) -- the easiest way is to make a"; \
-	  echo "* symbolic link from $(plugindir) to $(prefix)/lib/sasl2,"; \
-	  echo "* but this may not be appropriate for your site, so this"; \
-	  echo "* installation procedure won't do it for you."; \
-	  echo "*"; \
-          echo "* If you don't want to do this for some reason, you can"; \
-          echo "* set the location where the library will look for plugins"; \
-	  echo "* by setting the environment variable SASL_PATH to the path"; \
-	  echo "* the library should use."; \
-	  echo "********************************************************"; \
-	fi
 install-exec-local-osx:
 	$(mkinstalldirs) $(framedir)/Versions/A/Headers
 	$(mkinstalldirs) $(framedir)/Versions/A/Resources
