@@ -111,7 +111,7 @@ Description: Cyrus SASL - pluggable authentication modules (DB)
  This package provides the DB plugin, which supports Berkeley DB lookups.
 
 Package: libsasl2-modules-ldap
-Priority: extra
+Priority: optional
 Architecture: any
 Multi-Arch: same
 Depends: libsasl2-modules (= ${binary:Version}),
@@ -124,7 +124,7 @@ Description: Cyrus SASL - pluggable authentication modules (LDAP)
  This package provides the LDAP plugin, which supports OpenLDAP.
 
 Package: libsasl2-modules-otp
-Priority: extra
+Priority: optional
 Architecture: any
 Multi-Arch: same
 Depends: libsasl2-modules (= ${binary:Version}),
@@ -137,7 +137,7 @@ Description: Cyrus SASL - pluggable authentication modules (OTP)
  This package provides the OTP plugin, which supports one time passwords.
 
 Package: libsasl2-modules-sql
-Priority: extra
+Priority: optional
 Architecture: any
 Multi-Arch: same
 Depends: libsasl2-modules (= ${binary:Version}),
@@ -151,7 +151,7 @@ Description: Cyrus SASL - pluggable authentication modules (SQL)
  and SQLite.
 
 Package: libsasl2-modules-gssapi-mit
-Priority: extra
+Priority: optional
 Architecture: any
 Multi-Arch: same
 Depends: libsasl2-modules (= ${binary:Version}),
@@ -182,7 +182,7 @@ Description: Cyrus SASL - development files for authentication abstraction libra
 Package: libsasl2-modules-gssapi-heimdal
 Architecture: any
 Multi-Arch: same
-Priority: extra
+Priority: optional
 Depends: libsasl2-modules (= ${binary:Version}),
          ${misc:Depends},
          ${shlibs:Depends}
