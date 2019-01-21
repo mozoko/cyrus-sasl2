@@ -98,7 +98,7 @@ CONFIGURE_COMMON_OPTIONS= \
 	--with-saslauthd=/var/run/saslauthd \
 	$(CONFIGURE_LDAP) \
 	--with-configdir=/etc/sasl2:/etc/sasl:/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2:/usr/lib/sasl2 \
-	--with-plugindir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2:/usr/lib/sasl2 \
+	--with-plugindir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2 \
 	--sysconfdir=/etc \
 	--with-devrandom=/dev/urandom
 
