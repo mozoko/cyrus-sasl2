@@ -231,7 +231,10 @@ endif
 		debian/tmp/etc/logcheck/ignore.d.server/libsasl2-modules
 
 override_dh_install:
-	dh_install --fail-missing -Nlibsasl2-modules-gssapi-heimdal
+	dh_install -Nlibsasl2-modules-gssapi-heimdal
+
+override_dh_missing:
+	dh_missing --fail-missing
 
 override_dh_installinit:
 	dh_installinit $(DH_PACKAGE_EXCLUDES) --name=saslauthd start 20 2 3 4 5 . stop 20 0 1 6 .
