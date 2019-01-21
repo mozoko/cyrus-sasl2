@@ -104,10 +104,10 @@ CONFIGURE_COMMON_OPTIONS= \
 	--with-sphinx-build
 
 # Some convenience variables
-export TMPBUILD_MIT := $(CURDIR)/build-mit
-export TMPBUILD_HEIMDAL := $(CURDIR)/build-heimdal
-export TMP_MIT := $(CURDIR)/debian/tmp
-export TMP_HEIMDAL := $(CURDIR)/debian/tmp-heimdal
+export TMPBUILD_MIT := build-mit
+export TMPBUILD_HEIMDAL := build-heimdal
+export TMP_MIT := debian/tmp
+export TMP_HEIMDAL := debian/tmp-heimdal
 export MIT_LDFLAGS := $(shell krb5-config.mit --libs gssapi | sed -e 's/ -l.*//')
 export MIT_CPPFLAGS := $(shell krb5-config.mit --cflags gssapi)
 export HEIMDAL_LDFLAGS := $(shell krb5-config.heimdal --libs gssapi | sed -e 's/ -l.*//')
@@ -125,8 +125,8 @@ override_dh_auto_clean:
 	dh_auto_clean -B$(TMPBUILD_MIT)
 	dh_auto_clean -B$(TMPBUILD_HEIMDAL)
 
-	rm -f $(CURDIR)/sample/sample-client \
-		$(CURDIR)/sample/sample-server
+	rm -f sample/sample-client \
+		sample/sample-server
 	[ ! -f Makefile ] || $(MAKE) distclean
 	-rm -f config.h config.log autom4ate.cache
 
@@ -165,7 +165,7 @@ override_dh_auto_build:
 	dh_auto_build -B$(TMPBUILD_MIT) -- sasldir=/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
 
 	# Build sample-{client,server}
-	$(MAKE) -f $(CURDIR)/debian/sample/Makefile -C $(CURDIR)/sample T=$(TMPBUILD_MIT)
+	$(MAKE) -f ../debian/sample/Makefile -C sample T=../$(TMPBUILD_MIT)
 
 	# Build the sasl-sample-client and sasl-sample-server man pages.
 	/usr/bin/docbook-to-man debian/sasl-sample-client.sgml \
@@ -196,14 +196,14 @@ override_dh_auto_install:
 		$(TMP_MIT)/usr/share/man/man8/saslpluginviewer.8
 	install -m 644 saslauthd/saslauthd.mdoc \
 		$(TMP_MIT)/usr/share/man/man8/saslauthd.8
-	install -m 644 $(CURDIR)/debian/testsaslauthd.8 \
+	install -m 644 debian/testsaslauthd.8 \
 		$(TMP_MIT)/usr/share/man/man8/testsaslauthd.8
 	mv $(TMP_MIT)/usr/sbin/dbconverter-2 $(TMP_MIT)/usr/sbin/sasldbconverter2
 
 	# Install sample-{client,server} with Debianized names
-	install -m 755 -D $(CURDIR)/sample/sample-client \
+	install -m 755 -D sample/sample-client \
 		$(TMP_MIT)/usr/bin/sasl-sample-client
-	install -m 755 -D $(CURDIR)/sample/sample-server \
+	install -m 755 -D sample/sample-server \
 		$(TMP_MIT)/usr/sbin/sasl-sample-server
 
 	# Alter the rpath of certain binaries and shared libraries.
@@ -218,17 +218,17 @@ endif
 	dh_installman -psasl2-bin sasl-sample-client.8 sasl-sample-server.8
 
 	# Install saslfinger
-	install -m 644 -D $(CURDIR)/debian/saslfinger/saslfinger.1 \
+	install -m 644 -D debian/saslfinger/saslfinger.1 \
 		$(TMP_MIT)/usr/share/man/man1/saslfinger.1
-	install -m 755 -D $(CURDIR)/debian/saslfinger/saslfinger \
+	install -m 755 -D debian/saslfinger/saslfinger \
 		$(TMP_MIT)/usr/bin/saslfinger
 
 	# Install gen-auth
-	install -m 755 -D $(CURDIR)/debian/gen-auth/gen-auth \
+	install -m 755 -D debian/gen-auth/gen-auth \
 		$(TMP_MIT)/usr/bin/gen-auth
 
 	# Install logcheck snippet
-	install -m 644 -D $(CURDIR)/debian/libsasl2-modules.logcheck.server \
+	install -m 644 -D debian/libsasl2-modules.logcheck.server \
 		$(TMP_MIT)/etc/logcheck/ignore.d.server/libsasl2-modules
 
 override_dh_install:
