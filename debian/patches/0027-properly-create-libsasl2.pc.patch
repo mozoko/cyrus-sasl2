@@ -9,7 +9,7 @@ Subject: properly create libsasl2.pc
  2 files changed, 13 insertions(+), 1 deletion(-)
 
 diff --git a/Makefile.am b/Makefile.am
-index 04fc82d..a4fed1e 100644
+index 83dae6f..25694a8 100644
 --- a/Makefile.am
 +++ b/Makefile.am
 @@ -44,6 +44,15 @@ ACLOCAL_AMFLAGS = -I m4
@@ -40,10 +40,10 @@ index 04fc82d..a4fed1e 100644
  	@find $(distdir) -exec chmod u+w {} ';'
  	@find $(distdir) -name CVS -print | xargs -t rm -rf
 diff --git a/configure.ac b/configure.ac
-index 7019686..049382e 100644
+index 17b3f99..fe7f0eb 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1592,7 +1592,6 @@ AH_BOTTOM([#if defined __GNUC__ &&  __GNUC__ > 6
+@@ -1558,7 +1558,6 @@ AH_BOTTOM([#if defined __GNUC__ &&  __GNUC__ > 6
  AC_CONFIG_HEADERS(config.h)
  
  AC_OUTPUT(Makefile

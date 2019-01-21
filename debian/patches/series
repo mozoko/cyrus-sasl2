@@ -15,5 +15,4 @@
 0027-properly-create-libsasl2.pc.patch
 0032-Add-with_pgsql-include-postgresql-to-include-path.patch
 0017-Just-completely-remove-libobj-from-autotools-files.patch
-0018-We-need-to-look-for-compat-crypto.h-in-top_srcdir-as.patch
 0033-cross.patch

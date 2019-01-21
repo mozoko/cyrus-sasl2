@@ -21,7 +21,7 @@ index 56e0504..a90f7b4 100644
    AC_CHECK_FUNCS(gss_encapsulate_token)
    AC_CHECK_FUNCS(gss_oid_equal)
 diff --git a/plugins/gssapi.c b/plugins/gssapi.c
-index cf3fc64..7aab703 100644
+index ff663da..7c69ac2 100644
 --- a/plugins/gssapi.c
 +++ b/plugins/gssapi.c
 @@ -1545,7 +1545,7 @@ static sasl_server_plug_t gssapi_server_plugins[] =

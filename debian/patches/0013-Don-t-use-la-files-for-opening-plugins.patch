@@ -4,14 +4,14 @@ Date: Thu, 24 Mar 2016 11:35:04 +0100
 Subject: Don't use la files for opening plugins
 
 ---
- lib/dlopen.c | 115 ++++-------------------------------------------------------
- 1 file changed, 7 insertions(+), 108 deletions(-)
+ lib/dlopen.c | 121 ++++-------------------------------------------------------
+ 1 file changed, 7 insertions(+), 114 deletions(-)
 
 diff --git a/lib/dlopen.c b/lib/dlopen.c
-index 2032f94..9cb1ce7 100644
+index 8284cd8..ef90b11 100644
 --- a/lib/dlopen.c
 +++ b/lib/dlopen.c
-@@ -247,107 +247,6 @@ static int _sasl_plugin_load(char *plugin, void *library,
+@@ -246,113 +246,6 @@ static int _sasl_plugin_load(char *plugin, void *library,
      return result;
  }
  
@@ -39,6 +39,8 @@ index 2032f94..9cb1ce7 100644
 -    if (strcmp(in + (length - strlen(LA_SUFFIX)), LA_SUFFIX)) {
 -	if(!strcmp(in + (length - strlen(SO_SUFFIX)),SO_SUFFIX)) {
 -	    /* check for a .la file */
+-	    if (strlen(prefix) + strlen(in) + strlen(LA_SUFFIX) + 1 >= MAX_LINE)
+-		return SASL_BADPARAM;
 -	    strcpy(line, prefix);
 -	    strcat(line, in);
 -	    length = strlen(line);
@@ -51,11 +53,15 @@ index 2032f94..9cb1ce7 100644
 -		return SASL_FAIL;
 -	    }
 -	}
+-        if (strlen(prefix) + strlen(in) + 1 >= PATH_MAX)
+-            return SASL_BADPARAM;
 -	strcpy(out, prefix);
 -	strcat(out, in);
 -	return SASL_OK;
 -    }
 -
+-    if (strlen(prefix) + strlen(in) + 1 >= MAX_LINE)
+-        return SASL_BADPARAM;
 -    strcpy(line, prefix);
 -    strcat(line, in);
 -
@@ -119,7 +125,7 @@ index 2032f94..9cb1ce7 100644
  #endif /* DO_DLOPEN */
  
  /* loads a plugin library */
-@@ -501,18 +400,18 @@ int _sasl_load_plugins(const add_plugin_list_t *entrypoints,
+@@ -506,18 +399,18 @@ int _sasl_load_plugins(const add_plugin_list_t *entrypoints,
  		if (length + pos>=PATH_MAX) continue; /* too big */
  
  		if (strcmp(dir->d_name + (length - strlen(SO_SUFFIX)),

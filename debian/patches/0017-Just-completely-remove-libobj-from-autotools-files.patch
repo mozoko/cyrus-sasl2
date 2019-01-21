@@ -10,10 +10,10 @@ Subject: Just completely remove libobj from autotools files
  4 files changed, 4 insertions(+), 76 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index aa9e059..db02be9 100644
+index 1882f31..687779c 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1252,64 +1252,11 @@ AC_SUBST(SMTPTEST_PROGRAM)
+@@ -1218,64 +1218,11 @@ AC_SUBST(SMTPTEST_PROGRAM)
  AC_SUBST(SASL_UTIL_LIBS_EXTRA)
  AC_SUBST(SASL_UTIL_HEADERS_EXTRA)
  
@@ -33,7 +33,7 @@ index aa9e059..db02be9 100644
 -LTSNPRINTFOBJS=""
 -AC_CHECK_FUNC(snprintf, [AC_DEFINE(HAVE_SNPRINTF,[],[Does the system have snprintf()?])], [sasl_cv_snprintf=yes])
 -AC_CHECK_FUNC(vsnprintf, [AC_DEFINE(HAVE_VSNPRINTF,[],[Does the system have vsnprintf()?])], [sasl_cv_snprintf=yes])
--if test $sasl_cv_snprintf = no; then
+-if test $sasl_cv_snprintf = yes; then
 -       AC_LIBOBJ(snprintf)
 -       SNPRINTFOBJS="snprintf.o"
 -       LTSNPRINTFOBJS="snprintf.lo"
@@ -80,10 +80,10 @@ index aa9e059..db02be9 100644
  AC_C_INLINE
  AC_TYPE_MODE_T
 diff --git a/lib/Makefile.am b/lib/Makefile.am
-index a747335..5029a18 100644
+index 510c139..520676c 100644
 --- a/lib/Makefile.am
 +++ b/lib/Makefile.am
-@@ -66,27 +66,13 @@ endif
+@@ -65,27 +65,13 @@ endif
  common_headers = saslint.h
  common_sources = auxprop.c canonusr.c checkpw.c client.c common.c config.c external.c md5.c saslutil.c server.c seterror.c $(DLOPEN_C)
  
@@ -113,7 +113,7 @@ index a747335..5029a18 100644
  if MACOSX
  framedir = /Library/Frameworks/SASL2.framework
 diff --git a/plugins/Makefile.am b/plugins/Makefile.am
-index 24a3571..4310af1 100644
+index 5e84b3b..65eeeec 100644
 --- a/plugins/Makefile.am
 +++ b/plugins/Makefile.am
 @@ -52,9 +52,6 @@ plugin_version = 2:25:0
@@ -127,7 +127,7 @@ index 24a3571..4310af1 100644
  CRYPTO_COMPAT_OBJS = $(top_builddir)/common/libcrypto_compat.la
  
 diff --git a/saslauthd/Makefile.am b/saslauthd/Makefile.am
-index a5a4dfd..43a9a9a 100644
+index 4cf3a3d..af1c7ca 100644
 --- a/saslauthd/Makefile.am
 +++ b/saslauthd/Makefile.am
 @@ -2,8 +2,6 @@ AUTOMAKE_OPTIONS = 1.7
