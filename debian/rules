@@ -118,7 +118,7 @@ TMPBUILD=$(CURDIR)/build
 ### The Makefile targets begin. ###
 
 %:
-	dh $@ --with=quilt --with=autotools_dev --with=autoreconf $(DH_PACKAGE_EXCLUDES)
+	dh $@ $(DH_PACKAGE_EXCLUDES)
 
 override_dh_auto_clean:
 	dh_auto_clean -B$(TMPBUILD_MIT)

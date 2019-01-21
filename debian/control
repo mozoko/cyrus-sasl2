@@ -6,13 +6,11 @@ Uploaders: Fabian Fagerholm <fabbe@debian.org>,
            Roberto C. Sanchez <roberto@debian.org>,
            Ondřej Surý <ondrej@debian.org>,
            Adam Conrad <adconrad@0c3.net>
-Standards-Version: 3.9.8
-Build-Depends: automake (>= 1:1.14),
-               autotools-dev,
+Standards-Version: 4.3.0.1
+Build-Depends: autotools-dev,
                chrpath,
-               debhelper (>= 9),
+               debhelper-compat (= 12),
                default-libmysqlclient-dev | libmysqlclient-dev,
-               dh-autoreconf,
                docbook-to-man,
                groff-base,
                heimdal-multidev,
