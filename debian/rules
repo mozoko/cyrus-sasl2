@@ -39,7 +39,7 @@ export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed -Wl,-z,defs
 BDB_VERSION ?= $(shell LC_ALL=C dpkg-query -l 'libdb[45].[0-9]-dev' | grep ^ii | sed -e 's|.*\s\libdb\([45]\.[0-9]\)-dev\s.*|\1|')
 
 # SQL support may be turned off during the build, but is on by default.
-ifeq (,$(findstring no-sql,$(DEB_BUILD_OPTIONS)))
+ifeq (,$(findstring no-sql,$(DEB_BUILD_OPTIONS))$(findstring pkg.cyrus-sasl2.nosql,$(DEB_BUILD_PROFILES)))
 	CONFIGURE_SQL=--enable-sql
 else
 	CONFIGURE_SQL=--disable-sql
@@ -47,7 +47,7 @@ else
 endif
 
 # LDAP support may be turned off during the build, but is on by default.
-ifeq (,$(findstring no-ldap,$(DEB_BUILD_OPTIONS)))
+ifeq (,$(findstring no-ldap,$(DEB_BUILD_OPTIONS))$(findstring pkg.cyrus-sasl2.noldap,$(DEB_BUILD_PROFILES)))
 	CONFIGURE_LDAP=--with-ldap
 	CONFIGURE_LDAPDB=--enable-ldapdb
 else
@@ -57,7 +57,7 @@ else
 endif
 
 # GSSAPI support may be turned off during the build, but is on by default
-ifeq (,$(findstring no-gssapi,$(DEB_BUILD_OPTIONS)))
+ifeq (,$(findstring no-gssapi,$(DEB_BUILD_OPTIONS))$(findstring pkg.cyrus-sasl2.nogssapi,$(DEB_BUILD_PROFILES)))
 	CONFIGURE_GSSAPI=--enable-gssapi
 else
 	CONFIGURE_GSSAPI=--disable-gssapi
@@ -209,8 +209,10 @@ override_dh_auto_install:
 	# Alter the rpath of certain binaries and shared libraries.
 	chrpath -d $(TMP_MIT)/usr/sbin/sasldblistusers2 \
 		$(TMP_MIT)/usr/sbin/saslpasswd2
+ifeq (,$(findstring no-gssapi,$(DEB_BUILD_OPTIONS))$(findstring pkg.cyrus-sasl2.nogssapi,$(DEB_BUILD_PROFILES)))
 	chrpath -d $(TMP_HEIMDAL)/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2/libgssapiv2.so.*.*.*
-ifeq (,$(findstring no-sql,$(DEB_BUILD_OPTIONS)))
+endif
+ifeq (,$(findstring no-sql,$(DEB_BUILD_OPTIONS))$(findstring pkg.cyrus-sasl2.nosql,$(DEB_BUILD_PROFILES)))
 	chrpath -d $(TMP_MIT)/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2/libsql.so.*.*.*
 endif
 
