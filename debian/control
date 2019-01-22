@@ -9,17 +9,17 @@ Uploaders: Fabian Fagerholm <fabbe@debian.org>,
 Standards-Version: 4.3.0.1
 Build-Depends: chrpath,
                debhelper-compat (= 12),
-               default-libmysqlclient-dev | libmysqlclient-dev,
+               default-libmysqlclient-dev <!pkg.cyrus-sasl2.nosql> | libmysqlclient-dev <!pkg.cyrus-sasl2.nosql>,
                docbook-to-man,
                groff-base,
-               heimdal-multidev,
-               krb5-multidev,
+               heimdal-multidev <!pkg.cyrus-sasl2.nogssapi>,
+               krb5-multidev <!pkg.cyrus-sasl2.nogssapi>,
                libdb-dev,
-               libkrb5-dev,
-               libldap2-dev,
+               libkrb5-dev <!pkg.cyrus-sasl2.nogssapi>,
+               libldap2-dev <!pkg.cyrus-sasl2.noldap>,
                libpam0g-dev,
 	       libpod-pom-view-restructured-perl,
-               libpq-dev,
+               libpq-dev <!pkg.cyrus-sasl2.nosql>,
                libsqlite3-dev,
                libssl-dev,
                po-debconf,
@@ -119,6 +119,7 @@ Multi-Arch: same
 Depends: libsasl2-modules (= ${binary:Version}),
          ${misc:Depends},
          ${shlibs:Depends}
+Build-Profiles: <!pkg.cyrus-sasl2.noldap>
 Description: Cyrus SASL - pluggable authentication modules (LDAP)
  This is the Cyrus SASL API implementation, version 2.1. See package
  libsasl2-2 and RFC 2222 for more information.
@@ -145,6 +146,7 @@ Multi-Arch: same
 Depends: libsasl2-modules (= ${binary:Version}),
          ${misc:Depends},
          ${shlibs:Depends}
+Build-Profiles: <!pkg.cyrus-sasl2.nosql>
 Description: Cyrus SASL - pluggable authentication modules (SQL)
  This is the Cyrus SASL API implementation, version 2.1. See package
  libsasl2-2 and RFC 2222 for more information.
@@ -160,6 +162,7 @@ Depends: libsasl2-modules (= ${binary:Version}),
          ${misc:Depends},
          ${shlibs:Depends}
 Conflicts: libsasl2-modules-gssapi-heimdal
+Build-Profiles: <!pkg.cyrus-sasl2.nogssapi>
 Description: Cyrus SASL - pluggable authentication modules (GSSAPI)
  This is the Cyrus SASL API implementation, version 2.1. See package
  libsasl2-2 and RFC 2222 for more information.
@@ -189,6 +192,7 @@ Depends: libsasl2-modules (= ${binary:Version}),
          ${misc:Depends},
          ${shlibs:Depends}
 Conflicts: libsasl2-modules-gssapi-mit
+Build-Profiles: <!pkg.cyrus-sasl2.nogssapi>
 Description: Pluggable Authentication Modules for SASL (GSSAPI)
  This is the Cyrus SASL API implementation, version 2.1. See package
  libsasl2-2 and RFC 2222 for more information.

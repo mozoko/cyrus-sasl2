@@ -42,6 +42,25 @@ cyrus-sasl2 (2.1.27~rc4-1) unstable; urgency=medium
 
  -- Ondřej Surý <ondrej@debian.org>  Tue, 19 Sep 2017 09:53:57 +0200
 
+cyrus-sasl2 (2.1.27~101-g0780600+dfsg-3.1) unstable; urgency=medium
+
+  * Non-maintainer upload with maintainer permission.
+  * Add support for build-profiles. (Closes: #894297)
+
+ -- Karsten Merker <merker@debian.org>  Sat, 21 Apr 2018 18:20:16 +0200
+
+cyrus-sasl2 (2.1.27~101-g0780600+dfsg-3) unstable; urgency=medium
+
+  [ Holger Levsen ]
+  * NMU to help with #856847.
+
+  [ Andreas Beckmann ]
+  * libsasl2-modules.postinst: Remove executable permissions from
+    /etc/logcheck/ignore.d.server/libsasl2-modules on upgrades from jessie.
+    (Closes: #819893)
+
+ -- Holger Levsen <holger@debian.org>  Sun, 19 Mar 2017 12:30:33 +0000
+
 cyrus-sasl2 (2.1.27~101-g0780600+dfsg-2) unstable; urgency=medium
 
   * Reinstate Heimdal Kerberos support (Closes: #849706)
