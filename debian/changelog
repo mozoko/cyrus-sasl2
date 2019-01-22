@@ -1,3 +1,17 @@
+cyrus-sasl2 (2.1.27+dfsg-1) unstable; urgency=medium
+
+  [ Ryan Tandy ]
+  * Fix libsasl2-2 incorrectly depending on GSSAPI libraries.
+    (Closes: #917129)
+  * Restore changes from NMU versions
+    2.1.27~101-g0780600+dfsg-3 and 2.1.27~101-g0780600+dfsg-3.1
+    (Closes: #917140)
+
+  [ Ondřej Surý ]
+  * Upload to unstable.
+
+ -- Ondřej Surý <ondrej@debian.org>  Tue, 22 Jan 2019 08:53:59 +0000
+
 cyrus-sasl2 (2.1.27+dfsg-1~exp1) experimental; urgency=medium
 
   [ Roberto C. Sanchez ]
