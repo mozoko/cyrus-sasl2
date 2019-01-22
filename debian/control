@@ -18,12 +18,12 @@ Build-Depends: chrpath,
                libkrb5-dev <!pkg.cyrus-sasl2.nogssapi>,
                libldap2-dev <!pkg.cyrus-sasl2.noldap>,
                libpam0g-dev,
-	       libpod-pom-view-restructured-perl,
+               libpod-pom-view-restructured-perl,
                libpq-dev <!pkg.cyrus-sasl2.nosql>,
                libsqlite3-dev,
                libssl-dev,
                po-debconf,
-	       python3-sphinx,
+               python3-sphinx,
                quilt
 Build-Conflicts: heimdal-dev
 Vcs-Browser: https://salsa.debian.org/debian/cyrus-sasl2
